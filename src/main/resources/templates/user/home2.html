@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en" data-ng-app="App">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+		<meta charset="UTF-8"/>
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<title>test</title>
+		
+		<!-- Plugin Css -->
+    	<link href="../../css/bootstrap/bootstrap.min.css" rel="stylesheet"/>
+    	
+	    <!-- Custom Css -->
+    	<link href="../../css/test/custom.css" rel="stylesheet"/>
+	    <link href="../../css/test/themes/default/skin.css" rel="stylesheet" type="text/css" title="default"/>
+	</head>
+	<body ng-controller="app">
+		<div class="page-loader-wrapper">
+		    <div class="loader">
+		        <div class="md-preloader pl-size-md">
+		            <svg viewbox="0 0 75 75">
+		                <circle cx="37.5" cy="37.5" r="33.5" class="pl-red" stroke-width="4" />
+		            </svg>
+		        </div>
+		        <p>加载中，请稍后...</p>
+		    </div>
+		</div>
+		<div class="overlay"></div>
+		<!-- Page Loader -->
+		<div id="wrapper">
+			<div id="page-wrapper">
+				<div class="row clearfix">
+					<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+						<div class="panel">
+							<div class="panel-heading">
+								<h2 class="panel-title">表单验证</h2>
+							</div>
+							<div class="panel-body">
+								<div class="row clearfix">
+		                            <div class="col-md-12">
+		                            	<form action="#" method="post" id="theForm" class="form-horizontal" >
+			                            <div class="form-group">
+			                                	<label>姓名：</label>
+			                                    <div class="form-line">
+			                                        <input type="text" class="form-control" placeholder="请输入用户姓名" name="userName" id="userName" data-error="用户名错误" data-tip="请输入用户名" />
+			                                    </div>
+			                                </div>
+			                                
+			                                <div class="form-group">
+			                                	<label>密码：</label>
+			                                    <div class="form-line">
+			                                        <input type="password" class="form-control" placeholder="请输入密码" id="pwd" data-error="密码错误" data-tip="请输入密码" />
+			                                    </div>
+			                                </div>
+			                                
+			                                <div class="form-group">
+			                                	<label>类型:</label>
+			                                    <div class="form-line">
+			                                        <select class="form-control show-tick" id="userSel" name="test2">
+					                                    <option value="">请选择类型</option>
+					                                    <option value="10">10</option>
+					                                    <option value="20">20</option>
+					                                    <option value="30">30</option>
+					                                    <option value="40">40</option>
+					                                    <option value="50">50</option>
+					                                </select>
+			                                    </div>
+			                                </div>
+			                                
+			                                <div class="form-group">
+			                                	<label>性别：</label>
+			                                    <div class="form-line ds-inline">
+			                                        <div class="radio">
+		                                        		<div class="radio-inline">
+		                                        			<input name="group1" type="radio" class="with-gap radio-col-blue" id="radio_3" checked="checked" />
+		                                            		<label for="radio_3">男</label>
+		                                        		</div>
+		                                        		<div class="radio-inline">
+		                                        			<input name="group1" type="radio" class="with-gap radio-col-blue" id="radio_4" />
+		                                            		<label for="radio_4">女</label>
+		                                        		</div>
+		                                        	</div>
+			                                    </div>
+			                                </div>
+			                                
+			                                <div class="form-group">
+			                                	<label>证件照:</label>
+			                                	<div class="form-line">
+			                                		<div class="file-preview m-r-15">
+                										<span class="thumbnail" id="showImg">
+                											<i class="fa fa-plus"></i>
+                										</span>
+                										<input type="file" name="filefield" id="uploadFile" class="form-control" onchange="uploadImage('uploadFile','showImg')" />
+                										<span id="uploadFile_delete" class="ds-block hide img-deleted">
+                											<i class="fa fa-minus-circle col-red" onclick="deleteImg('uploadFile','showImg')"></i>
+                										</span>
+                									</div>
+                									<div class="file-preview">
+                										<span class="thumbnail" id="showImg2">
+                											<i class="fa fa-plus"></i>
+                										</span>
+                										<input type="file" name="filefield"  id="uploadFile2" class="form-control" onchange="uploadImage('uploadFile2','showImg2')" />
+                										<span  id="uploadFile2_delete" class="ds-block hide  img-deleted">
+                											<i class="fa fa-minus-circle col-red" onclick="deleteImg('uploadFile2','showImg2')"></i>
+                										</span>
+                									</div>
+		                                       </div>
+			                                </div>
+			                                
+			                                <div class="form-group">
+			                                	<div class="form-line">
+			                                		<div class="checkbox">
+			                                			<div class="checkbox-inline">
+			                                				<input type="checkbox" class="filled-in chk-col-blue" id="sing" name="hobby" value="sing" data-error="未勾选" checked="checked" />
+				                                			<label for="sing">我已阅读并接受此协议</label>
+			                                			</div>
+			                                		</div>
+			                                	</div>
+			                                	<div class="input-tips">
+	                        						<label class="error" id="checkboxError">请勾选</label>
+                        						</div>
+			                                </div>
+			                                
+			                                <button type="button" class="btn btn-success waves-effect m-w-80" id="submitBtn" >提交</button>
+			                         
+			                            </form>
+		                            </div>
+		                       </div>
+							</div>
+						</div>
+						<!-- / .panel -->
+					</div>
+					<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+						<div class="panel">
+							<div class="panel-heading">
+								<h2 class="panel-title">
+									表单设计元素
+									<small>此栏为表单元素的一种布局方式，有没有表单验证功能</small>
+								</h2>
+							</div>
+							<div class="panel-body">
+								<div class="row clearfix">
+		                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+		                                <div class="input-group">
+		                                	<input type="text" class="form-control has-feedback-left" placeholder="用户名"/>
+		                                	<span class="form-control-feedback pull-left" aria-hidden="true"><i class="fa fa-user"></i></span>
+		                                </div>
+		                            </div>
+		                            
+		                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+		                                <div class="input-group">
+		                                	<input type="password" class="form-control has-feedback-right" placeholder="密码" />
+		                                	<span class="form-control-feedback pull-right" aria-hidden="true"><i class="fa fa-lock"></i></span>
+		                                </div>
+		                            </div>
+		                            
+		                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+		                                <div class="input-group">
+		                                	<input type="text" class="form-control has-feedback-left" placeholder="邮箱" />
+		                                	<span class="form-control-feedback pull-left" aria-hidden="true"><i class="fa fa-envelope"></i></span>
+		                                </div>
+		                            </div>
+		                            
+		                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+		                                <div class="input-group">
+		                                	<input type="tel" class="form-control has-feedback-right" placeholder="电话" />
+		                                	<span class="form-control-feedback pull-right" aria-hidden="true"><i class="fa fa-phone"></i></span>
+		                                </div>
+		                            </div>
+		                            
+		                       </div>
+		                       
+		                       <div class="form-column">
+		                       		<div class="row clearfix">
+		                                <div class="col-lg-5 col-md-5 col-sm-5 col-xs-12 form-control-label">
+		                                    <label>默认文本框：</label>
+		                                </div>
+		                                <div class="col-lg-7 col-md-7 col-sm-7 col-xs-12">
+		                                    <div class="form-group">
+		                                        <div class="form-line">
+		                                            <input type="text" class="form-control" placeholder="默认文本框" />
+		                                        </div>
+		                                    </div>
+		                                </div>
+		                            </div>
+		                            
+		                            <div class="row clearfix">
+		                                <div class="col-lg-5 col-md-5 col-sm-5 col-xs-12 form-control-label">
+		                                    <label>禁用文本框：</label>
+		                                </div>
+		                                <div class="col-lg-7 col-md-7 col-sm-7 col-xs-12">
+		                                    <div class="form-group">
+		                                        <div class="form-line">
+		                                            <input type="text" class="form-control" placeholder="禁用文本框" disabled="disabled" />
+		                                        </div>
+		                                    </div>
+		                                </div>
+		                            </div>
+		                            
+		                            <div class="row clearfix">
+		                                <div class="col-lg-5 col-md-5 col-sm-5 col-xs-12 form-control-label">
+		                                    <label>只读文本框：</label>
+		                                </div>
+		                                <div class="col-lg-7 col-md-7 col-sm-7 col-xs-12">
+		                                    <div class="form-group">
+		                                        <div class="form-line">
+		                                            <input type="text" class="form-control" placeholder="只读文本框" readonly="readonly" />
+		                                        </div>
+		                                    </div>
+		                                </div>
+		                            </div>
+		                            
+		                            <div class="row clearfix">
+		                                <div class="col-lg-5 col-md-5 col-sm-5 col-xs-12 form-control-label">
+		                                    <label>日/月/年 时/分/秒：</label>
+		                                </div>
+		                                <div class="col-lg-7 col-md-7 col-sm-7 col-xs-12">
+		                                    <div class="form-group">
+		                                        <div class="form-line">
+		                                            <div id="datetimepicker1" class="input-append date">
+												        <input type="text" class="form-control" readonly="readonly" data-format="dd/MM/yyyy hh:mm:ss" placeholder="请选择时间" />
+												        <span class="add-on">
+												          <i data-time-icon="icon-time" data-date-icon="icon-calendar" class="fa fa-calendar"></i>
+												        </span>
+											      	</div>
+		                                        </div>
+		                                    </div>
+		                                </div>
+		                            </div>
+		                            
+		                            <div class="row clearfix">
+		                                <div class="col-lg-5 col-md-5 col-sm-5 col-xs-12 form-control-label">
+		                                    <label>日/月/年：</label>
+		                                </div>
+		                                <div class="col-sm-7 col-xs-12">
+		                                    <div class="form-group">
+		                                        <div class="form-line">
+		                                            <div id="datetimepicker2" class="input-append date">
+												        <input type="text" class="form-control" readonly="readonly" data-format="dd/MM/yyyy" placeholder="请选择时间" />
+												        <span class="add-on">
+												          <i data-time-icon="icon-time" data-date-icon="icon-calendar" class="fa fa-calendar"></i>
+												        </span>
+											      	</div>
+		                                        </div>
+		                                    </div>
+		                                </div>
+		                            </div>
+		                            
+		                            <div class="row clearfix">
+		                                <div class="col-lg-5 col-md-5 col-sm-5 col-xs-3 form-control-label l-chk-rad">
+		                                    <label>性别：</label>
+		                                </div>
+		                                <div class="col-lg-7 col-md-7 col-sm-7 col-xs-9">
+		                                    <div class="form-group">
+		                                        <div class="form-line">
+		                                        	<div class="radio">
+		                                        		<div class="radio-inline">
+		                                        			<input name="group1" type="radio" class="with-gap radio-col-blue" id="radio_5" checked="checked" />
+		                                            		<label for="radio_5">男</label>
+		                                        		</div>
+		                                        		<div class="radio-inline">
+		                                        			<input name="group1" type="radio" class="with-gap radio-col-blue" id="radio_6" />
+		                                            		<label for="radio_6">女</label>
+		                                        		</div>
+		                                        	</div>
+		                                        </div>
+		                                    </div>
+		                                </div>
+		                            </div>
+		                            
+		                            <div class="row clearfix">
+		                                <div class="col-lg-5 col-md-5 col-sm-5 col-xs-12 form-control-label">
+		                                    <label>文件上传：</label>
+		                                </div>
+		                                <div class="col-lg-7 col-md-7 col-sm-7 col-xs-12">
+		                                    <div class="form-group">
+		                                        <div class="form-line">
+		                                            <div class="file-group">
+	                									<input type="text" name="fileName" id="fileName" class="form-control" placeholder="选择文件..." />
+	                    								<input type="button" value="选择文件" class="btn btn-primary"/>
+	                    								<input type="file" name="filefield" id="uploadFile" onchange="document.getElementById('fileName').value=this.value" />
+	                    							</div>
+		                                        </div>
+		                                    </div>
+		                                </div>
+		                            </div>
+		                            
+		                            <div class="row clearfix">
+		                            	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 align-center">
+		                            		<button type="button" class="btn btn-success waves-effect m-r-8 m-w-80" >确定</button>
+		                            		<button type="button" class="btn btn-primary waves-effect m-l-8 m-w-80" >取消</button>
+		                            	</div>
+		                            </div>
+		                            
+		                       </div>
+		                       <!-- /. form-column -->
+							</div>
+						</div>
+						<!-- / .panel -->
+					</div>
+				</div>
+				<!-- / .row -->
+			</div>
+			<!-- / #page-wrapper -->
+		</div>
+		<!-- / #wrapper -->
+	</body>
+	<!-- Plugin Js -->
+    <script src="../../../plugins/jquery/jquery-2.2.4.min.js"></script>
+    <script src="../../../plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../../../plugins/angular/angular.min.js"></script>
+    <script src="../../../plugins/ocLazyLoad/ocLazyLoad.min.js"></script>
+    <script src="../../../plugins/jquery-slimscroll/jquery.slimscroll.js"></script>
+    <script src="../../../plugins/bootstrap-select/js/bootstrap-select.js"></script>
+    <script src="../../../plugins/bootstrap-notify/bootstrap-notify.js"></script>
+    <script src="../../../plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>
+    <script src="../../../plugins/node-waves/waves.js"></script>
+    <script src="../../../plugins/sweetalert/sweetalert.min.js"></script>
+    <script src="../../../js/ui/dialogs.js"></script>
+    <script src="../../../js/ui/modals.js"></script>
+    <script src="../../../js/ui/notifications.js"></script>
+    <script src="../../../js/ui/tooltips-popovers.js"></script>
+    <script src="../../../js/ui/load_resize.js"></script>
+    <!--文件上传-->
+    <script type="text/javascript" src="../../../js/fileUpload/ajaxfileupload.js" ></script>
+    <!-- Custom JS -->
+    <script src="../../../js/server/server.js" type="text/javascript"></script>
+	<script src="../../../js/cookie.js" type="text/javascript"></script>
+	<script src="../../../js/skin.js" type="text/javascript"></script>
+	<script src="../../../js/config/config_skin.js" type="text/javascript"></script>
+	<script src="../../../js/App.js" type="text/javascript"></script>
+	<script src="../../../js/home.js" type="text/javascript"></script>
+	
+	<!-- Forms JS-->
+	<script src="../../../js/formValidata/formValid_Inf.js" type="text/javascript"></script>
+	<script src="../../../js/formValidata/formValid_Rule.js" type="text/javascript"></script>
+	<script src="../../../js/formValidata/formValid.js" type="text/javascript"></script>
+	<script src="../../../js/formValidata/getFormData.js" type="text/javascript"></script>
+	<!--图片上传示例-->
+	<script src="../../../js/formSubmit/ajaxUpload.js"></script>
+	<!-- Script -->
+	<script type="text/javascript">
+	/*
+	  	$(function() {
+		    $('#datetimepicker1').datetimepicker({
+		    	collapse: true
+		    });
+		    $('#datetimepicker2').datetimepicker({
+		    	collapse: true
+		    });
+		});
+	*/
+	</script>
+	
+</html>

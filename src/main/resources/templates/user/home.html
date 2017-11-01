@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en" data-ng-app="App">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+		<meta charset="UTF-8"/>
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<title>test</title>
+		
+		<!-- Plugin Css -->
+    	<link href="../../css/bootstrap/bootstrap.min.css" rel="stylesheet"/>
+    	
+	 </head>
+	<body >
+		<!-- Page Loader -->
+		<div id="wrapper">
+			<div id="page-wrapper">
+				<div class="row clearfix">
+				     <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1"></div>
+				     <!-- the first  login with pass-->
+					<div  ng-controller="control_loginwithpass as loginWithPassSession" class="col-lg-2 col-md-2 col-sm-6 col-xs-12">
+						<div class="panel">
+							<div class="panel-heading">
+								<h5 class="panel-title">Login with password</h5>
+							</div>
+							<div class="panel-body">
+								<div class="row clearfix">
+		                            <div class="col-md-12">
+		                            	<form action="#" method="post" id="theForm" class="form-horizontal" >
+			                            	<div class="form-group">
+			                                	<label>Country Code：</label>
+			                                    <div class="form-line">
+			                                        <input type="text" class="form-control" ng-model="loginWithPassSession.countryCode" placeholder="请输入区号" name="countryCode"   data-tip="请输入区号"/>
+			                                    </div>
+			                                </div>
+			                             	<div class="form-group">
+			                                    <label>Phone：</label>
+				                                <div class="form-line">
+				                                        <input type="text" class="form-control" ng-model="loginWithPassSession.phone" placeholder="请输入全号码" name="userName"  data-tip="请输入号码" />
+				                                </div>
+			                                </div>
+			                                
+			                                <div class="form-group">
+			                                	<label>Password：</label>
+			                                    <div class="form-line">
+			                                        <input type="password" class="form-control" placeholder="请输入密码" ng-model="loginWithPassSession.password" data-tip="请输入密码" />
+			                                    </div>
+			                                </div>
+			                                
+			                                <button type="button" class="btn btn-success waves-effect m-w-80" ng-click="loginWithPassSession.nglogin()" >Login</button>
+			                         
+			                            </form>
+		                            </div>
+		                       </div>
+							</div>
+						</div>
+						<!-- / .panel -->
+					</div>
+					 <!-- the login with code  -->
+					<div  ng-controller="control_loginwithcode as loginWithCodeSession" class="col-lg-2 col-md-2 col-sm-6 col-xs-12">
+						<div class="panel">
+							<div class="panel-heading">
+								<h5 class="panel-title">Login with code</h5>
+							</div>
+							<div class="panel-body">
+								<div class="row clearfix">
+		                            <div class="col-md-12">
+		                            	<form action="#" method="post" id="theForm" class="form-horizontal" >
+			                            	<div class="form-group">
+			                                	<label>Country Code：</label>
+			                                    <div class="form-line">
+			                                        <input type="text" class="form-control" ng-model="loginWithCodeSession.countryCode" placeholder="请输入区号" name="countryCode"   data-tip="请输入区号"/>
+			                                    </div>
+			                                </div>
+			                             	<div class="form-group">
+			                                    <label>Phone：</label>
+				                                <div class="form-line">
+				                                        <input type="text" class="form-control" ng-model="loginWithCodeSession.phone" placeholder="请输入全号码" name="userName"  data-tip="请输入号码" />
+				                                </div>
+			                                </div>
+			                                
+			                                <div class="form-group">
+			                                    <label>authCode：</label>
+				                                <div class="form-line">
+				                                        <input type="text" class="form-control" ng-model="loginWithCodeSession.authcode" placeholder="请输入认证码" name="userName"  data-tip="请输入短信认证码" />
+				                                </div>
+			                                </div>
+			                                 <button type="button" class="btn btn-success waves-effect m-w-80" ng-click="loginWithCodeSession.getAuthCode()" >get Code</button>
+			                                 <button type="button" class="btn btn-success waves-effect m-w-80" ng-click="loginWithCodeSession.nglogin()" >Login</button>
+			                         
+			                            </form>
+		                            </div>
+		                       </div>
+							</div>
+						</div>
+						<!-- / .panel -->
+					</div>
+					<!-- end of the login with code -->
+					<!-- the second  register with code-->
+					<div ng-controller="control_register as registerSession" class="col-lg-2 col-md-2 col-sm-6 col-xs-12">
+						<div class="panel">
+							<div class="panel-heading">
+								<h5 class="panel-title">Register with code
+								</h5>
+							</div>
+							<div class="panel-body">
+								<div class="row clearfix">
+		                           <form action="#" method="post" id="theForm" class="form-horizontal" >
+			                            	<div class="form-group">
+			                                	<label>Country Code：</label>
+			                                    <div class="form-line">
+			                                        <input type="text" class="form-control" ng-model="registerSession.countryCode" placeholder="请输入区号" name="countryCode"   data-tip="请输入区号"/>
+			                                    </div>
+			                                </div>
+			                             	<div class="form-group">
+			                                    <label>Phone：</label>
+				                                <div class="form-line">
+				                                        <input type="text" class="form-control" ng-model="registerSession.phone" placeholder="请输入号码" name="userName"  data-tip="请输入号码" />
+				                                </div>
+			                                </div>
+			                                
+			                                <div class="form-group">
+			                                	<label>Password：</label>
+			                                    <div class="form-line">
+			                                        <input type="password" class="form-control" placeholder="请输入密码" ng-model="registerSession.password" data-tip="请输入密码" />
+			                                    </div>
+			                                </div>
+			                                
+			                                <div class="form-group">
+			                                    <label>authCode：</label>
+				                                <div class="form-line">
+				                                        <input type="text" class="form-control" ng-model="registerSession.authcode" placeholder="请输入认证码" name="userName"  data-tip="请输入短信认证码" />
+				                                </div>
+			                                </div>
+			                                <button type="button" class="btn btn-success waves-effect m-w-80" ng-click="registerSession.getAuthCode()" >get authCode</button>
+			                         
+			                                <button type="button" class="btn btn-success waves-effect m-w-80" ng-click="registerSession.register()" >Register</button>
+			                         
+			                            </form>
+		                                
+		                       </div>
+		                        <!-- end of row -->     
+		                  </div>
+						</div>
+						<!-- / .panel -->
+					</div>
+				    <!-- end of send -->
+				    <!-- reset password with code -->
+					<div ng-controller="control_resetPassSession as resetPassSession" class="col-lg-2 col-md-2 col-sm-6 col-xs-12">
+						<div class="panel">
+							<div class="panel-heading">
+								<h5 class="panel-title">Reset Password
+								</h5>
+							</div>
+							<div class="panel-body">
+								<div class="row clearfix">
+		                           <form action="#" method="post" id="theForm" class="form-horizontal" >
+			                            	<div class="form-group">
+			                                	<label>Country Code：</label>
+			                                    <div class="form-line">
+			                                        <input type="text" class="form-control" ng-model="resetPassSession.countryCode" placeholder="请输入区号" name="countryCode"   data-tip="请输入区号"/>
+			                                    </div>
+			                                </div>
+			                             	<div class="form-group">
+			                                    <label>Phone：</label>
+				                                <div class="form-line">
+				                                        <input type="text" class="form-control" ng-model="resetPassSession.phone" placeholder="请输入号码" name="userName"  data-tip="请输入号码" />
+				                                </div>
+			                                </div>
+			                                
+			                                <div class="form-group">
+			                                	<label>New Password：</label>
+			                                    <div class="form-line">
+			                                        <input type="password" class="form-control" placeholder="请输入密码" ng-model="resetPassSession.password" data-tip="请输入密码" />
+			                                    </div>
+			                                </div>
+			                                
+			                                <div class="form-group">
+			                                    <label>authCode：</label>
+				                                <div class="form-line">
+				                                        <input type="text" class="form-control" ng-model="resetPassSession.authcode" placeholder="请输入认证码" name="userName"  data-tip="请输入短信认证码" />
+				                                </div>
+			                                </div>
+			                                <button type="button" class="btn btn-success waves-effect m-w-80" ng-click="resetPassSession.getAuthCode()" >get authCode</button>
+			                         
+			                                <button type="button" class="btn btn-success waves-effect m-w-80" ng-click="resetPassSession.resetPassword()" >reset</button>
+			                         
+			                            </form>
+		                                
+		                       </div>
+		                        <!-- end of row -->     
+		                  </div>
+						</div>
+						<!-- / .panel -->
+					</div>
+				    <!-- end of third -->
+				    
+				      <!-- modify password  -->
+					<div ng-controller="control_modifyPassSession as modifyPassSession" class="col-lg-2 col-md-2 col-sm-6 col-xs-12">
+						<div class="panel">
+							<div class="panel-heading">
+								<h5 class="panel-title">Modify Password
+								</h5>
+							</div>
+							<div class="panel-body">
+								<div class="row clearfix">
+		                           <form action="#" method="post" id="theForm" class="form-horizontal" >
+			                            	<div class="form-group">
+			                                	<label>Country Code：</label>
+			                                    <div class="form-line">
+			                                        <input type="text" class="form-control" ng-model="modifyPassSession.countryCode" placeholder="请输入区号" name="countryCode"   data-tip="请输入区号"/>
+			                                    </div>
+			                                </div>
+			                             	<div class="form-group">
+			                                    <label>Phone：</label>
+				                                <div class="form-line">
+				                                        <input type="text" class="form-control" ng-model="modifyPassSession.phone" placeholder="请输入号码" name="userName"  data-tip="请输入号码" />
+				                                </div>
+			                                </div>
+			                                
+			                                <div class="form-group">
+			                                	<label>old Password：</label>
+			                                    <div class="form-line">
+			                                        <input type="password" class="form-control" placeholder="请输入老密码" ng-model="modifyPassSession.oldPassword" data-tip="请输入老密码" />
+			                                    </div>
+			                                </div>
+			                                
+			                                <div class="form-group">
+			                                    <label>New PassWord:</label>
+				                                <div class="form-line">
+				                                        <input type="password" class="form-control" ng-model="modifyPassSession.newPassword" placeholder="请输入新密码" name="userName"  data-tip="请输入新密码" />
+				                                </div>
+			                                </div>
+			                               
+			                                <button type="button" class="btn btn-success waves-effect m-w-80" ng-click="modifyPassSession.modifyPassword()" >modify password</button>
+			                         
+			                            </form>
+		                                
+		                       </div>
+		                        <!-- end of row -->     
+		                  </div>
+						</div>
+						<!-- / .panel -->
+					</div>
+				    <!-- end of third -->
+				</div>
+				<!-- / .row -->
+			</div>
+			<!-- / #page-wrapper -->
+		</div>
+		<!-- / #wrapper -->
+	</body>
+	<!-- Plugin Js -->
+    <!--图片上传示例-->
+   <script src="../../js/jquery/jquery-3.2.1.min.js"></script>
+	<script src="../../js/angular/angular.min.js"></script>
+	<script src="../../js/encrypt/jsencrypt.min.js"></script>
+	
+	<script src="../../js/test/ajax.js"></script>
+	<script src="../../js/test/userAjax.js"></script>
+	<script src="../../js/test/user.js"></script>
+	<script src="../../js/test/angularApp.js"></script>
+	
+	
+	<!-- Script -->
+	<script type="text/javascript">
+	/*
+	  	$(function() {
+		    $('#datetimepicker1').datetimepicker({
+		    	collapse: true
+		    });
+		    $('#datetimepicker2').datetimepicker({
+		    	collapse: true
+		    });
+		});
+	*/
+	</script>
+	
+</html>
