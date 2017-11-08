@@ -166,7 +166,7 @@ public class TokenInterceptor implements HandlerInterceptor,InitializingBean {
 		if(allowAccess(request))
 	    //if(true)
 		{
-	    	System.out.print("return true");
+	    	//System.out.print("return true");
 	    	return true;
 	    }
 	    else

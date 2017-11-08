@@ -2,10 +2,10 @@
 <configuration>
 	<include resource="org/springframework/boot/logging/logback/base.xml" />
 	<appender name="dailyRollingFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<File>../logs/logback_lottery_commission_db.log</File>
+		<File>../logs/logback_courseManager.log</File>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- daily rollover -->
-			<FileNamePattern>../logs/logback_lottery_commission_db.%d{yyyy-MM-dd}-%i.log</FileNamePattern>
+			<FileNamePattern>../logs/logback_courseManager.%d{yyyy-MM-dd}-%i.log</FileNamePattern>
 			<!-- keep 20 days' worth of history -->
 			<maxHistory>20</maxHistory>
 			<TimeBasedFileNamingAndTriggeringPolicy	class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
@@ -19,7 +19,7 @@
 	<root level="INFO">
 		<appender-ref ref="CONSOLE" />
 	</root>
-	<logger name="com.xinwei" level="INFO">
+	<logger name="com.company" level="INFO">
 		<appender-ref ref="dailyRollingFileAppender" />
 	</logger>
 </configuration>

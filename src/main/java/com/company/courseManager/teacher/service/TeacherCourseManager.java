@@ -1,0 +1,34 @@
+package com.company.courseManager.teacher.service;
+
+import com.xinwei.nnl.common.domain.ProcessResult;
+
+public interface TeacherCourseManager {
+	/**
+	 * 根据发布订单，创建教师中心的课程信息
+	 * @param category
+	 * @param dbId
+	 * @param orderid
+	 * @return
+	 */
+	public ProcessResult configureTecherCourses(String category,String dbId,String orderid);
+	
+	/**
+	 * 根据发布的订单，创建教师中心的课时信息
+	 * @param category
+	 * @param dbId
+	 * @param orderid
+	 * @return
+	 */
+	public ProcessResult configureTecherClass(String category,String dbId,String orderid);
+	
+	/**
+	 * 
+	 * @param category
+	 * @param dbId
+	 * @param orderid
+	 * @return
+	 */
+	public ProcessResult publishCourse(String category,String dbId,String orderid);
+	
+	
+}
