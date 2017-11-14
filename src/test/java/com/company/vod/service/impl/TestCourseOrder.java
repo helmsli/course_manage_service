@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.RestTemplate;
 
+import com.company.courseManager.teacher.domain.CourseClassPublish;
 import com.company.platform.order.OrderClientService;
 import com.company.userOrder.domain.UserOrder;
 import com.company.videodb.domain.CourseClass;
@@ -46,7 +47,7 @@ public class TestCourseOrder {
 	
 	public void getOrderId()
 	{
-	   String baseUrl = "http://127.0.0.1:9088/orderId";
+	   String baseUrl = "http://huaxiahuizhi.cn:9088/orderId";
 	   ///{category}/{ownerKey}/createOrderId
 	   JsonRequest jsonRequest =new JsonRequest();
 		System.out.println(baseUrl + "/" + category + "/" + ownerKey +  "/createOrderId");
@@ -65,7 +66,7 @@ public class TestCourseOrder {
 	
 	public void createCourseOrder()
 	{
-		String baseUrl = "http://127.0.0.1:9088/orderGateway";
+		String baseUrl = "http://huaxiahuizhi.cn:9088/orderGateway";
 		//this.orderId="3001030001";	 
 		orderClientService.setRestTemplate(restTemplate);
 		orderClientService.setOrderServiceUrl(baseUrl);
@@ -77,6 +78,7 @@ public class TestCourseOrder {
 		courses.setOwner(ownerKey);
 		gCourses = courses;
 		maps.put("course", JsonUtil.toJson(courses));
+		CourseClassPublish courseClassPublish = new CourseClassPublish();
 		 lists = new ArrayList<CourseClass>();
 		for(int i=0;i<10;i++)
 		{
@@ -88,19 +90,25 @@ public class TestCourseOrder {
 			courseClass.setOwner(ownerKey);
 			lists.add(courseClass);
 		}
-		maps.put("courseClass", JsonUtil.toJson(lists));
+		courseClassPublish.setChapterId("1");
+		courseClassPublish.setCourseClasses(lists);
+		maps.put("courseClass", JsonUtil.toJson(courseClassPublish));
+		
+		
 		OrderMainContext orderMainContext  = new OrderMainContext();
 		orderMainContext.setContextDatas(maps);
 		orderMainContext.setCatetory(category);
 		orderMainContext.setOrderId(this.orderId);
 		System.out.println(maps.toString());
+		System.out.println("((((:" + JsonUtil.toJson(orderMainContext));
+		
 		ProcessResult processResult=orderClientService.createOrder(orderMainContext);		
 		System.out.println(processResult);
 	}
 	public void startOrder()
 	{
 		///{category}/{dbId}/{orderId}/startOrder
-		String baseUrl = "http://127.0.0.1:9088/orderGateway";
+		String baseUrl = "http://huaxiahuizhi.cn:9088/orderGateway";
 		String dbId=OrderMainContext.getDbId(orderId);
 		
 		ProcessResult processResult = restTemplate.getForObject(

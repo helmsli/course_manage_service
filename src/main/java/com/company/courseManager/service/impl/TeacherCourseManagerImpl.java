@@ -1,22 +1,19 @@
 package com.company.courseManager.service.impl;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import com.company.courseManager.Const.CoursemanagerConst;
+import com.company.courseManager.teacher.domain.CourseClassPublish;
 import com.company.courseManager.teacher.service.TeacherCourseManager;
 import com.company.platform.order.OrderClientService;
 import com.company.userOrder.domain.UserOrder;
 import com.company.videodb.domain.CourseClass;
 import com.company.videodb.domain.Courses;
-import com.google.gson.reflect.TypeToken;
 import com.xinwei.nnl.common.domain.JsonRequest;
 import com.xinwei.nnl.common.domain.ProcessResult;
 import com.xinwei.nnl.common.util.JsonUtil;
@@ -62,7 +59,9 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 				Map<String,String>maps= getOrderContextMap(category, dbId, orderid, keys);
 				if(maps.containsKey(courseKey))
 				{					
-					List<CourseClass> courseClassList =JsonUtil.fromJson(maps.get(courseKey), new TypeToken<List<CourseClass>>() {}.getType());
+					//List<CourseClass> courseClassList =JsonUtil.fromJson(maps.get(courseKey), new TypeToken<List<CourseClass>>() {}.getType());
+					CourseClassPublish courseClassPublish = JsonUtil.fromJson(maps.get(courseKey),CourseClassPublish.class);
+					List<CourseClass> courseClassList=courseClassPublish.getCourseClasses();
 					if(courseClassList!=null&&courseClassList.size()>0)
 					{
 						return configClassToDb(dbId,courseClassList);
@@ -105,7 +104,6 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 	 */
 	public ProcessResult publishCourseDb(String category,String dbId,String orderId,Courses courses)
 	{
-		
 		ProcessResult result = null;
 		UserOrder userOrder = new UserOrder();
 		userOrder.setCategory(category);
@@ -117,6 +115,7 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		userOrder.setOrderId(orderId);
 		userOrder.setStatus(0);
 		userOrder.setUserId(courses.getOwner());
+		userOrder.setConstCreateTime();
 		result  = restTemplate.postForObject(courseUserDbWriteUrl + "/" +  category+ "/" + userOrder.getUserId() + "/configUserOrder" ,userOrder ,ProcessResult.class);
 		return result;
 	}

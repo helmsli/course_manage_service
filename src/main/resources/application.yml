@@ -19,4 +19,16 @@ spring:
       - 101.200.166.163:9003
       - 101.200.166.163:9004
       - 101.200.166.163:9005   
-    
+fdfs:
+  soTimeout: 1501
+  connectTimeout: 601 
+  thumbImage:
+    width: 150
+    height: 150
+  trackerList:
+     - 39.107.15.75:22122
+  pool:
+    #从池中借出的对象的最大数目
+    maxTotal: 153
+    #获取连接时的最大等待毫秒数100
+    maxWaitMillis: 102    

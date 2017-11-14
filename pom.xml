@@ -2,7 +2,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
 	<groupId>com.company</groupId>
 	<artifactId>course_manage_service</artifactId>
 	<version>1.0.0.1</version>
@@ -10,29 +9,29 @@
 
 	<name>course_manage_service</name>
 	<description>course_manage_service for Spring Boot</description>
-<repositories>
+	<repositories>
 		<repository>
 			<id>local</id>
 			<url>http://maven.aliyun.com/nexus/content/groups/public</url>
 		</repository>
 		<repository>
-            <id>sonatype-nexus-staging</id>
-            <name>Sonatype Nexus Staging</name>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-            <releases>
-                    <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                    <enabled>true</enabled>
-            </snapshots>
-    </repository>
+			<id>sonatype-nexus-staging</id>
+			<name>Sonatype Nexus Staging</name>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
 	</repositories>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>1.5.6.RELEASE</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
 	<properties>
@@ -50,17 +49,17 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
-		
-		<dependency>  
-            <groupId>org.springframework.session</groupId>  
-            <artifactId>spring-session-data-redis</artifactId>  
-        </dependency>
-        
-		<!-- aop  -->
+
+		<dependency>
+			<groupId>org.springframework.session</groupId>
+			<artifactId>spring-session-data-redis</artifactId>
+		</dependency>
+
+		<!-- aop -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-		  <artifactId>spring-boot-starter-aop</artifactId>
-		</dependency>	
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.mybatis.spring.boot</groupId>
 			<artifactId>mybatis-spring-boot-starter</artifactId>
@@ -71,29 +70,26 @@
 			<artifactId>httpclient</artifactId>
 			<version>4.5.3</version>
 		</dependency>
-		<!-- test dependencies 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		-->
+		<!-- test dependencies <dependency> <groupId>org.springframework.boot</groupId> 
+			<artifactId>spring-boot-starter-test</artifactId> <scope>test</scope> </dependency> -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
-		</dependency>	
-		
-		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson 
-		<dependency>
-		    <groupId>com.google.code.gson</groupId>
-		    <artifactId>gson</artifactId>
-		    <version>2.8.1</version>
 		</dependency>
-		-->
+
+		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson <dependency> 
+			<groupId>com.google.code.gson</groupId> <artifactId>gson</artifactId> <version>2.8.1</version> 
+			</dependency> -->
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<scope>runtime</scope>
+		</dependency>
+		<!-- fastdfs -->
+		<dependency>
+			<groupId>com.github.tobato</groupId>
+			<artifactId>fastdfs-client</artifactId>
+			<version>1.25.4-RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -109,10 +105,10 @@
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
-			
+
 		</dependency>
-		
-        <dependency>
+
+		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>2.8.0</version>
@@ -124,16 +120,11 @@
 			<artifactId>hessian</artifactId>
 			<version>4.0.38</version>
 		</dependency>
-		
 
-        <!-- mvn install:install-file -Dfile="E:\Users\helmsli\eclipse-workspace\video_db\export\userOrderPlatform_0.0.0.1.jar" -DgroupId=com.company -DartifactId=userOrderDomain -Dversion=0.0.1 -Dpackaging=jar
-         -->
-        <dependency>
-			<groupId>com.company</groupId>
-			<artifactId>userOrderDomain</artifactId>
-			<version>0.0.2</version>
-		</dependency>		 
-        <!--引入lib目录中的第三方包 -->
+		<!-- mvn install:install-file -Dfile="E:\Users\helmsli\eclipse-workspace\video_db\export\userOrderPlatform_0.0.0.1.jar" 
+			-DgroupId=com.company -DartifactId=userOrderDomain -Dversion=0.0.1 -Dpackaging=jar -->
+
+		<!--引入lib目录中的第三方包 -->
 		<dependency>
 			<groupId>com</groupId>
 			<artifactId>course.domain</artifactId>
@@ -148,7 +139,7 @@
 			<scope>system</scope>
 			<systemPath>${basedir}/lib/userOrderPlatform_0.0.0.1.jar</systemPath>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com</groupId>
 			<artifactId>tokenSecurity</artifactId>
@@ -156,7 +147,7 @@
 			<scope>system</scope>
 			<systemPath>${basedir}/lib/security_rsa_service.jar</systemPath>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com</groupId>
 			<artifactId>orderdb</artifactId>
@@ -164,27 +155,25 @@
 			<scope>system</scope>
 			<systemPath>${basedir}/lib/order_db_1.0.10.jar</systemPath>
 		</dependency>
-		
-		
+
+
 		<dependency>
 			<groupId>com.xinwei.nnl</groupId>
 			<artifactId>nnl-commons</artifactId>
 			<version>1.9.1</version>
 		</dependency>
-		<!--dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>	
-		</dependency-->
+		<!--dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-devtools</artifactId> 
+			</dependency -->
 		<!-- vod of aliyun -->
 		<dependency>
-		      <groupId>com.aliyun</groupId>
-		      <artifactId>aliyun-java-sdk-core</artifactId>
-		      <version>3.2.2</version>
+			<groupId>com.aliyun</groupId>
+			<artifactId>aliyun-java-sdk-core</artifactId>
+			<version>3.2.2</version>
 		</dependency>
 		<dependency>
-		      <groupId>com.aliyun</groupId>
-		      <artifactId>aliyun-java-sdk-vod</artifactId>
-		      <version>2.2.0</version>
+			<groupId>com.aliyun</groupId>
+			<artifactId>aliyun-java-sdk-vod</artifactId>
+			<version>2.2.0</version>
 		</dependency>
 	</dependencies>
 
@@ -193,8 +182,41 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				  
+
 			</plugin>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<!-- delete file="${project.build.directory}/classes/jdbc.properties" 
+									/ <copy file="${project.build.outputDirectory}/application.properties" tofile="${project.build.directory}/application.properties" 
+									/> <copy file="${project.build.outputDirectory}/application.yml" tofile="${project.build.directory}/application.yml" 
+									/> -->
+								<copy todir="${project.build.directory}" overwrite="true">
+									<fileset dir="src/main/resources">
+										<include name="**/*.properties" />
+										<include name="*.yml" />
+										<include name="**/*.sh" />
+									</fileset>
+								</copy>
+								<replace token="xxxx.jar" value="${project.build.finalName}.jar">
+									<fileset dir="${project.build.directory}">
+										<include name="*.sh" />
+									</fileset>
+								</replace>
+
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 		</plugins>
 		<!-- 引入第三方包，打包需要引入 -->
 		<resources>
@@ -210,7 +232,8 @@
 				<targetPath>BOOT-INF/classes/</targetPath>
 			</resource>
 		</resources>
-		
+		<directory>target/${project.version}</directory>
+		<outputDirectory>target/classes</outputDirectory>
 	</build>
 
 

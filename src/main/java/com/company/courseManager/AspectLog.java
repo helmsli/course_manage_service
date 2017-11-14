@@ -1,11 +1,10 @@
 /**
  * 
  */
-package com.company.courseManager.service.impl;
+package com.company.courseManager;
 
 import java.util.Arrays;
 
-import javax.servlet.http.HttpServletRequest;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -16,8 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.google.gson.Gson;
 
@@ -28,7 +25,7 @@ import com.google.gson.Gson;
 @Aspect
 //申明是个spring管理的bean
 @Component
-@Order(1)
+@Order(2)
 public class AspectLog {
   private Logger log = LoggerFactory.getLogger(getClass());
   private Gson gson = new Gson();
