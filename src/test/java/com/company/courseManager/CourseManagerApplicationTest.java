@@ -44,7 +44,7 @@ public class CourseManagerApplicationTest {
 			String path = fastDFSClientWrapper.uploadFile(multi);
 			System.out.println(path);
 			
-			 List<String>pathes = fastDFSClientWrapper.uploadFileAndCrtThumbImage(multi);
+			 String pathes = fastDFSClientWrapper.uploadFileAndCrtThumbImageAuto(multi);
 			System.out.println(pathes);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block

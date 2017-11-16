@@ -22,8 +22,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.github.tobato.fastdfs.domain.StorePath;
 import com.github.tobato.fastdfs.domain.ThumbImageConfig;
+import com.github.tobato.fastdfs.domain.extend.ThumbScaleInfo;
 import com.github.tobato.fastdfs.exception.FdfsUnsupportStorePathException;
 import com.github.tobato.fastdfs.service.FastFileStorageClient;
+import com.github.tobato.fastdfs.service.extend.ThumbFastFileStorageClient;
 import com.github.tobato.fastdfs.domain.MateData;
 
 @Component
@@ -32,7 +34,7 @@ public class FastDFSClientWrapper {
 	@Value("${fdfs.serverUrl}")
 	private String fdfsServerUrl;
 	@Autowired
-    protected FastFileStorageClient storageClient;
+    protected ThumbFastFileStorageClient storageClient;
 	protected  Logger LOGGER = LoggerFactory.getLogger(getClass());
     @Autowired
     private ThumbImageConfig thumbImageConfig;
@@ -52,19 +54,49 @@ public class FastDFSClientWrapper {
 	        StorePath storePath = storageClient.uploadFile(file.getInputStream(),file.getSize(), FilenameUtils.getExtension(file.getOriginalFilename()),null);
 	        return getResAccessUrl(storePath);
 	    }
-	    public List<String> uploadFileAndCrtThumbImage(MultipartFile file) throws IOException {
-	    	List<String> fileFullPathList = new ArrayList<String>();
+	    public String uploadFileAndCrtThumbImage(MultipartFile file) throws IOException {
+	    	//List<String> fileFullPathList = new ArrayList<String>();
 	    	String prefixName = this.getCrtThumbImagePrefixName();
 	    	String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
-	        StorePath storePath = this.uploadImageAndCrtThumbImage(file, null);
+	        StorePath storePath = this.uploadImageAndCrtThumbImageSize(file, null);
 	        String originalFullPath= getResAccessUrl(storePath);
-	        fileFullPathList.add(originalFullPath);
+	        //fileFullPathList.add(originalFullPath);
 	        String originalPath = storePath.getPath();
 	        String crtThumbImage = originalPath.substring(0,originalPath.length() - fileExtension.length()-1);
 	        storePath.setPath(crtThumbImage + prefixName + "." + fileExtension);
 	        String thumbImageFullPath =  getResAccessUrl(storePath);
-	        fileFullPathList.add(thumbImageFullPath);
-	        return fileFullPathList;
+	        //fileFullPathList.add(thumbImageFullPath);
+	        return originalFullPath;
+	    }
+	    public String uploadFileAndCrtThumbImageScale(MultipartFile file) throws IOException {
+	    	//List<String> fileFullPathList = new ArrayList<String>();
+	    	String prefixName = this.getCrtThumbImagePrefixName();
+	    	String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+	    	
+	        StorePath storePath = this.uploadImageAndCrtThumbImageScale(file, null,null);
+	        String originalFullPath= getResAccessUrl(storePath);
+	       // fileFullPathList.add(originalFullPath);
+	        String originalPath = storePath.getPath();
+	        String crtThumbImage = originalPath.substring(0,originalPath.length() - fileExtension.length()-1);
+	        storePath.setPath(crtThumbImage + prefixName + "." + fileExtension);
+	        String thumbImageFullPath =  getResAccessUrl(storePath);
+	        //fileFullPathList.add(thumbImageFullPath);
+	        return originalFullPath;
+	    }
+	    public String uploadFileAndCrtThumbImageAuto(MultipartFile file) throws IOException {
+	    	//List<String> fileFullPathList = new ArrayList<String>();
+	    	String prefixName = this.getCrtThumbImagePrefixName();
+	    	String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+	    	
+	        StorePath storePath = this.uploadImageAndCrtThumbImageAuto(file, null);
+	        String originalFullPath= getResAccessUrl(storePath);
+	       // fileFullPathList.add(originalFullPath);
+	        String originalPath = storePath.getPath();
+	        String crtThumbImage = originalPath.substring(0,originalPath.length() - fileExtension.length()-1);
+	        storePath.setPath(crtThumbImage + prefixName + "." + fileExtension);
+	        String thumbImageFullPath =  getResAccessUrl(storePath);
+	        //fileFullPathList.add(thumbImageFullPath);
+	        return originalFullPath;
 	    }
 	    /*
 	     * public void testUploadImageAndCrtThumbImage() {
@@ -152,9 +184,9 @@ public class FastDFSClientWrapper {
 	     * @param metaDataSet
 	     * @return
 	     */
-	    private StorePath uploadImageAndCrtThumbImage(MultipartFile file, Set<MateData> metaDataSet) {
+	    private StorePath uploadImageAndCrtThumbImageSize(MultipartFile file, Set<MateData> metaDataSet) {
 	        try {
-	            
+	        	
 	            return storageClient.uploadImageAndCrtThumbImage(file.getInputStream(), file.getSize(), FilenameUtils.getExtension(file.getOriginalFilename()), metaDataSet);
 	        } catch (Exception e) {
 	            e.printStackTrace();
@@ -164,7 +196,33 @@ public class FastDFSClientWrapper {
 	        return null;
 
 	    }
+	    private StorePath uploadImageAndCrtThumbImageScale(MultipartFile file, Set<MateData> metaDataSet,List<ThumbScaleInfo> thumbScaleInfos) {
+	        try {
+	        	
+	            return storageClient.uploadAndCrtThumbImageByScales(file.getInputStream(), file.getSize(), FilenameUtils.getExtension(file.getOriginalFilename()), metaDataSet,thumbScaleInfos);
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        } finally {
+	           
+	        }
+	        return null;
 
+	    }
+        
+	    private StorePath uploadImageAndCrtThumbImageAuto(MultipartFile file, Set<MateData> metaDataSet) {
+	        try {
+	        	
+	            return storageClient.uploadAndCrtThumbImageByAuto(file.getInputStream(), file.getSize(), FilenameUtils.getExtension(file.getOriginalFilename()), metaDataSet);
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        } finally {
+	           
+	        }
+	        return null;
+
+	    }
+
+	    
 	    private Set<MateData> createMateData() {
 	        Set<MateData> metaDataSet = new HashSet<MateData>();
 	        metaDataSet.add(new MateData("Author", "wyf"));

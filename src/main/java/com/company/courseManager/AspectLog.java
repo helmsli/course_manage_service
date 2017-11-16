@@ -30,7 +30,7 @@ public class AspectLog {
   private Logger log = LoggerFactory.getLogger(getClass());
   private Gson gson = new Gson();
   //申明一个切点 里面是 execution表达式
-  @Pointcut("execution(public * com.company.courseManager.service..*.*(..))||execution(public * com.company.courseManager.controller..*.*(..))")
+  @Pointcut("execution(public * com.company.courseManager.service..*.*(..))||execution(public * com.company.courseManager.controller..*.*(..))||execution(public * com.company.courseManager.fastDfs..*.*(..))")
   public void mylogPoint(){}
   
   /**

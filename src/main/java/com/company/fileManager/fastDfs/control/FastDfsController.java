@@ -10,6 +10,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.company.courseManager.Const.CoursemanagerConst;
@@ -18,14 +20,36 @@ import com.company.fileManager.fastDfs.FileManagerConst;
 import com.xinwei.nnl.common.domain.ProcessResult;
 import com.xinwei.nnl.common.util.JsonUtil;
 
-@Controller
+@RestController
+
 @ConditionalOnProperty(name = "fdfs.serverUrl")
+@RequestMapping("/images")
 public class FastDfsController {
 	@Autowired
 	private FastDFSClientWrapper fastDFSClientWrapper;
-	 // 上传图片
+	
+	@RequestMapping(value = "/getTest", method = RequestMethod.GET)
+    public ProcessResult getTest() throws Exception {
+    	ProcessResult processResult = new ProcessResult();
+		
+    	processResult.setRetCode(FileManagerConst.RESULT_FAILURE);
+		
+    	try {
+			// 省略业务逻辑代码。。。
+			
+			processResult.setResponseInfo("success");
+			processResult.setResponseInfo(FileManagerConst.RESULT_SUCCESS);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	return processResult;
+       
+
+    }
+	// 上传图片
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public ProcessResult upload(MultipartFile file, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ProcessResult upload(@RequestParam("file") MultipartFile file, HttpServletRequest request, HttpServletResponse response) throws Exception {
     	ProcessResult processResult = new ProcessResult();
 		
     	processResult.setRetCode(FileManagerConst.RESULT_FAILURE);
@@ -34,7 +58,7 @@ public class FastDfsController {
 			// 省略业务逻辑代码。。。
 			String imgUrl = fastDFSClientWrapper.uploadFile(file);
 			processResult.setResponseInfo(imgUrl);
-			processResult.setResponseInfo(FileManagerConst.RESULT_SUCCESS);
+			processResult.setRetCode(FileManagerConst.RESULT_SUCCESS);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -51,9 +75,9 @@ public class FastDfsController {
 		
     	try {
 			// 省略业务逻辑代码。。。
-			List<String> imgUrlList = fastDFSClientWrapper.uploadFileAndCrtThumbImage(file);
-			processResult.setResponseInfo(JsonUtil.toJson(imgUrlList));
-			processResult.setResponseInfo(FileManagerConst.RESULT_SUCCESS);
+			String imgUrlList = fastDFSClientWrapper.uploadFileAndCrtThumbImageAuto(file);
+			processResult.setResponseInfo(imgUrlList);
+			processResult.setRetCode(FileManagerConst.RESULT_SUCCESS);
 		} catch (Exception e) {
 			
 			// TODO Auto-generated catch block
