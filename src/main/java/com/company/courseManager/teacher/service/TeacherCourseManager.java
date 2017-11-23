@@ -29,6 +29,32 @@ public interface TeacherCourseManager {
 	 * @return
 	 */
 	public ProcessResult publishCourse(String category,String dbId,String orderid);
+	/**
+	 * 
+	 * @param category
+	 * @param dbId
+	 * @param orderid
+	 * @return
+	 */
+	public ProcessResult getCourse(String courseId);
+
+	/**
+	 * 
+	 * @param category
+	 * @param dbId
+	 * @param courseId
+	 * @return
+	 */
+	public ProcessResult getCourseClass(String courseId,String classId);
+	
+	/**
+	 * 
+	 * @param category
+	 * @param dbId
+	 * @param courseId
+	 * @return
+	 */
+	public ProcessResult getCourseAllClass(String courseId);
 	
 	
 }
