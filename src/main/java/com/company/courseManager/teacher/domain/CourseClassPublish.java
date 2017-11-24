@@ -11,7 +11,16 @@ public class CourseClassPublish implements Serializable {
 	/** 章节. */
 	private String chapterId;
 
-	List<CourseClass> courseClasses = new ArrayList<CourseClass>();
+	private String chapterTitle;
+	
+	private String label;
+	
+	
+	
+	
+	
+	
+	List<CourseClass> courseList = new ArrayList<CourseClass>();
 
 	public String getChapterId() {
 		return chapterId;
@@ -21,12 +30,14 @@ public class CourseClassPublish implements Serializable {
 		this.chapterId = chapterId;
 	}
 
-	public List<CourseClass> getCourseClasses() {
-		return courseClasses;
+	public List<CourseClass> getCourseList() {
+		return courseList;
 	}
 
-	public void setCourseClasses(List<CourseClass> courseClasses) {
-		this.courseClasses = courseClasses;
+	public void setCourseList(List<CourseClass> courseList) {
+		this.courseList = courseList;
 	}
+
+	
 	
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -71,21 +72,49 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		// TODO Auto-generated method stub
 				List<CourseClass> willAddClassList=new ArrayList<CourseClass>();
 				List<String> keys = new ArrayList<String>();
-				String courseKey = "courseClass";
+				String courseClassKey = "courseClass";
+				String courseKey = "course";
 				keys.add(courseKey);
+				keys.add(courseClassKey);
 				Map<String,String>maps= getOrderContextMap(category, dbId, orderid, keys);
-				
+				Courses course = null;
 				if(maps.containsKey(courseKey))
+				{
+					course =JsonUtil.fromJson(maps.get(courseKey), Courses.class);
+					
+				}
+				
+				
+				if(maps.containsKey(courseClassKey))
 				{					
-					List<CourseClassPublish> classPublishList =JsonUtil.fromJson(maps.get(courseKey), new TypeToken<List<CourseClassPublish>>() {}.getType());
+					List<CourseClassPublish> classPublishList =JsonUtil.fromJson(maps.get(courseClassKey), new TypeToken<List<CourseClassPublish>>() {}.getType());
 					
 					for(int i=0;i<classPublishList.size();i++)
 					{
-						
+						CourseClassPublish courseClassPublish = classPublishList.get(i);
+						if(StringUtils.isEmpty(courseClassPublish.getChapterId()))
+						{
+							courseClassPublish.setChapterId(String.valueOf(i+1));
+						}
 					//CourseClassPublish courseClassPublish = JsonUtil.fromJson(maps.get(courseKey),CourseClassPublish.class);
-						List<CourseClass> courseClassList=classPublishList.get(i).getCourseClasses();
+						List<CourseClass> courseClassList=classPublishList.get(i).getCourseList();
 						if(courseClassList!=null&&courseClassList.size()>0)
 						{
+							for(int j=0;j<courseClassList.size();j++)
+							{
+								CourseClass courseClass = courseClassList.get(j);
+								courseClass.setOwner(course.getOwner());
+								courseClass.setCourseId(course.getCourseId());
+								if(StringUtils.isEmpty(courseClass.getChapterId()))
+								{
+									courseClass.setChapterId(courseClassPublish.getChapterId());
+								}
+								if(StringUtils.isEmpty(courseClass.getClassId()))
+								{
+									courseClass.setClassId(courseClass.getChapterId() + "_" +String.valueOf(j+1));
+								}
+							}
+							
 							willAddClassList.addAll(courseClassList);
 							
 						}
@@ -271,7 +300,7 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 			CourseClass courseClass= list.get(i);
 			if(courseClass.getChapterId().compareToIgnoreCase(chapter)==0)
 			{
-				courseClassPublish.getCourseClasses().add(courseClass);
+				courseClassPublish.getCourseList().add(courseClass);
 			}
 			else
 			{
@@ -279,7 +308,7 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 				courseClassPublish = new CourseClassPublish();
 				courseClassPublish.setChapterId(courseClass.getChapterId());
 				chapter=courseClass.getChapterId();
-				courseClassPublish.getCourseClasses().add(courseClass);
+				courseClassPublish.getCourseList().add(courseClass);
 				publishList.add(courseClassPublish);
 				
 			}

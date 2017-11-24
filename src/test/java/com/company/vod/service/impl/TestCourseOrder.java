@@ -45,6 +45,7 @@ public class TestCourseOrder {
 		System.out.println("get order (((((((((((((((");
 		testCourse.getCourseOrder();
 		testCourse.startOrder();
+		
 	}
 	
 	public void getOrderId()
@@ -79,6 +80,9 @@ public class TestCourseOrder {
 		courses.setRealPrice(1.12f);
 		courses.setOwner(ownerKey);
 		courses.setTitle("我们是中国人china ，骄傲");
+		courses.setCourseChapter("aaaaa");
+		courses.setDetail("detail detail");
+		
 		gCourses = courses;
 		maps.put("course", JsonUtil.toJson(courses));
 		List<CourseClassPublish> clist = new ArrayList<CourseClassPublish>();
@@ -94,10 +98,11 @@ public class TestCourseOrder {
 			courseClass.setClassId(String.valueOf(i+1));
 			courseClass.setOriginalPrice(i);
 			courseClass.setOwner(ownerKey);
+			courseClass.setDetail("detal dedal class");
 			lists.add(courseClass);
 		}
 		courseClassPublish.setChapterId(String.valueOf(j));
-		courseClassPublish.setCourseClasses(lists);
+		courseClassPublish.setCourseList(lists);
 		clist.add(courseClassPublish);
 		}
 		maps.put("courseClass", JsonUtil.toJson(clist));
@@ -142,6 +147,8 @@ public class TestCourseOrder {
 	}
 	
 
+	
+	
 
 	
 }
