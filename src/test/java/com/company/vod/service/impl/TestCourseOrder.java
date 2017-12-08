@@ -51,7 +51,9 @@ public class TestCourseOrder {
 	public void getOrderId()
 	{
 	   String baseUrl = "http://huaxiahuizhi.cn:8080/orderId";
-	   ///{category}/{ownerKey}/createOrderId
+		//String baseUrl = "http://127.0.0.1:9088/orderId";
+		   
+		///{category}/{ownerKey}/createOrderId
 	   JsonRequest jsonRequest =new JsonRequest();
 		System.out.println(baseUrl + "/" + category + "/" + ownerKey +  "/createOrderId");
 		ProcessResult processResult = restTemplate.postForObject(
@@ -70,16 +72,18 @@ public class TestCourseOrder {
 	public void createCourseOrder()
 	{
 		String baseUrl = "http://huaxiahuizhi.cn:8080/orderGateway";
+		//String baseUrl = "http://127.0.0.1:9088/orderGateway";
+		
 		//this.orderId="3001030001";	 
 		orderClientService.setRestTemplate(restTemplate);
 		orderClientService.setOrderServiceUrl(baseUrl);
 		String dbId=OrderMainContext.getDbId(orderId);
 		Map<String,String>maps = new HashMap<String,String>();
 		Courses courses = new Courses();
-		courses.setCourseId(orderId);
+		courses.setCourseId("10001030001");
 		courses.setRealPrice(1.12f);
 		courses.setOwner(ownerKey);
-		courses.setTitle("我们是中国人china ，骄傲");
+		courses.setTitle("我们是中国人china ，骄傲"+Calendar.getInstance().getTime());
 		courses.setCourseChapter("aaaaa");
 		courses.setDetail("detail detail");
 		
@@ -93,12 +97,12 @@ public class TestCourseOrder {
 		for(int i=0;i<10;i++)
 		{
 			CourseClass courseClass= new CourseClass();
-			courseClass.setCourseId(orderId);
+			courseClass.setCourseId(courses.getCourseId());
 			courseClass.setChapterId(String.valueOf(j));
 			courseClass.setClassId(String.valueOf(i+1));
 			courseClass.setOriginalPrice(i);
 			courseClass.setOwner(ownerKey);
-			courseClass.setDetail("detal dedal class");
+			courseClass.setDetail("detal dedal class" + Calendar.getInstance().getTime());
 			lists.add(courseClass);
 		}
 		courseClassPublish.setChapterId(String.valueOf(j));
@@ -122,6 +126,8 @@ public class TestCourseOrder {
 	public void getCourseOrder()
 	{
 		String baseUrl = "http://huaxiahuizhi.cn:8080/orderGateway";
+		//String baseUrl = "http://127.0.0.1:9088/orderGateway";
+		
 		JsonRequest jsonRequest =new JsonRequest();
 		List<String> keys = new ArrayList<String>();
 		keys.add("course");
@@ -131,15 +137,17 @@ public class TestCourseOrder {
 		ProcessResult processResult = restTemplate.postForObject(
 				baseUrl + "/" + category + "/" + dbId + "/" +orderId +    "/getContextData",
 				jsonRequest,ProcessResult.class);
-		System.out.println(processResult);
+		System.out.println("userorder:" + processResult);
 	}
 	
 	public void startOrder()
 	{
 		///{category}/{dbId}/{orderId}/startOrder
 		String baseUrl = "http://huaxiahuizhi.cn:8080/orderGateway";
-		String dbId=OrderMainContext.getDbId(orderId);
+		//String baseUrl = "http://127.0.0.1:9088/orderGateway";
 		
+		String dbId=OrderMainContext.getDbId(orderId);
+		System.out.println("startorderID:" + orderId);
 		ProcessResult processResult = restTemplate.getForObject(
 				baseUrl + "/" + category + "/" + dbId + "/" +orderId +    "/startOrder",
 				ProcessResult.class);

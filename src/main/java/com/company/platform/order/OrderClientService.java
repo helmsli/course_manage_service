@@ -6,8 +6,12 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.RestTemplate;
 
+import com.company.userOrder.domain.UserOrder;
+import com.company.videodb.domain.Courses;
 import com.google.gson.reflect.TypeToken;
 import com.xinwei.nnl.common.domain.JsonRequest;
 import com.xinwei.nnl.common.domain.ProcessResult;
@@ -18,6 +22,7 @@ import com.xinwei.orderDb.domain.OrderMainContext;
 public class OrderClientService {
 	
 	protected int RESULT_Success = 0;
+	
 	
 	@Value("${order.orderServiceUrl}")
 	private String orderServiceUrl;
@@ -152,7 +157,27 @@ public class OrderClientService {
 		result  = restTemplate.postForObject(orderServiceUrl + "/" +  category+ "/" + dbId + "/" + orderId + "/mJumpToNext" ,orderFlow ,ProcessResult.class);
 		return result;
 	}
+	/**
+	 * 发布数据到用户中心
+	 * @param userDbWriteUrl
+	 * @param userOrder
+	 * @return
+	 */
+	public ProcessResult saveUserOrder(String userDbWriteUrl,UserOrder userOrder)
+	{
+		
+		ProcessResult result = null;
+		result  = restTemplate.postForObject(userDbWriteUrl + "/" +  userOrder.getCategory()+ "/" + userOrder.getUserId() + "/configUserOrder" ,userOrder ,ProcessResult.class);
+		return result;
+	}
 	
-	
-
+	public ProcessResult startOrder(String category,String orderId)
+	{
+		
+		ProcessResult result = null;
+		String dbid = OrderMainContext.getDbId(orderId);
+		//System.out.println("**************"+this.orderServiceUrl + "/" + category + "/" + orderId + "/startOrder");
+		result  = restTemplate.getForObject(this.orderServiceUrl + "/" + category + "/" + "/" + dbid + "/" +orderId + "/startOrder" ,ProcessResult.class);
+		return result;
+	}
 }

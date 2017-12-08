@@ -37,23 +37,51 @@ public class CourseRedisManagerImpl {
 		redisTemplate.opsForValue().set(key, courses, courseCacheExpireHours, TimeUnit.HOURS);
 	}
 	
+	public void delCourse(String courseId)
+	{
+		try {
+			String key = this.getCourseKey(courseId);
+			redisTemplate.delete(key);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	public Courses getCourseFromCache(String courseId)
 	{
-		String key = this.getCourseKey(courseId);
-		return (Courses)redisTemplate.opsForValue().get(key);
+		try {
+			String key = this.getCourseKey(courseId);
+			return (Courses)redisTemplate.opsForValue().get(key);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	public void putClassToCache(CourseClass courseClass)
 	{
-		String key = this.getClassKey(courseClass.getCourseId(), courseClass.getClassId());
-		redisTemplate.opsForValue().set(key, courseClass, courseCacheExpireHours, TimeUnit.HOURS);
+		try {
+			String key = this.getClassKey(courseClass.getCourseId(), courseClass.getClassId());
+			redisTemplate.opsForValue().set(key, courseClass, courseCacheExpireHours, TimeUnit.HOURS);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public CourseClass getClassFromCache(String courseId,String classId)
 	{
-		String key = this.getClassKey(courseId,classId);
-		
-		return (CourseClass)redisTemplate.opsForValue().get(key);
+		try {
+			String key = this.getClassKey(courseId,classId);
+			
+			return (CourseClass)redisTemplate.opsForValue().get(key);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 }

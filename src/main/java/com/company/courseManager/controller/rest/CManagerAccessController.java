@@ -1,8 +1,12 @@
 package com.company.courseManager.controller.rest;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,6 +54,8 @@ public class CManagerAccessController {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			saveExceptionToResult(processResult,e);
+			
 		}
 		return processResult;
 	}
@@ -72,6 +78,7 @@ public class CManagerAccessController {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			saveExceptionToResult(processResult,e);
 		}
 		return processResult;
 	}
@@ -99,8 +106,21 @@ public class CManagerAccessController {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			saveExceptionToResult(processResult,e);
 		}
 		return processResult;
+	}
+	
+	protected void saveExceptionToResult(ProcessResult processResult,Exception e)
+	{
+		StringWriter errors = new StringWriter();
+		e.printStackTrace(new PrintWriter(errors));
+		String errorStr = errors.toString();
+		if(!StringUtils.isEmpty(errorStr))
+		{
+			processResult.setRetMsg(errorStr.substring(0,1000));
+		}
+		return ;
 	}
 
 }

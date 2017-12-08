@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.company.courseManager.Const.CoursemanagerConst;
 import com.company.courseManager.teacher.service.TeacherCourseManager;
+import com.company.coursestudent.domain.StudentBuyOrder;
+import com.company.coursestudent.domain.StudentConst;
+import com.company.coursestudent.service.CourseStudentService;
+import com.company.platform.controller.rest.ControllerUtils;
 import com.xinwei.nnl.common.domain.JsonRequest;
 import com.xinwei.nnl.common.domain.ProcessResult;
 import com.xinwei.orderDb.domain.OrderMain;
@@ -20,6 +24,8 @@ public class CStudentCourseController {
 	@Resource(name="teacherCourseManager")
 	private TeacherCourseManager teacherCourseManager;
 	
+	@Resource(name="courseStudentService")
+	private CourseStudentService courseStudentService;
 	@RequestMapping(method = RequestMethod.GET,value = "/{courseId}/queryCourse")
 	public  ProcessResult queryCourse(@PathVariable String courseId) {
 		ProcessResult processResult = new ProcessResult();
@@ -54,7 +60,23 @@ public class CStudentCourseController {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return ControllerUtils.getFromResponse(e, StudentConst.RESULT_Error_Fail, processResult);
+			
+			
 		}
 		return processResult;
+	}
+	@RequestMapping(method = RequestMethod.POST,value = "/{userid}/{orderId}/submitBuyOrder")
+	public ProcessResult submitOrder(@PathVariable String userid,@PathVariable String orderId,@RequestBody StudentBuyOrder studentBuyOrder)
+	{
+		
+		try {
+			return courseStudentService.submitBuyOrder(orderId, studentBuyOrder);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ControllerUtils.getFromResponse(e, StudentConst.RESULT_Error_Fail, null);
+		}
+		
 	}
 }

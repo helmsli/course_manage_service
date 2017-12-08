@@ -121,7 +121,20 @@
 			<artifactId>hessian</artifactId>
 			<version>4.0.38</version>
 		</dependency>
+		
 
+		<dependency>
+			<groupId>com.github.ulisesbocchio</groupId>
+			<artifactId>jasypt-spring-boot-starter</artifactId>
+			<version>1.8</version>
+		</dependency>	
+		<!-- spring configure encrypt -->
+		<dependency>
+			<groupId>com.github.ulisesbocchio</groupId>
+			<artifactId>jasypt-spring-boot-starter</artifactId>
+			<version>1.8</version>
+		</dependency>	
+		
 		<!-- mvn install:install-file -Dfile="E:\Users\helmsli\eclipse-workspace\video_db\export\userOrderPlatform_0.0.0.1.jar" 
 			-DgroupId=com.company -DartifactId=userOrderDomain -Dversion=0.0.1 -Dpackaging=jar -->
 

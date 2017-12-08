@@ -48,7 +48,12 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		if(maps.containsKey(courseKey))
 		{
 			Courses course = JsonUtil.fromJson(maps.get(courseKey), Courses.class);
-			return configCourseToDb(dbId,course);
+			ProcessResult processResult =  configCourseToDb(dbId,course);
+			if(processResult.getRetCode()==0)
+			{
+				this.courseRedisManager.delCourse(course.getCourseId());
+			}
+			return processResult;
 		}
 		return getErrorProcessResult();
 	}
@@ -222,7 +227,7 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		}
 		userOrder.setOrderData(JsonUtil.toJson(courses));
 		userOrder.setOrderId(courses.getCourseId());
-		userOrder.setStatus(0);
+		userOrder.setStatus(UserOrder.STATUS_FinishOrder);
 		userOrder.setUserId(courses.getOwner());
 		userOrder.setConstCreateTime();
 		result  = restTemplate.postForObject(courseUserDbWriteUrl + "/" +  category+ "/" + userOrder.getUserId() + "/configUserOrder" ,userOrder ,ProcessResult.class);
