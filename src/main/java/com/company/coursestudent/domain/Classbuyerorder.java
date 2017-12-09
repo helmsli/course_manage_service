@@ -1,6 +1,8 @@
 package com.company.coursestudent.domain;
 import java.io.Serializable;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 /**
  * Model class of ClassBuyerOrder.
  * 
@@ -12,29 +14,30 @@ public class Classbuyerorder implements Serializable {
 	/** serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
-	/** 课程编号. */
-	private String courseid;
-
 	/** 课时ID，标识一个视频的唯一编号. */
-	private String classid;
+	private String classId;
+
+	/** 课程编号. */
+	private String courseId;
+
 
 	/** 课时标题. */
-	private String classtitle;
-
+	private String classTitle;
+	
 	/** 实际成交价格. */
-	private float realprice;
+	private float realPrice;
 
 	/** 发布的原价. */
-	private float originalprice;
+	private float originalPrice;
 
 	/** 视频播放id. */
-	private String vodeoid;
+	private String vodeoId;
 
 	/** 视频播放地址. */
 	private String voidurl;
 
 	/** 教师名称. */
-	private String teachername;
+	private String teacherName;
 
 	/**
 	 * Constructor.
@@ -42,157 +45,71 @@ public class Classbuyerorder implements Serializable {
 	public Classbuyerorder() {
 	}
 
-	/**
-	 * Set the 课程编号.
-	 * 
-	 * @param courseid
-	 *            课程编号
-	 */
-	public void setCourseid(String courseid) {
-		this.courseid = courseid;
+	public String getClassId() {
+		return classId;
 	}
 
-	/**
-	 * Get the 课程编号.
-	 * 
-	 * @return 课程编号
-	 */
-	public String getCourseid() {
-		return this.courseid;
+	public void setClassId(String classId) {
+		this.classId = classId;
 	}
 
-	/**
-	 * Set the 课时ID，标识一个视频的唯一编号.
-	 * 
-	 * @param classid
-	 *            课时ID，标识一个视频的唯一编号
-	 */
-	public void setClassid(String classid) {
-		this.classid = classid;
+	public String getCourseId() {
+		return courseId;
 	}
 
-	/**
-	 * Get the 课时ID，标识一个视频的唯一编号.
-	 * 
-	 * @return 课时ID，标识一个视频的唯一编号
-	 */
-	public String getClassid() {
-		return this.classid;
+	public void setCourseId(String courseId) {
+		this.courseId = courseId;
 	}
 
-	/**
-	 * Set the 课时标题.
-	 * 
-	 * @param classtitle
-	 *            课时标题
-	 */
-	public void setClasstitle(String classtitle) {
-		this.classtitle = classtitle;
+	public String getClassTitle() {
+		return classTitle;
 	}
 
-	/**
-	 * Get the 课时标题.
-	 * 
-	 * @return 课时标题
-	 */
-	public String getClasstitle() {
-		return this.classtitle;
+	public void setClassTitle(String classTitle) {
+		this.classTitle = classTitle;
 	}
 
-	/**
-	 * Set the 实际成交价格.
-	 * 
-	 * @param realprice
-	 *            实际成交价格
-	 */
-	public void setRealprice(float realprice) {
-		this.realprice = realprice;
+	public float getRealPrice() {
+		return realPrice;
 	}
 
-	/**
-	 * Get the 实际成交价格.
-	 * 
-	 * @return 实际成交价格
-	 */
-	public float getRealprice() {
-		return this.realprice;
+	public void setRealPrice(float realPrice) {
+		this.realPrice = realPrice;
 	}
 
-	/**
-	 * Set the 发布的原价.
-	 * 
-	 * @param originalprice
-	 *            发布的原价
-	 */
-	public void setOriginalprice(float originalprice) {
-		this.originalprice = originalprice;
+	public float getOriginalPrice() {
+		return originalPrice;
 	}
 
-	/**
-	 * Get the 发布的原价.
-	 * 
-	 * @return 发布的原价
-	 */
-	public float getOriginalprice() {
-		return this.originalprice;
+	public void setOriginalPrice(float originalPrice) {
+		this.originalPrice = originalPrice;
 	}
 
-	/**
-	 * Set the 视频播放id.
-	 * 
-	 * @param vodeoid
-	 *            视频播放id
-	 */
-	public void setVodeoid(String vodeoid) {
-		this.vodeoid = vodeoid;
+	public String getVodeoId() {
+		return vodeoId;
 	}
 
-	/**
-	 * Get the 视频播放id.
-	 * 
-	 * @return 视频播放id
-	 */
-	public String getVodeoid() {
-		return this.vodeoid;
+	public void setVodeoId(String vodeoId) {
+		this.vodeoId = vodeoId;
 	}
 
-	/**
-	 * Set the 视频播放地址.
-	 * 
-	 * @param voidurl
-	 *            视频播放地址
-	 */
+	public String getVoidurl() {
+		return voidurl;
+	}
+
 	public void setVoidurl(String voidurl) {
 		this.voidurl = voidurl;
 	}
 
-	/**
-	 * Get the 视频播放地址.
-	 * 
-	 * @return 视频播放地址
-	 */
-	public String getVoidurl() {
-		return this.voidurl;
+	public String getTeacherName() {
+		return teacherName;
 	}
 
-	/**
-	 * Set the 教师名称.
-	 * 
-	 * @param teachername
-	 *            教师名称
-	 */
-	public void setTeachername(String teachername) {
-		this.teachername = teachername;
+	public void setTeacherName(String teacherName) {
+		this.teacherName = teacherName;
 	}
-
-	/**
-	 * Get the 教师名称.
-	 * 
-	 * @return 教师名称
-	 */
-	public String getTeachername() {
-		return this.teachername;
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
-
-
+	
 }

@@ -1,6 +1,8 @@
 package com.company.coursestudent.domain;
 import java.io.Serializable;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 /**
  * Model class of courseBuyerOrder.
  * 
@@ -13,31 +15,31 @@ public class Coursebuyerorder implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** 用户ID. */
-	private String userid;
+	private String userId;
 
 	/** 课程编号. */
-	private String courseid;
+	private String courseId;
 
 	/** 教师名称. */
-	private String teachername;
+	private String teacherName;
 
 	/** 课程标题. */
 	private String title;
 
 	/** 课程头像. */
-	private String courseavatar;
+	private String courseAvatar;
 
 	/** 实际成交价格. */
-	private float realprice;
+	private float realPrice;
 
 	/** 发布的原价. */
-	private float originalprice;
+	private float originalPrice;
 
 	/** 订单原始总价格. */
-	private float totaloriginalprice;
+	private float totalOriginalPrice;
 
 	/** 实际成交的总价格. */
-	private float totalrealprice;
+	private float totalRealPrice;
 
 	/**
 	 * Constructor.
@@ -45,176 +47,79 @@ public class Coursebuyerorder implements Serializable {
 	public Coursebuyerorder() {
 	}
 
-	/**
-	 * Set the 用户ID.
-	 * 
-	 * @param userid
-	 *            用户ID
-	 */
-	public void setUserid(String userid) {
-		this.userid = userid;
+	public String getUserId() {
+		return userId;
 	}
 
-	/**
-	 * Get the 用户ID.
-	 * 
-	 * @return 用户ID
-	 */
-	public String getUserid() {
-		return this.userid;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
-	/**
-	 * Set the 课程编号.
-	 * 
-	 * @param courseid
-	 *            课程编号
-	 */
-	public void setCourseid(String courseid) {
-		this.courseid = courseid;
+	public String getCourseId() {
+		return courseId;
 	}
 
-	/**
-	 * Get the 课程编号.
-	 * 
-	 * @return 课程编号
-	 */
-	public String getCourseid() {
-		return this.courseid;
+	public void setCourseId(String courseId) {
+		this.courseId = courseId;
 	}
 
-	/**
-	 * Set the 教师名称.
-	 * 
-	 * @param teachername
-	 *            教师名称
-	 */
-	public void setTeachername(String teachername) {
-		this.teachername = teachername;
+	public String getTeacherName() {
+		return teacherName;
 	}
 
-	/**
-	 * Get the 教师名称.
-	 * 
-	 * @return 教师名称
-	 */
-	public String getTeachername() {
-		return this.teachername;
+	public void setTeacherName(String teacherName) {
+		this.teacherName = teacherName;
 	}
 
-	/**
-	 * Set the 课程标题.
-	 * 
-	 * @param title
-	 *            课程标题
-	 */
+	public String getTitle() {
+		return title;
+	}
+
 	public void setTitle(String title) {
 		this.title = title;
 	}
 
-	/**
-	 * Get the 课程标题.
-	 * 
-	 * @return 课程标题
-	 */
-	public String getTitle() {
-		return this.title;
+	public String getCourseAvatar() {
+		return courseAvatar;
 	}
 
-	/**
-	 * Set the 课程头像.
-	 * 
-	 * @param courseavatar
-	 *            课程头像
-	 */
-	public void setCourseavatar(String courseavatar) {
-		this.courseavatar = courseavatar;
+	public void setCourseAvatar(String courseAvatar) {
+		this.courseAvatar = courseAvatar;
 	}
 
-	/**
-	 * Get the 课程头像.
-	 * 
-	 * @return 课程头像
-	 */
-	public String getCourseavatar() {
-		return this.courseavatar;
+	public float getRealPrice() {
+		return realPrice;
 	}
 
-	/**
-	 * Set the 实际成交价格.
-	 * 
-	 * @param realprice
-	 *            实际成交价格
-	 */
-	public void setRealprice(float realprice) {
-		this.realprice = realprice;
+	public void setRealPrice(float realPrice) {
+		this.realPrice = realPrice;
 	}
 
-	/**
-	 * Get the 实际成交价格.
-	 * 
-	 * @return 实际成交价格
-	 */
-	public float getRealprice() {
-		return this.realprice;
+	public float getOriginalPrice() {
+		return originalPrice;
 	}
 
-	/**
-	 * Set the 发布的原价.
-	 * 
-	 * @param originalprice
-	 *            发布的原价
-	 */
-	public void setOriginalprice(float originalprice) {
-		this.originalprice = originalprice;
+	public void setOriginalPrice(float originalPrice) {
+		this.originalPrice = originalPrice;
 	}
 
-	/**
-	 * Get the 发布的原价.
-	 * 
-	 * @return 发布的原价
-	 */
-	public float getOriginalprice() {
-		return this.originalprice;
+	public float getTotalOriginalPrice() {
+		return totalOriginalPrice;
 	}
 
-	/**
-	 * Set the 订单原始总价格.
-	 * 
-	 * @param totaloriginalprice
-	 *            订单原始总价格
-	 */
-	public void setTotaloriginalprice(float totaloriginalprice) {
-		this.totaloriginalprice = totaloriginalprice;
+	public void setTotalOriginalPrice(float totalOriginalPrice) {
+		this.totalOriginalPrice = totalOriginalPrice;
 	}
 
-	/**
-	 * Get the 订单原始总价格.
-	 * 
-	 * @return 订单原始总价格
-	 */
-	public float getTotaloriginalprice() {
-		return this.totaloriginalprice;
+	public float getTotalRealPrice() {
+		return totalRealPrice;
 	}
 
-	/**
-	 * Set the 实际成交的总价格.
-	 * 
-	 * @param totalrealprice
-	 *            实际成交的总价格
-	 */
-	public void setTotalrealprice(float totalrealprice) {
-		this.totalrealprice = totalrealprice;
+	public void setTotalRealPrice(float totalRealPrice) {
+		this.totalRealPrice = totalRealPrice;
 	}
 
-	/**
-	 * Get the 实际成交的总价格.
-	 * 
-	 * @return 实际成交的总价格
-	 */
-	public float getTotalrealprice() {
-		return this.totalrealprice;
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
-
-
 }

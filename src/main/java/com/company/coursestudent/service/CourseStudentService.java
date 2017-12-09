@@ -32,7 +32,7 @@ public class CourseStudentService extends OrderClientService{
 	private TeacherCourseManager teacherCourseManager;
 	
 	
-	protected ProcessResult isCheckSubmitBuyOrder(StudentBuyOrder studentBuyOrder)
+	public ProcessResult isCheckSubmitBuyOrder(StudentBuyOrder studentBuyOrder)
 	{
 		//check price
 		ProcessResult processResult = null;
@@ -40,7 +40,7 @@ public class CourseStudentService extends OrderClientService{
 		List<CourseClass> courseClassList=new ArrayList<CourseClass>();
 		if(classList ==null)
 		{
-			 processResult = teacherCourseManager.getCourseAllClass(studentBuyOrder.getCourseid());
+			 processResult = teacherCourseManager.getAllClass(studentBuyOrder.getCourseId());
 			 if(processResult.getRetCode()!=StudentConst.RESULT_Success)
 			 {
 				 return processResult;
@@ -52,7 +52,7 @@ public class CourseStudentService extends OrderClientService{
 			for(int i=0;i<classList.size();i++)
 			{
 				Classbuyerorder classbuyerorder= classList.get(i);
-				processResult=teacherCourseManager.getCourseClass(studentBuyOrder.getCourseid(), classbuyerorder.getClassid());
+				processResult=teacherCourseManager.getCourseClass(studentBuyOrder.getCourseId(), classbuyerorder.getClassId());
 				if(processResult.getRetCode()!=StudentConst.RESULT_Success)
 				 {
 					 return processResult;
@@ -67,17 +67,17 @@ public class CourseStudentService extends OrderClientService{
 		{
 			totalMoney += courseClassList.get(i).getRealPrice();
 		}
-		if(totalMoney!=studentBuyOrder.getRealprice())
+		if(totalMoney!=studentBuyOrder.getTotalRealPrice())
 		{
 			return ControllerUtils.getErrorResponse(StudentConst.RESULT_Error_money, "course real money error");
 		}		
 		return ControllerUtils.getSuccessResponse(processResult);
 	}
 	
-	public ProcessResult submitBuyOrder(String orderId,StudentBuyOrder studentBuyOrder) 
+	public ProcessResult submitBuyOrder(String orderId,StudentBuyOrder studentBuyOrder)
 	{
 		
-		
+		studentBuyOrder.createCourseClassList();
 		ProcessResult processResult = isCheckSubmitBuyOrder(studentBuyOrder);
 		if(processResult.getRetCode()!=StudentConst.RESULT_Success)
 		{
@@ -86,7 +86,7 @@ public class CourseStudentService extends OrderClientService{
 		OrderMainContext orderMainContext = new OrderMainContext();
 		orderMainContext.setCatetory(StudentConst.ORDER_BUYER_CATEGORY);
 		orderMainContext.setOrderId(orderId);
-		orderMainContext.setOwnerKey(studentBuyOrder.getUserid());
+		orderMainContext.setOwnerKey(studentBuyOrder.getUserId());
 		Map<String,String> contextMap = new HashMap<String,String>();
 		contextMap.put(StudentConst.ORDERKEY_ORDER,JsonUtil.toJson(studentBuyOrder));
 		orderMainContext.setContextDatas(contextMap);
@@ -100,7 +100,7 @@ public class CourseStudentService extends OrderClientService{
 		userOrder.setConstCreateTime();
 		userOrder.setOrderId(orderId);
 		userOrder.setStatus(StudentConst.ORDER_BUYER_STATUS_NEEDPAY);
-		userOrder.setUserId(studentBuyOrder.getUserid());
+		userOrder.setUserId(studentBuyOrder.getUserId());
 		processResult= saveUserOrder(studentUserDbWriteUrl,userOrder);
 		if(processResult.getRetCode()!=StudentConst.RESULT_Success)
 		{

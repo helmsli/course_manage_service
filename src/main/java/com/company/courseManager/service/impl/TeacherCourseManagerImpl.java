@@ -288,7 +288,7 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 	}
 
 	@Override
-	public ProcessResult getCourseAllClass( String courseId) {
+	public ProcessResult getCourseAllClass(String courseId) {
 		String dbId = Courses.getDbId(courseId);
 		
 		ProcessResult processResult = this.selectAllClassFromDb(dbId, courseId);
@@ -321,7 +321,17 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		processResult.setResponseInfo(publishList);
 		return processResult;
 	}
-
+	@Override
+	public ProcessResult getAllClass(String courseId) {
+		String dbId = Courses.getDbId(courseId);
+		
+		ProcessResult processResult = this.selectAllClassFromDb(dbId, courseId);
+		if(processResult.getRetCode()!=0)
+		{
+			return processResult;
+		}
+		return processResult;
+	}
 	
 
 }

@@ -52,9 +52,15 @@ public interface TeacherCourseManager {
 	 * @param category
 	 * @param dbId
 	 * @param courseId
-	 * @return
+	 * @return 按照章节保存的CourseClassPublish
 	 */
 	public ProcessResult getCourseAllClass(String courseId);
 	
-	
+	/**
+	 * 
+	 * @param courseId
+	 * @return CourseClass 列表
+	 */
+	public ProcessResult getAllClass(String courseId);
+		
 }
