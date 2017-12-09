@@ -1,10 +1,12 @@
 package com.company.courseManager.service.impl;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -25,10 +27,13 @@ public class CourseRedisManagerImpl {
 		return "courseId:" + courseId; 
 	}
 	
-	
+	public String getCourseClassMapKey(String courseId)
+	{
+		return "classes:" + courseId; 
+	}
 	public String getClassKey(String courseId,String classId)
 	{
-		return "classId:" + courseId + ":" + classId; 
+		return ":"+classId; 
 	}
 	
 	public void putCourseToCache(Courses courses)
@@ -41,7 +46,9 @@ public class CourseRedisManagerImpl {
 	{
 		try {
 			String key = this.getCourseKey(courseId);
+			String classKey = this.getCourseClassMapKey(courseId);
 			redisTemplate.delete(key);
+			redisTemplate.delete(classKey);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -63,8 +70,13 @@ public class CourseRedisManagerImpl {
 	public void putClassToCache(CourseClass courseClass)
 	{
 		try {
-			String key = this.getClassKey(courseClass.getCourseId(), courseClass.getClassId());
-			redisTemplate.opsForValue().set(key, courseClass, courseCacheExpireHours, TimeUnit.HOURS);
+			String key = this.getCourseClassMapKey(courseClass.getCourseId());
+			String classkey = this.getClassKey(courseClass.getCourseId(), courseClass.getClassId());
+			
+			redisTemplate.opsForHash().put(key,classkey, courseClass);
+			redisTemplate.expire(key, courseCacheExpireHours, TimeUnit.HOURS);
+			//redisTemplate.opsForValue().set(classkey, courseClass, courseCacheExpireHours, TimeUnit.HOURS);
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -74,9 +86,34 @@ public class CourseRedisManagerImpl {
 	public CourseClass getClassFromCache(String courseId,String classId)
 	{
 		try {
-			String key = this.getClassKey(courseId,classId);
+			String key = this.getCourseClassMapKey(courseId);
+			String classkey = this.getClassKey(courseId,classId);
 			
-			return (CourseClass)redisTemplate.opsForValue().get(key);
+			//String key = this.getClassKey(courseId,classId);
+			
+			return (CourseClass)redisTemplate.opsForHash().get(key, classkey);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * 
+	 * @param courseId
+	 * @param classId
+	 * @return
+	 */
+	public Map<Object,Object> getAllClassFromCache(String courseId)
+	{
+		try {
+			String key = this.getCourseClassMapKey(courseId);
+			
+			//String key = this.getClassKey(courseId,classId);
+			Map<Object, Object> maps = redisTemplate.opsForHash().entries(key);
+			return maps;
+			//		return (CourseClass)redisTemplate.boundHashOps(key).get(classkey);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

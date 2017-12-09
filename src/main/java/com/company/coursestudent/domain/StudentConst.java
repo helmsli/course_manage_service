@@ -10,6 +10,8 @@ public class StudentConst {
 	public static final int RESULT_Success = 0;	
 	public static final int RESULT_Error_Fail = 12100;	
 	
+	public static final int RESULT_Error_money=RESULT_Error_Fail+1;
+	
 	public static final String ORDERKEY_ORDER="order";
 
 	

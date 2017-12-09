@@ -59,6 +59,18 @@ public class ControllerUtils {
 		return processResult;
 	}
 	
+	public static ProcessResult getSuccessResponse(ProcessResult processResult)
+	{
+		
+		if(processResult==null)
+		{
+			processResult = new ProcessResult();
+		}
+		processResult.setRetCode(0);
+		
+		return processResult;
+	}
+	
 	public static ProcessResult toJsonSimpleProcessResult(ProcessResult processResult) {
 		Object object = processResult.getResponseInfo();
 		if (object != null) {
