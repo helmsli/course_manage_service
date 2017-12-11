@@ -1,5 +1,7 @@
 package com.company.vod.service.impl;
 
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.RestTemplate;
 
 import com.company.coursestudent.domain.StudentBuyOrder;
@@ -22,10 +24,12 @@ public class TestStudent {
 		
 		TestStudent testStudent = new TestStudent();
 		testStudent.requestPay();
+		
+		testStudent.getPayInfo();
 	}
 	public void requestPay()
 	{
-		String userid = "23456789";
+		String userid = "234567891";
 		
 		getOrderId(userid);
 		if(this.orderId==null)
@@ -36,7 +40,10 @@ public class TestStudent {
 		String requestUrl = this.baseUrl;
 		//String orderId= "";
 		StudentBuyOrder studentBuyOrder = new StudentBuyOrder();	
-		studentBuyOrder.setUserid(userid);
+		studentBuyOrder.setUserId(userid);
+		studentBuyOrder.setCourseId("4011010001");
+		studentBuyOrder.setTotalRealPrice(25.0f);
+		
 		ProcessResult processResult = restTemplate.postForObject(
 				requestUrl + "/" + userid + "/" + orderId + "/submitBuyOrder", studentBuyOrder,
 				ProcessResult.class);
@@ -48,6 +55,29 @@ public class TestStudent {
 		
 	}
 
+	public void getPayInfo()
+	{
+		String userid = "23456789";
+		
+		
+		if(this.orderId==null)
+		{
+			System.out.println("error get orderid");
+			return;
+		}
+		String requestUrl = this.baseUrl;
+		ProcessResult processResult = restTemplate.getForObject(
+				requestUrl + "/" + userid + "/" + orderId + "/getOrderPayInfo",
+				ProcessResult.class);
+		 if(processResult.getRetCode()==0)
+		 {
+			 
+		 }
+		 System.out.println(processResult);
+
+	}
+	
+	
 	public void getOrderId(String ownerKey)
 	{
 	   String baseUrl = "http://www.chunzeacademy.com:8080/orderId";

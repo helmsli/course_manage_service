@@ -6,7 +6,6 @@
 	<artifactId>course_manage_service</artifactId>
 	<version>1.0.0.1</version>
 	<packaging>jar</packaging>
-
 	<name>course_manage_service</name>
 	<description>course_manage_service for Spring Boot</description>
 	<repositories>

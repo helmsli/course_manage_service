@@ -3,14 +3,14 @@ package com.company.pay.wechat.domain;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+
+import com.company.platform.order.OrderWillPayRequest;
 /**
  * 扫码支付的请求
  * @author helmsli
  *
  */
 public  class WeChatScanPayRequest implements Serializable {
-	
-		
 	//付款商家信息title
 	private String title_desc_seller;
 	//付款商品信息title
@@ -18,7 +18,7 @@ public  class WeChatScanPayRequest implements Serializable {
 	//交易号
 	private String out_trade_no;
 	//自定义参数，可以为终端设备号(门店号或收银设备ID)，PC网页或公众号内支付可以传"WEB"
-	private String device_info="WEB";
+	private String device_info="172.16.1.1";
 	//支付金额类型
 	private String fee_type="CNY";
 	//支付的总金额

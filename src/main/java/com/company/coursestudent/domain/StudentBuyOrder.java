@@ -38,7 +38,7 @@ public class StudentBuyOrder extends Coursebuyerorder {
 	public void createCourseClassList()
 	{
 		try {
-			if(courseClasses!=null&&courseClasses!="")
+			if(courseClasses!=null&&courseClasses.length()>10)
 			{
 				courseClassList = JsonUtil.fromJson(courseClasses, new TypeToken<ArrayList<Classbuyerorder>>() {}.getType());
 			}
@@ -46,6 +46,7 @@ public class StudentBuyOrder extends Coursebuyerorder {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			courseClasses=null;
 		}
 	}
 }

@@ -5,6 +5,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.company.pay.wechat.domain.WeChatPayConst;
@@ -17,7 +19,8 @@ import com.xinwei.nnl.common.domain.ProcessResult;
 public class WeChatScanPayServiceImpl extends BaseServiceImpl implements WeChatScanPayService {
 	@Resource(name="weChatPay")
 	private WXPay wxpay;
-	
+	private Logger log = LoggerFactory.getLogger(getClass());
+		
 	protected String getBody(WeChatScanPayRequest weChatScanPayRequest)
 	{
 		return weChatScanPayRequest.getTitle_desc_seller() + "-" + weChatScanPayRequest.getTitle_goods();
@@ -25,7 +28,8 @@ public class WeChatScanPayServiceImpl extends BaseServiceImpl implements WeChatS
 	
 	@Override
 	public ProcessResult doUnifiedPay(WeChatScanPayRequest weChatScanPayRequest) {
-		 HashMap<String, String> data = new HashMap<String, String>();
+		log.error(weChatScanPayRequest.toString());
+		HashMap<String, String> data = new HashMap<String, String>();
 	        /*
 	         * PC网站	扫码支付	浏览器打开的网站主页title名 -商品概述	腾讯充值中心-QQ会员充
 	         */
@@ -52,7 +56,7 @@ public class WeChatScanPayServiceImpl extends BaseServiceImpl implements WeChatS
 	         */
 	        data.put("product_id", weChatScanPayRequest.getProduct_id());
 	        // data.put("time_expire", "20170112104120");
-
+	        data.put("time_expire", "20291227091010");
 	        try {
 	            Map<String, String> responseData = wxpay.unifiedOrder(data);
 	            return getFromResponse(responseData,null);
@@ -72,8 +76,18 @@ public class WeChatScanPayServiceImpl extends BaseServiceImpl implements WeChatS
 
 	@Override
 	public ProcessResult doPayQuery(String out_trade_no) {
-		// TODO Auto-generated method stub
-		return null;
+		  System.out.println("查询订单");
+	        HashMap<String, String> data = new HashMap<String, String>();
+	        data.put("out_trade_no", out_trade_no);
+//	        data.put("transaction_id", "4008852001201608221962061594");
+	        try {
+	            Map<String, String> responseData = wxpay.orderQuery(data);
+	            return getFromResponse(responseData,null);
+		           
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            return getFromResponse(e,null);
+	        }
 	}
 
 	@Override
@@ -99,5 +113,9 @@ public class WeChatScanPayServiceImpl extends BaseServiceImpl implements WeChatS
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	@Override
+	public Map<String, String> processResponseXml(String xmlStr) throws Exception 
+	{
+		return this.wxpay.processResponseXml(xmlStr);
+	}
 }

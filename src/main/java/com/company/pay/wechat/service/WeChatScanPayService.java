@@ -1,5 +1,7 @@
 package com.company.pay.wechat.service;
 
+import java.util.Map;
+
 import com.company.pay.wechat.domain.WeChatScanPayRequest;
 import com.xinwei.nnl.common.domain.ProcessResult;
 
@@ -50,4 +52,7 @@ public interface WeChatScanPayService {
 	 * @return
 	 */
 	public ProcessResult doRefundQuery(String out_refund_no);
+	
+	public Map<String, String> processResponseXml(String xmlStr) throws Exception;
+		
 }

@@ -61,7 +61,7 @@ public class PayControllerServiceImpl extends OrderClientService {
 
 	public ProcessResult requestPayNoOrder(WeChatScanPayRequest weChatScanPayRequest) {
 		// TODO Auto-generated method stub
-		weChatScanPayRequest.setNotify_action(notify_action);
+		//weChatScanPayRequest.setNotify_action(notify_action);
 		weChatScanPayRequest.setOut_trade_no(weChatScanPayRequest.getOut_trade_no());
 		weChatScanPayRequest.setProduct_id(weChatScanPayRequest.getOut_trade_no());
 		System.out.println(weChatScanPayRequest.toString());

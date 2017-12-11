@@ -29,6 +29,9 @@ public abstract class WXPayConfig {
      */
     abstract public String getKey();
 
+    
+    abstract public void setKey(String key);
+
     /**
      * 获取通知地址
      * @return

@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.company.pay.wechat.domain.WeChatPayConst;
@@ -18,15 +19,24 @@ public class BaseServiceImpl {
 			processResult = new ProcessResult();
 		}
 		processResult.setRetCode(WeChatPayConst.RESULT_Error_Fail);
-		 String RETURN_CODE = "return_code";
+		 String RETURN_CODE_KEY = "result_code";
 		 String ERROR_CODE = "err_code";
-		 String return_code="";
-		 if (respData.containsKey(RETURN_CODE)) {
-	            return_code = respData.get(RETURN_CODE);
+		 String code_url  ="code_url";
+				 
+		 String result_code="";
+		 if (respData.containsKey(RETURN_CODE_KEY)) {
+			 result_code = respData.get(RETURN_CODE_KEY);
+	            //StringEscapeUtils.unescapeJava(return_code);
+	            //respData.put(RETURN_CODE, StringEscapeUtils.unescapeJava(return_code));
 	     }
-		 if (return_code.equals(WXPayConstants.SUCCESS))
+		 if (result_code.equals(WXPayConstants.SUCCESS))
 		 {
 			 processResult.setRetCode(WeChatPayConst.RESULT_Success);
+			 if(respData.containsKey(code_url))
+			 {
+				 respData.put(code_url, StringEscapeUtils.unescapeJava(respData.get(code_url)));
+				    		 
+			 }
 		 }
 		 else
 		 {

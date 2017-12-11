@@ -171,6 +171,28 @@ public class OrderClientService {
 		return result;
 	}
 	
+	public ProcessResult updateUserOrderStatus(String userDbWriteUrl,UserOrder userOrder)
+	{
+		
+		ProcessResult result = null;
+		result  = restTemplate.postForObject(userDbWriteUrl + "/" +  userOrder.getCategory()+ "/" + userOrder.getUserId() + "/updateUserOrderStatus" ,userOrder ,ProcessResult.class);
+		return result;
+	}
+	
+	public ProcessResult queryOneOrder(String userDbWriteUrl,UserOrder userOrder)
+	{
+		
+		ProcessResult result = null;
+		result  = restTemplate.postForObject(userDbWriteUrl + "/" +  userOrder.getCategory()+ "/" + userOrder.getUserId() + "/queryOneOrder" ,userOrder ,ProcessResult.class);
+		if(result.getRetCode()==0)
+		{
+			UserOrder retUserOrder = JsonUtil.fromJson((String)result.getResponseInfo(), UserOrder.class);
+			result.setResponseInfo(retUserOrder);
+		}
+		return result;
+	}
+	
+	
 	public ProcessResult startOrder(String category,String orderId)
 	{
 		
@@ -180,4 +202,29 @@ public class OrderClientService {
 		result  = restTemplate.getForObject(this.orderServiceUrl + "/" + category + "/" + "/" + dbid + "/" +orderId + "/startOrder" ,ProcessResult.class);
 		return result;
 	}
+	/**
+	 * 用于保存生成的需要付款信息的订单KEY
+	 * @return
+	 */
+	public String getOrderWillPayKey()
+	{
+		return "willPayment";
+	}
+	/**
+	 * 用户保存付款成功后的订单中的key
+	 * @return
+	 */
+	public String getOrderSuccessPayKey()
+	{
+		return "succPayment";
+	}
+	/**
+	 * 
+	 * @return
+	 */
+	public String getOrderPayInfoKey()
+	{
+		return "infoPayment";
+	}
+
 }

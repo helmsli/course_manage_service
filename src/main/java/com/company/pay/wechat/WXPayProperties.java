@@ -82,7 +82,7 @@ public class WXPayProperties extends WXPayConfig{
 	public void setMchID(String mchID) {
 		this.mchID = mchID;
 	}
-
+	@Override
 	public void setKey(String key) {
 		this.key = key;
 	}

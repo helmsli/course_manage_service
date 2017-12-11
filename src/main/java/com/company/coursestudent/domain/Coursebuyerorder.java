@@ -41,6 +41,8 @@ public class Coursebuyerorder implements Serializable {
 	/** 实际成交的总价格. */
 	private float totalRealPrice;
 
+	private String feeType="CNY";
+	
 	/**
 	 * Constructor.
 	 */
@@ -49,6 +51,16 @@ public class Coursebuyerorder implements Serializable {
 
 	public String getUserId() {
 		return userId;
+	}
+
+	
+	
+	public String getFeeType() {
+		return feeType;
+	}
+
+	public void setFeeType(String feeType) {
+		this.feeType = feeType;
 	}
 
 	public void setUserId(String userId) {
