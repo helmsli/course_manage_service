@@ -53,7 +53,7 @@ public class CourseStudentService extends OrderClientService{
 		
 		//check 是否已经购买
 		try {
-			StudentBuyOrder oldStudentBuyOrder = getByerStudentBuyOrder(studentBuyOrder.getUserId());
+			StudentBuyOrder oldStudentBuyOrder = getByerStudentBuyOrder(studentBuyOrder.getUserId(),studentBuyOrder.getCourseId());
 			//有数据
 			if(oldStudentBuyOrder!=null)
 			{
@@ -83,7 +83,7 @@ public class CourseStudentService extends OrderClientService{
 					{
 						if(classes.containsKey(studentBuyOrder.getCourseClasses().get(i).getClassId()))
 						{
-							return ControllerUtils.getErrorResponse(StudentConst.RESULT_Error_HAVEPAID, studentBuyOrder.getCourseClasses().get(i).getClassId());
+							return ControllerUtils.getErrorResponse(StudentConst.RESULT_Error_HAVEPAID, studentBuyOrder.getCourseClasses().get(i).getClassId() + " have paid.");
 						}
 					}
 				}
@@ -310,19 +310,21 @@ public class CourseStudentService extends OrderClientService{
 			return processResult;
 		}
 		//更新用户的购买信息的状态
+		StudentBuyOrder newStudentBuyOrder = null;
+		
+		newStudentBuyOrder=	JsonUtil.fromJson(maps.get(StudentConst.ORDERKEY_ORDER), StudentBuyOrder.class);
+		
 		UserOrder userBuyCourse= new UserOrder();
 		userBuyCourse.setCategory(StudentConst.USER_BUYER_CATEGORY);
 		userBuyCourse.setConstCreateTime();
-		userBuyCourse.setOrderId(StudentConst.USER_BUYER_ORDERID);		
+		userBuyCourse.setOrderId(newStudentBuyOrder.getCourseId());		
 		userBuyCourse.setUserId(orderWillPayRequest.getUserid());
 		
 		processResult=queryOneOrder(studentUserDbWriteUrl,userBuyCourse);
-		StudentBuyOrder newStudentBuyOrder = null;
 		//数据不存在
 		if(processResult.getRetCode()==10002)
 		{
 			
-			newStudentBuyOrder=	JsonUtil.fromJson(maps.get(StudentConst.ORDERKEY_ORDER), StudentBuyOrder.class);
 			
 		}
 		else if(processResult.getRetCode()!=StudentConst.RESULT_Success)
@@ -352,12 +354,12 @@ public class CourseStudentService extends OrderClientService{
 	 * @param userid
 	 * @return
 	 */
-	public StudentBuyOrder getByerStudentBuyOrder(String userid) throws Exception
+	public StudentBuyOrder getByerStudentBuyOrder(String userid,String courseId) throws Exception
 	{
 		UserOrder userBuyCourse= new UserOrder();
 		userBuyCourse.setCategory(StudentConst.USER_BUYER_CATEGORY);
 		userBuyCourse.setConstCreateTime();
-		userBuyCourse.setOrderId(StudentConst.USER_BUYER_ORDERID);		
+		userBuyCourse.setOrderId(courseId);		
 		userBuyCourse.setUserId(userid);
 		ProcessResult processResult=queryOneOrder(studentUserDbWriteUrl,userBuyCourse);
 		if(processResult.getRetCode()==10002)
