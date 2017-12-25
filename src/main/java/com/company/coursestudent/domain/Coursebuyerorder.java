@@ -1,5 +1,7 @@
 package com.company.coursestudent.domain;
 import java.io.Serializable;
+import java.util.Calendar;
+import java.util.Date;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
@@ -40,6 +42,9 @@ public class Coursebuyerorder implements Serializable {
 
 	/** 实际成交的总价格. */
 	private float totalRealPrice;
+	
+	
+	private Date createTime;
 
 	private String feeType="CNY";
 	
@@ -129,6 +134,25 @@ public class Coursebuyerorder implements Serializable {
 
 	public void setTotalRealPrice(float totalRealPrice) {
 		this.totalRealPrice = totalRealPrice;
+	}
+
+	
+	
+	public Date getCreateTime() {
+		return createTime;
+	}
+	protected Date formatDate(Date sourceDate) {
+		if (sourceDate != null) {
+			Calendar calenCreate = Calendar.getInstance();
+			calenCreate.setTime(sourceDate);
+			calenCreate.set(Calendar.MILLISECOND, 0);
+			return calenCreate.getTime();
+		}
+		return sourceDate;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = formatDate(createTime);
 	}
 
 	public String toString() {

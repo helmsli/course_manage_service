@@ -23,6 +23,7 @@ import com.company.courseManager.Const.CoursemanagerConst;
 import com.company.courseManager.teacher.service.TeacherCourseManager;
 import com.company.coursestudent.domain.StudentBuyOrder;
 import com.company.coursestudent.domain.StudentConst;
+import com.company.coursestudent.domain.UserInfo;
 import com.company.coursestudent.service.CourseStudentService;
 import com.company.platform.controller.rest.ControllerUtils;
 import com.xinwei.nnl.common.domain.JsonRequest;
@@ -45,6 +46,24 @@ public class CStudentCourseController {
 		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
 		try {
 			processResult = teacherCourseManager.getCourse(courseId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return processResult;
+	}
+	
+	/**
+	 * 查询我的全部课程，如果购买状态为255，其余状态为正常状态
+	 * @param courseId
+	 * @return
+	 */
+	@RequestMapping(method = RequestMethod.POST,value = "/{courseId}/queryMyCourse")
+	public  ProcessResult queryMyCourse(@PathVariable String courseId,@RequestBody UserInfo userInfo) {
+		ProcessResult processResult = new ProcessResult();
+		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
+		try {
+			processResult = teacherCourseManager.getMyCourse(courseId,userInfo.getUserId());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -189,7 +208,7 @@ public class CStudentCourseController {
 		
 		return "";
 	}
-	
+	/*
 	@RequestMapping(value = "/wx_notify",method=RequestMethod.POST)
 	public String weiChatNotify(HttpServletRequest request,
 			HttpServletResponse response) {
@@ -203,6 +222,6 @@ public class CStudentCourseController {
 		}
 		return "";
 	}
-	
+	*/
 	
 }

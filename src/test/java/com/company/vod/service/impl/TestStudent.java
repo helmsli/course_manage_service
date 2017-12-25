@@ -98,4 +98,23 @@ public class TestStudent {
 		
 	}
 	
+	public void getMyCourse(String ownerKey)
+	{
+	   String baseUrl = "http://www.chunzeacademy.com:8080/orderId";
+		//String baseUrl = "http://127.0.0.1:9088/orderId";
+		 //studentCourse/5021010001/queryMyCourse  
+		///http://www.chunzeacademy.com:8080/studentCourse/5021010001/queryMyCourse?userId=110000000
+	   JsonRequest jsonRequest =new JsonRequest();
+		System.out.println(baseUrl + "/" + StudentConst.ORDER_BUYER_CATEGORY + "/" + ownerKey +  "/createOrderId");
+		ProcessResult processResult = restTemplate.postForObject(
+				baseUrl + "/" + StudentConst.ORDER_BUYER_CATEGORY + "/" + ownerKey +  "/createOrderId", jsonRequest,
+				ProcessResult.class);
+		
+		 if(processResult.getRetCode()==0)
+		 {
+			 orderId  = (String)processResult.getResponseInfo();
+		 }
+		 System.out.println(processResult);
+		
+	}	
 }

@@ -3,6 +3,7 @@ package com.company.platform.order;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -93,7 +94,16 @@ public class OrderWillPayRequest implements Serializable{
 		}
 
 		public void setCreateTime(Date createTime) {
-			this.createTime = createTime;
+			this.createTime = formatDate(createTime);
+		}
+		protected Date formatDate(Date sourceDate) {
+			if (sourceDate != null) {
+				Calendar calenCreate = Calendar.getInstance();
+				calenCreate.setTime(sourceDate);
+				calenCreate.set(Calendar.MILLISECOND, 0);
+				return calenCreate.getTime();
+			}
+			return sourceDate;
 		}
 
 		public Date getExpireTime() {

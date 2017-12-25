@@ -1,8 +1,19 @@
 package com.company.courseManager.teacher.service;
 
+import com.company.coursestudent.domain.DraftDocument;
 import com.xinwei.nnl.common.domain.ProcessResult;
 
 public interface TeacherCourseManager {
+	
+	/**
+	 * 创建草稿
+	 * @param draftDocument
+	 * @return
+	 */
+	public ProcessResult createDraftDoc(DraftDocument draftDocument);
+	
+	
+	
 	/**
 	 * 根据发布订单，创建教师中心的课程信息
 	 * @param category
@@ -38,6 +49,13 @@ public interface TeacherCourseManager {
 	 */
 	public ProcessResult getCourse(String courseId);
 
+	/**
+	 * 查询我是否购买该课程的详细信息，如果已经购买全部课程，状态为255
+	 * @param courseId
+	 * @return
+	 */
+	public ProcessResult getMyCourse(String courseId,String userId);
+	
 	/**
 	 * 
 	 * @param category

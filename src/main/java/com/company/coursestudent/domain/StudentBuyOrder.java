@@ -1,6 +1,7 @@
 package com.company.coursestudent.domain;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -17,6 +18,10 @@ public class StudentBuyOrder extends Coursebuyerorder {
 
 	private  String courseClasses;
 
+	public StudentBuyOrder()
+	{
+		this.setCreateTime(Calendar.getInstance().getTime());
+	}
 	
 	public List<Classbuyerorder> getCourseClasses() {
 		return courseClassList;
@@ -49,4 +54,5 @@ public class StudentBuyOrder extends Coursebuyerorder {
 			courseClasses=null;
 		}
 	}
+	
 }

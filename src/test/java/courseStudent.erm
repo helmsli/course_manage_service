@@ -95,10 +95,10 @@
 				<is_open_after_saved>true</is_open_after_saved>
 			</export_image_setting>
 			<export_java_setting>
-				<java_output></java_output>
-				<package_name></package_name>
+				<java_output>C:\Users\helmsli\Desktop</java_output>
+				<package_name>com.xinwei.test</package_name>
 				<class_name_suffix></class_name_suffix>
-				<src_file_encoding></src_file_encoding>
+				<src_file_encoding>UTF-8</src_file_encoding>
 				<with_hibernate>false</with_hibernate>
 			</export_java_setting>
 			<export_testdata_setting>
@@ -135,7 +135,7 @@
 			</connections>
 			<display>false</display>
 			<creation_date>2017-12-08 07:45:36</creation_date>
-			<updated_date>2017-12-08 07:58:08</updated_date>
+			<updated_date>2017-12-13 13:08:38</updated_date>
 			<model_property>
 				<name>Project Name</name>
 				<value></value>

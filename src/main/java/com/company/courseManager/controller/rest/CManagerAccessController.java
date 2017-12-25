@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.company.courseManager.Const.CoursemanagerConst;
 import com.company.courseManager.domain.AliVodUploadInfo;
 import com.company.courseManager.teacher.service.TeacherCourseManager;
+import com.company.coursestudent.domain.DraftDocument;
+import com.company.coursestudent.domain.UserInfo;
 import com.company.videodb.Const.VideodbConst;
 import com.company.videodb.domain.Courses;
 import com.xinwei.nnl.common.domain.JsonRequest;
@@ -33,6 +35,33 @@ public class CManagerAccessController {
 	@Resource(name="teacherCourseManager")
 	private TeacherCourseManager teacherCourseManager;
 	
+	
+	/**
+	 * 发布创建草稿
+	 * @param category
+	 * @param dbid
+	 * @param orderid
+	 * @param jsonRequest
+	 * @return
+	 */
+	@RequestMapping(method = RequestMethod.POST,value = "{category}/createDraft")
+	public  ProcessResult createDraft(@PathVariable String category,@RequestBody DraftDocument draftDocument) {
+		ProcessResult processResult = new ProcessResult();
+		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
+		try {
+			processResult =teacherCourseManager.createDraftDoc(draftDocument);
+					/*
+			 * 构造一个teacher对象，将其传递给useridorder；
+			 */
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			saveExceptionToResult(processResult,e);
+			
+		}
+		return processResult;
+	}
+	
 	/**
 	 * 将数据从教师的课程发布到学员库
 	 * @param category
@@ -41,6 +70,7 @@ public class CManagerAccessController {
 	 * @param jsonRequest
 	 * @return
 	 */
+	
 	@RequestMapping(method = RequestMethod.POST,value = "{category}/{dbid}/{orderid}/confTeacherCourse")
 	public  ProcessResult configureTecherCourses(@PathVariable String category,@PathVariable String dbid,@PathVariable String orderid,@RequestBody JsonRequest jsonRequest) {
 		ProcessResult processResult = new ProcessResult();
@@ -59,6 +89,10 @@ public class CManagerAccessController {
 		}
 		return processResult;
 	}
+	
+	
+	
+	
 	/**
 	 * 将数据从教师的课时发布到学员库
 	 * @param category

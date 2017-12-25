@@ -27,6 +27,11 @@ public class OrderClientService {
 	@Value("${order.orderServiceUrl}")
 	private String orderServiceUrl;
 	
+	@Value("${order.orderIdUrl}")
+	private String orderIdUrl;
+	
+	
+	
 	@Autowired
 	protected RestTemplate restTemplate;
 	
@@ -87,6 +92,24 @@ public class OrderClientService {
 	}
 	
 	/**
+	 * 
+	 * @param category
+	 * @param ownerKey
+	 * @return null -- if no orderId return;
+	 */
+	public String getOrderId(String category, String ownerKey) {
+		String orderId = null;
+		JsonRequest jsonRequest = new JsonRequest();
+		ProcessResult processResult = restTemplate.postForObject(
+				orderIdUrl + "/" + category + "/" + ownerKey + "/createOrderId", jsonRequest, ProcessResult.class);
+		if (processResult.getRetCode() == 0) {
+			orderId = (String) processResult.getResponseInfo();
+		}
+		return orderId;
+
+
+	}
+	/**
 	 * 从订单中心获取上下文
 	 * @param category
 	 * @param dbId
@@ -121,6 +144,11 @@ public class OrderClientService {
 		
 		ProcessResult result = null;
 		JsonRequest jsonRequest = new JsonRequest();
+		if(dbId==null)
+		{
+			dbId = OrderMainContext.getDbId(orderId);
+			
+		}
 		jsonRequest.setJsonString(JsonUtil.toJson(maps));
 		OrderMainContext orderMainContext= new OrderMainContext();
 		orderMainContext.setOrderId(orderId);
