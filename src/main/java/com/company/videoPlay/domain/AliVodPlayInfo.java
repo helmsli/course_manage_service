@@ -1,9 +1,12 @@
-package com.company.courseManager.domain;
+package com.company.videoPlay.domain;
 
 import java.io.Serializable;
 
-public class AliVodPlayInfo implements Serializable {
-	/**
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
+public class AliVodPlayInfo extends MyPlayClassInfo implements Serializable {
+	
+		/**
 	 * 视频ID
 	 */
 	private String videoId;
@@ -15,6 +18,8 @@ public class AliVodPlayInfo implements Serializable {
 	 * 视频Meta信息
 	 */
 	private AliVodMetaData videoMeta;
+	
+	
 	/**
 	 * 视频播放凭证
 	 */
@@ -43,12 +48,6 @@ public class AliVodPlayInfo implements Serializable {
 	public void setPlayAuth(String playAuth) {
 		this.playAuth = playAuth;
 	}
-	@Override
-	public String toString() {
-		return "AliVodPlayInfo [videoId=" + videoId + ", requestId=" + requestId + ", videoMeta=" + videoMeta
-				+ ", playAuth=" + playAuth + "]";
-	}
-	
 	
 	
 }

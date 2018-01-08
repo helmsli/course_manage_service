@@ -239,7 +239,7 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		{
 			Courses course = JsonUtil.fromJson(maps.get(courseKey), Courses.class);
 			
-			return publishCourseDb(category,course);
+			return publishCourseDb(category,orderid,course);
 		}
 		return getErrorProcessResult();
 	}
@@ -252,11 +252,36 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 	 * @param courses
 	 * @return
 	 */
-	public ProcessResult publishCourseDb(String category,Courses courses)
+	public ProcessResult publishCourseDb(String category,String orderId,Courses courses)
 	{
 		
 		ProcessResult result = null;
+		/**
+		 * 删除草稿
+		 */
 		UserOrder userOrder = new UserOrder();
+		userOrder.setCategory(StudentConst.USER_DRAFT_CATEGORY);
+		userOrder.setConstCreateTime();
+		userOrder.setOrderId(orderId);
+		userOrder.setStatus(UserOrder.STATUS_CreateOrder);
+		userOrder.setUserId(courses.getOwner());
+		result  = this.delOneOrder(courseUserDbWriteUrl, userOrder);
+		if(result.getRetCode()!=0)
+		{
+			return result;
+		}
+		
+		userOrder = new UserOrder();
+		userOrder.setCategory(StudentConst.USER_DRAFT_COURSEKey);
+		userOrder.setConstCreateTime();
+		userOrder.setOrderId(courses.getCourseId());
+		userOrder.setUserId(courses.getOwner());
+		result  = this.delOneOrder(courseUserDbWriteUrl, userOrder);
+		
+		
+		//end 删除草稿
+		
+		userOrder = new UserOrder();
 		userOrder.setCategory(category);
 		if(courses.getCreateTime()!=null)
 		{
@@ -299,6 +324,11 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 			 courses = (Courses)processResult.getResponseInfo();
 			this.courseRedisManager.putCourseToCache(courses);
 		}
+		else if(VideodbConst.RESULT_Error_dbNotExist==processResult.getRetCode())
+		{
+			processResult.setResponseInfo(VideodbConst.RESULT_SUCCESS);
+			processResult.setResponseInfo(null);
+		}
 		return processResult;
 	}
 
@@ -320,6 +350,11 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		{
 			courseClass = (CourseClass)processResult.getResponseInfo();
 			this.courseRedisManager.putClassToCache(courseClass);;
+		}
+		else if(VideodbConst.RESULT_Error_dbNotExist==processResult.getRetCode())
+		{
+			processResult.setResponseInfo(VideodbConst.RESULT_SUCCESS);
+			processResult.setResponseInfo(null);
 		}
 		return processResult;
 	}
@@ -448,30 +483,140 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 	@Override
 	public ProcessResult createDraftDoc(DraftDocument draftDocument) {
 		// TODO Auto-generated method stub
-		String orderId="";
-		orderId=this.getOrderId(StudentConst.USER_DRAFT_CATEGORY,draftDocument.getUserId());
-		if(orderId==null)
+		String orderId=draftDocument.getOrderId();
+		String requestCourseId = draftDocument.getCourses().getCourseId();
+		//是否有草稿了，如果有草稿就是修改
+		boolean isModifyDraft = true;
+		boolean isNeedQueryPublishCourse = true;
+		//是否需要申请新的订单ID
+		if(StringUtils.isEmpty(orderId)||orderId.compareToIgnoreCase("000000")==0)
+		{
+			isModifyDraft = false;
+			orderId=this.getOrderId(StudentConst.USER_DRAFT_CATEGORY,draftDocument.getUserId());
+			draftDocument.getCourses().setCourseId(orderId);
+		}
+		
+		if(StringUtils.isEmpty(orderId))
 		{
 			return ControllerUtils.getErrorResponse(StudentConst.RESULT_Error_ORDERID_NULL,StudentConst.RESULT_String_ORDERID_NULL);
 		}
-		draftDocument.getCourses().setCourseId(orderId);
+		if(StringUtils.isEmpty(draftDocument.getCourses().getCourseId()))
+		{
+			return ControllerUtils.getErrorResponse(StudentConst.RESULT_Error_ORDERID_NULL,"courseId is error");
+					
+		}
 		ProcessResult result = null;
 		String courseKey = "course";
+		String courseClassKey = "courseClass";
 		Map<String,String>contexts = new HashMap<String,String>();
-		contexts.put(courseKey, JsonUtil.toJson(draftDocument.getCourses()));
-		result=this.putContextData(StudentConst.USER_DRAFT_CATEGORY, null, orderId, contexts);
-		if(result.getRetCode()!=0)
+		
+		//判断订单中是否存在草稿，如果存在草稿，就查询发布的课程和课时了
+		if(isModifyDraft)
 		{
-			return result;
+			List<String>queryKeys = new ArrayList<String>();
+			queryKeys.add(courseKey);
+			queryKeys.add(courseClassKey);
+			contexts=getOrderContextMap(StudentConst.USER_DRAFT_CATEGORY, null, orderId, queryKeys);
+			if(contexts.containsKey(courseKey))
+			{
+				isNeedQueryPublishCourse=false;
+			}
+		}
+		//如果课程id不为空
+		if(isNeedQueryPublishCourse && !StringUtils.isEmpty(requestCourseId) && requestCourseId.compareToIgnoreCase("000000")!=0)
+		{
+			//查询发布的课程和课时信息
+			ProcessResult processResult = this.getCourse(requestCourseId);
+			if(processResult.getRetCode()!=VideodbConst.RESULT_SUCCESS)
+			{
+				return processResult;
+			}
+		
+			Courses course = (Courses)processResult.getResponseInfo();
+			processResult = this.getCourseAllClass(requestCourseId);
+			if(processResult.getRetCode()!=VideodbConst.RESULT_SUCCESS)
+			{
+				return processResult;
+			}
+			List<CourseClassPublish> publishList=(List<CourseClassPublish>)processResult.getResponseInfo();
+			if(course!=null)
+			{
+			contexts.put(courseKey, JsonUtil.toJson(course));
+			}
+			if(publishList!=null)
+			{
+			contexts.put(courseClassKey, JsonUtil.toJson(publishList));
+			}
+			if(contexts.size()>0)
+			{
+				result=this.putContextData(StudentConst.USER_DRAFT_CATEGORY, null, orderId, contexts);
+				if(result.getRetCode()!=0)
+				{
+					return result;
+				}
+			}
+			 	
+			//end 查询发布的课程和课时信息
+			
+		}
+		//新发布的课程
+		else
+		{
+			contexts.put(courseKey, JsonUtil.toJson(draftDocument.getCourses()));
+			result=this.putContextData(StudentConst.USER_DRAFT_CATEGORY, null, orderId, contexts);
+			if(result.getRetCode()!=0)
+			{
+				return result;
+			}
 		}
 		
+		
+		
+	
 		UserOrder userOrder = new UserOrder();
+		userOrder.setCategory(StudentConst.USER_DRAFT_COURSEKey);
+		userOrder.setConstCreateTime();
+		userOrder.setOrderId(draftDocument.getCourses().getCourseId());
+		userOrder.setUserId(draftDocument.getUserId());
+		result = this.queryOneOrder(courseUserDbWriteUrl, userOrder);
+		if(result.getRetCode()==0)
+		{
+			try {
+				userOrder = (UserOrder)result.getResponseInfo();
+				if(userOrder!=null)
+				{
+					String oldorderId = userOrder.getOrderData();
+					userOrder.setCategory(StudentConst.USER_DRAFT_CATEGORY);
+					userOrder.setConstCreateTime();
+					userOrder.setOrderId(oldorderId);
+					userOrder.setUserId(draftDocument.getUserId());
+					this.delOneOrder(courseUserDbWriteUrl, userOrder);
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		userOrder = new UserOrder();
 		userOrder.setCategory(StudentConst.USER_DRAFT_CATEGORY);
 		userOrder.setConstCreateTime();
 		userOrder.setOrderId(orderId);
 		userOrder.setStatus(UserOrder.STATUS_CreateOrder);
 		userOrder.setUserId(draftDocument.getUserId());
+		userOrder.setOrderDataType(draftDocument.getCourses().getCourseId());
 		userOrder.setOrderData(contexts.get(courseKey));
+		result  = restTemplate.postForObject(courseUserDbWriteUrl + "/" +  userOrder.getCategory()+ "/" + userOrder.getUserId() + "/configUserOrder" ,userOrder ,ProcessResult.class);
+		result.setResponseInfo(orderId);
+		
+	
+		userOrder = new UserOrder();
+		userOrder.setCategory(StudentConst.USER_DRAFT_COURSEKey);
+		userOrder.setConstCreateTime();
+		userOrder.setOrderId(draftDocument.getCourses().getCourseId());
+		userOrder.setStatus(UserOrder.STATUS_CreateOrder);
+		userOrder.setUserId(draftDocument.getUserId());
+		userOrder.setOrderData(orderId);
 		result  = restTemplate.postForObject(courseUserDbWriteUrl + "/" +  userOrder.getCategory()+ "/" + userOrder.getUserId() + "/configUserOrder" ,userOrder ,ProcessResult.class);
 		result.setResponseInfo(orderId);
 		return result;

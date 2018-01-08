@@ -31,7 +31,11 @@ public class StudentConst {
 	//对于用户信息的订单ID固定填写000000
 	public static final String USER_BUYER_ORDERID="000000";
 	public static final String USER_BUYER_CATEGORY="ubuyer";
-	public static final String USER_DRAFT_CATEGORY="tcoursepub";	
+	public static final String USER_DRAFT_CATEGORY="tcoursepub";
+	
+	public static final String USER_DRAFT_COURSEKey="cDraftKey";
+	
+	
 	public static final String ORDER_BUYER_CATEGORY="coursebuyer";
 
 	public static final String PAY_QRCODEURL_KEY="code_url";

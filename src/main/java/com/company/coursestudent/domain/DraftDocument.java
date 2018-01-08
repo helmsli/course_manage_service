@@ -10,6 +10,11 @@ public class DraftDocument implements Serializable{
 	private String userId;
 	private Courses courses;
 	/**
+	 * 首次创建草稿，orderID填写 000000
+	 * 从草稿箱进入编辑，客户端将orderID发送给服务器；
+	 */
+	private String   orderId;
+	/**
 	 * 视频分类
 	 */
 	private String category;
@@ -34,6 +39,12 @@ public class DraftDocument implements Serializable{
 	}
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
+	}
+	public String getOrderId() {
+		return orderId;
+	}
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
 	}
 	
 }

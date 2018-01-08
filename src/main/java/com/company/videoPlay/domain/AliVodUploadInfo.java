@@ -1,4 +1,6 @@
-package com.company.courseManager.domain;
+package com.company.videoPlay.domain;
+
+import com.company.courseManager.domain.VodUploadInfo;
 
 public class AliVodUploadInfo extends VodUploadInfo {
 	

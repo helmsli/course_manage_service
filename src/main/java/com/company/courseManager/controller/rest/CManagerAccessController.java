@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.company.courseManager.Const.CoursemanagerConst;
-import com.company.courseManager.domain.AliVodUploadInfo;
 import com.company.courseManager.teacher.service.TeacherCourseManager;
 import com.company.coursestudent.domain.DraftDocument;
 import com.company.coursestudent.domain.UserInfo;
+import com.company.videoPlay.domain.AliVodUploadInfo;
 import com.company.videodb.Const.VideodbConst;
 import com.company.videodb.domain.Courses;
 import com.xinwei.nnl.common.domain.JsonRequest;

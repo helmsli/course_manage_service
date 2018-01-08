@@ -1,4 +1,4 @@
-package com.company.courseManager.domain;
+package com.company.videoPlay.domain;
 
 import java.io.Serializable;
 import java.security.KeyPair;

@@ -1,7 +1,7 @@
-package com.company.courseManager.service;
+package com.company.videoPlay.service;
 
-import com.company.courseManager.domain.AliVodPlayInfo;
-import com.company.courseManager.domain.AliVodUploadInfo;
+import com.company.videoPlay.domain.AliVodPlayInfo;
+import com.company.videoPlay.domain.AliVodUploadInfo;
 import com.xinwei.nnl.common.domain.ProcessResult;
 
 
@@ -27,4 +27,6 @@ public interface AliVodService {
 	 */
 	public ProcessResult   requestPlayVideo(AliVodPlayInfo aliVodPlayInfo);
 
+	
+	
 }

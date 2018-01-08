@@ -25,10 +25,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.aliyuncs.vod.model.v20170321.GetVideoPlayAuthResponse;
-import com.company.courseManager.domain.AliVodPlayInfo;
-import com.company.courseManager.service.AliVodService;
-import com.company.courseManager.service.impl.AliVodInfoServiceImpl;
 import com.company.courseManager.utils.AliyunUtils;
+import com.company.videoPlay.domain.AliVodPlayInfo;
+import com.company.videoPlay.service.AliVodService;
+import com.company.videoPlay.service.impl.AliVodInfoServiceImpl;
 import com.xinwei.nnl.common.domain.ProcessResult;
 @RunWith(SpringRunner.class)
 @SpringBootTest

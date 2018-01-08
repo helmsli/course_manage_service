@@ -1,5 +1,12 @@
-package com.company.courseManager.service.impl;
+package com.company.videoPlay.service.impl;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Resource;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -26,12 +33,13 @@ import com.aliyuncs.vod.model.v20170321.GetVideoPlayAuthResponse;
 import com.aliyuncs.vod.model.v20170321.RefreshUploadVideoRequest;
 import com.aliyuncs.vod.model.v20170321.RefreshUploadVideoResponse;
 import com.company.courseManager.Const.VodServiceConst;
-import com.company.courseManager.domain.AliVodMetaData;
-import com.company.courseManager.domain.AliVodPlayInfo;
-import com.company.courseManager.domain.AliVodUploadInfo;
 import com.company.courseManager.domain.AliyunSignature;
-import com.company.courseManager.service.AliVodService;
 import com.company.courseManager.utils.AliyunUtils;
+import com.company.videoPlay.domain.AliVodMetaData;
+import com.company.videoPlay.domain.AliVodPlayInfo;
+import com.company.videoPlay.domain.AliVodUploadInfo;
+import com.company.videoPlay.service.AliVodService;
+import com.company.videoPlay.service.MyPlayClassService;
 import com.xinwei.nnl.common.domain.ProcessResult;
 @Service("aliVodService")
 public class AliVodInfoServiceImpl implements AliVodService,InitializingBean {
@@ -45,9 +53,33 @@ public class AliVodInfoServiceImpl implements AliVodService,InitializingBean {
 	@Value("${alidayuVod.accessKeySecret}")
 	private String accessKeySecret;
 	
+	
+	@Value("${student.myplaytask.maxSchedulerThread:5}")
+	private int myplayTaskmaxThread;
+	//后续需要保证每一步的任务调度是均等的，即如果某一步的任务过多会侵占别的任务
+	@Value("${student.myplaytask.initSchedulerThread:2}")
+	private int myplayTaskinitThread;
+	
+	@Value("${student.myplaytask.SchedulerkeepAliveTime:300}")
+	private int myplayTaskkeepAliveTime;
+	
+	@Value("${student.myplaytask.SchedulerQueneSize:30000}")
+	private int myplayTaskQueneSize;
+	
+	@Resource(name="myPlayClassService")
+	private MyPlayClassService myPlayClassService;
+	
 	private RestTemplate restTemplate=new RestTemplate();
 	
 	private DefaultAcsClient aliyunClient;
+	
+	/**
+	 * 更新学员学习中心的课时信息任务配置
+	 */
+	//java.util.concurrent.ConcurrentSkipListSet<E>
+	private BlockingQueue<Runnable> myplayTaskworkQueue =null;
+	private ThreadPoolExecutor myplayTaskPool = null;//new ThreadPoolExecutor(myplayTaskinitThread, myplayTaskmaxThread, myplayTaskkeepAliveTime, TimeUnit.SECONDS,myplayTaskworkQueue);
+
 	
     /**
      * aliyunClient = new DefaultAcsClient(
@@ -130,11 +162,18 @@ public class AliVodInfoServiceImpl implements AliVodService,InitializingBean {
 		aliyunClient = new DefaultAcsClient(
 		DefaultProfile.getProfile("cn-shanghai",accessKeyId,accessKeySecret));
 				
+		
+		myplayTaskworkQueue =new ArrayBlockingQueue<Runnable>(myplayTaskQueneSize);
+		
+		myplayTaskPool = new ThreadPoolExecutor(myplayTaskinitThread, myplayTaskmaxThread, myplayTaskkeepAliveTime, TimeUnit.SECONDS,myplayTaskworkQueue);
+
 	}
 
 	@Override
 	public ProcessResult requestPlayVideo(AliVodPlayInfo aliVodPlayInfo) {
 		// TODO Auto-generated method stub
+		MyplayUpdaterTask myplayUpdaterTask=  new MyplayUpdaterTask(this.myPlayClassService,aliVodPlayInfo);
+		this.myplayTaskPool.execute(myplayUpdaterTask);
 		return getVideoPlayAuth(aliVodPlayInfo);
 	}
 	

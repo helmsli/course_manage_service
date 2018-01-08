@@ -121,6 +121,11 @@ public class OrderClientService {
 	{
 		
 		JsonRequest jsonRequest =new JsonRequest();
+		if(dbId==null)
+		{
+			dbId = OrderMainContext.getDbId(orderid);
+			
+		}
 		jsonRequest.setJsonString(JsonUtil.toJson(keys));
 		ProcessResult processResult = restTemplate.postForObject(
 				orderServiceUrl + "/" + category + "/" + dbId + "/" + orderid + "/getContextData", jsonRequest,
@@ -129,10 +134,9 @@ public class OrderClientService {
 		 {
 			 Map<String,String> contextMaps =
 			 JsonUtil.fromJson((String)processResult.getResponseInfo(),new TypeToken<HashMap<String,String>>(){}.getType());
-			
 			 return contextMaps;
-			 
 		 }
+		
 		return null;
 		
 		//{category}/{dbId}/{orderId}/getContextData
@@ -220,6 +224,14 @@ public class OrderClientService {
 		return result;
 	}
 	
+	public ProcessResult delOneOrder(String userDbWriteUrl,UserOrder userOrder)
+	{
+		
+		ProcessResult result = null;
+		result  = restTemplate.postForObject(userDbWriteUrl + "/" +  userOrder.getCategory()+ "/" + userOrder.getUserId() + "/delUserOrder" ,userOrder ,ProcessResult.class);
+		
+		return result;
+	}
 	
 	public ProcessResult startOrder(String category,String orderId)
 	{

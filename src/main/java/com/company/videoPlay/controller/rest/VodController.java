@@ -1,12 +1,10 @@
-package com.company.courseManager.controller.rest;
-import java.security.PrivateKey;
+package com.company.videoPlay.controller.rest;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 /**
  * 点播业务接入请求
@@ -17,11 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.company.courseManager.Const.CoursemanagerConst;
 import com.company.courseManager.Const.VodServiceConst;
-import com.company.courseManager.domain.AccessContext;
-import com.company.courseManager.domain.AliVodPlayInfo;
-import com.company.courseManager.domain.AliVodUploadInfo;
-import com.company.courseManager.domain.RequestAjax;
-import com.company.courseManager.service.AliVodService;
+import com.company.platform.controller.rest.ControllerUtils;
+import com.company.videoPlay.domain.AccessContext;
+import com.company.videoPlay.domain.AliVodPlayInfo;
+import com.company.videoPlay.domain.AliVodUploadInfo;
+import com.company.videoPlay.domain.RequestAjax;
+import com.company.videoPlay.service.AliVodService;
+import com.company.videoPlay.service.MyPlayClassService;
 import com.google.gson.reflect.TypeToken;
 import com.xinwei.nnl.common.domain.ProcessResult;
 import com.xinwei.nnl.common.util.JsonUtil;
@@ -31,6 +31,10 @@ import com.xinwei.nnl.common.util.JsonUtil;
 public class VodController {
 	@Resource(name="aliVodService")
 	private AliVodService aliVodService;
+	
+	@Resource(name="myPlayClassService")
+	private MyPlayClassService myPlayClassService;
+	
 	/**
 	 * 单个文件的上传请求
 	 * @param request
@@ -126,7 +130,7 @@ public class VodController {
 	 * @return
 	 */
 	@RequestMapping(method = RequestMethod.POST,value = "requestPlayAuthList")
-	public  ProcessResult requestPlayAuth(HttpServletRequest request,@RequestBody RequestAjax requestAjax) {
+	public  ProcessResult requestPlayAuthList(HttpServletRequest request,@RequestBody RequestAjax requestAjax) {
 		ProcessResult processResult = new ProcessResult();
 		processResult.setRetCode(VodServiceConst.RESULT_Error_Fail);
 		
@@ -176,5 +180,28 @@ public class VodController {
 		}
 		return processResult;
 	}
-	
+	@RequestMapping(method = RequestMethod.POST,value = "getMyPlayClass")
+	public  ProcessResult getMyPlayClass(HttpServletRequest request,@RequestBody AliVodPlayInfo aliVodPlayInfo) {
+		ProcessResult processResult = new ProcessResult();
+		processResult.setRetCode(VodServiceConst.RESULT_Error_Fail);
+		
+		
+		try {
+			int iRet = VodServiceConst.RESULT_Success;
+			AliVodPlayInfo queryAliVodPlayInfo = myPlayClassService.queryMyPlayClass(aliVodPlayInfo);
+			if(queryAliVodPlayInfo==null)
+			{
+				iRet = CoursemanagerConst.RESULT_FAILURE_MYPLAY_NULL;
+				return ControllerUtils.getErrorResponse(iRet, CoursemanagerConst.RESULT_FAILURE_STRING_MYPLAY_NULL);
+			}
+			processResult.setRetCode(iRet);
+			processResult.setResponseInfo(queryAliVodPlayInfo);
+			return processResult;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ControllerUtils.getFromResponse(e, CoursemanagerConst.RESULT_FAILURE, null);
+		}
+		
+	}
 }
