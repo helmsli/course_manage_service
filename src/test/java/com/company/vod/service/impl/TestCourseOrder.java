@@ -102,7 +102,7 @@ public class TestCourseOrder {
 			courseClass.setClassId(String.valueOf(i+1));
 			courseClass.setOriginalPrice(i);
 			courseClass.setOwner(ownerKey);
-			courseClass.setDetail("detal dedal class" + Calendar.getInstance().getTime());
+		//	courseClass.setDetail("detal dedal class" + Calendar.getInstance().getTime());
 			lists.add(courseClass);
 		}
 		courseClassPublish.setChapterId(String.valueOf(j));
