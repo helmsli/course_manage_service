@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
 import com.company.courseManager.Const.CoursemanagerConst;
+import com.company.courseManager.domain.CourseSearch;
 import com.company.courseManager.teacher.domain.CourseClassPublish;
 import com.company.courseManager.teacher.service.TeacherCourseManager;
 import com.company.coursestudent.domain.DraftDocument;
@@ -47,6 +48,11 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 	
 	@Resource(name="courseStudentService")
 	private CourseStudentService courseStudentService;
+	
+	
+	@Value("${course.searchUrl}")
+	private String courseSearchUrl;
+	
 	
 	@Override
 	public ProcessResult configureTecherCourses(String category, String dbId, String orderid) {
@@ -239,9 +245,25 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		{
 			Courses course = JsonUtil.fromJson(maps.get(courseKey), Courses.class);
 			
-			return publishCourseDb(category,orderid,course);
+			ProcessResult processResult =  publishCourseDb(category,orderid,course);
+			if(processResult.getRetCode()==0)
+			{
+				return this.publishCourseToSearch(course);
+			}
+			return processResult;
+			
 		}
 		return getErrorProcessResult();
+	}
+	
+	public ProcessResult publishCourseToSearch(Courses courses)
+	{
+		CourseSearch courseSearch = new CourseSearch();
+		courseSearch.setCourse(courses);
+		ProcessResult result = null;
+		result  = restTemplate.postForObject(courseSearchUrl + "/saveCourse"  ,courseSearch ,ProcessResult.class);
+		
+		return result;
 	}
 	
 	/**
