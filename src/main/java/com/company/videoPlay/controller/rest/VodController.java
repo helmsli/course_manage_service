@@ -29,6 +29,7 @@ import com.xinwei.nnl.common.util.JsonUtil;
 @RestController
 @RequestMapping("/vod")
 public class VodController {
+	
 	@Resource(name="aliVodService")
 	private AliVodService aliVodService;
 	
@@ -41,7 +42,8 @@ public class VodController {
 	 * @param aliyunVodInfo
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.POST,value = "requestUploadVideo")
+	
+	@RequestMapping(method = RequestMethod.POST,value = "/requestUploadVideo")
 	public  ProcessResult createUploadVideo(HttpServletRequest request,@RequestBody AliVodUploadInfo aliyunVodInfo) {
 		ProcessResult processResult = new ProcessResult();
 		processResult.setRetCode(VodServiceConst.RESULT_Error_Fail);
@@ -60,7 +62,7 @@ public class VodController {
 		return processResult;
 	}
 	
-	@RequestMapping(method = RequestMethod.POST,value = "requestUpVideoList")
+	@RequestMapping(method = RequestMethod.POST,value = "/requestUpVideoList")
 	public  ProcessResult createUploadVideos(HttpServletRequest request,@RequestBody RequestAjax requestAjax) {
 		ProcessResult processResult = new ProcessResult();
 		processResult.setRetCode(VodServiceConst.RESULT_Error_Fail);
@@ -129,7 +131,8 @@ public class VodController {
 	 * @param requestAjax
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.POST,value = "requestPlayAuthList")
+	
+	@RequestMapping(method = RequestMethod.POST,value = "/requestPlayAuthList")
 	public  ProcessResult requestPlayAuthList(HttpServletRequest request,@RequestBody RequestAjax requestAjax) {
 		ProcessResult processResult = new ProcessResult();
 		processResult.setRetCode(VodServiceConst.RESULT_Error_Fail);
@@ -180,13 +183,14 @@ public class VodController {
 		}
 		return processResult;
 	}
-	@RequestMapping(method = RequestMethod.POST,value = "getMyPlayClass")
+	@RequestMapping(method = RequestMethod.POST,value = "/getMyPlayClass")
 	public  ProcessResult getMyPlayClass(HttpServletRequest request,@RequestBody AliVodPlayInfo aliVodPlayInfo) {
 		ProcessResult processResult = new ProcessResult();
 		processResult.setRetCode(VodServiceConst.RESULT_Error_Fail);
 		
 		
 		try {
+			
 			int iRet = VodServiceConst.RESULT_Success;
 			AliVodPlayInfo queryAliVodPlayInfo = myPlayClassService.queryMyPlayClass(aliVodPlayInfo);
 			if(queryAliVodPlayInfo==null)
@@ -194,8 +198,10 @@ public class VodController {
 				iRet = CoursemanagerConst.RESULT_FAILURE_MYPLAY_NULL;
 				return ControllerUtils.getErrorResponse(iRet, CoursemanagerConst.RESULT_FAILURE_STRING_MYPLAY_NULL);
 			}
+			
 			processResult.setRetCode(iRet);
 			processResult.setResponseInfo(queryAliVodPlayInfo);
+			
 			return processResult;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -204,4 +210,5 @@ public class VodController {
 		}
 		
 	}
+	
 }

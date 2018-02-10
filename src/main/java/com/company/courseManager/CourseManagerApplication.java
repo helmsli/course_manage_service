@@ -12,7 +12,7 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 @EnableAutoConfiguration
 //@EnableRedisHttpSession
 //@EnableRedisHttpSession 
-@ComponentScan ("com.company.elasticsearch.repositories,com.company.courseManager,com.company.fileManager.fastDfs,com.company.pay,com.company.coursestudent,com.company.websocket,com.company.videoPlay.service,com.company.elasticsearch")
+@ComponentScan ("com.company.*")
 @EnableRedisHttpSession(maxInactiveIntervalInSeconds = 86400*30)
 public class CourseManagerApplication {
 

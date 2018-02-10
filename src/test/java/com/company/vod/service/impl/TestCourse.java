@@ -14,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.company.platform.order.OrderClientService;
 import com.company.userOrder.domain.UserOrder;
+import com.company.videoPlay.domain.AliVodPlayInfo;
 import com.company.videodb.domain.CourseClass;
 import com.company.videodb.domain.Courses;
 import com.google.gson.reflect.TypeToken;
@@ -38,11 +39,38 @@ public class TestCourse {
 		// TODO Auto-generated method stub
 		TestCourse testCourse = new TestCourse();
 		//testCourse.getOrderId();
+		/*
 		testCourse.createCourse();
 		testCourse.getCourse();
 		testCourse.publishCourse();
 		testCourse.publishClass();
 		testCourse.configUserOrder();
+		*/
+		testCourse.testQueryPlayAuth();
+	}
+	
+	
+	public void testQueryPlayAuth()
+	{
+		//d4a3b67c4edd4a2891b98aebfa0f3ebe
+		String baseUrl = "http://127.0.0.1:9200/vod/requestPlayAuth";
+		  
+		//String baseUrl = "http://www.chunzeacademy.com:8080/vod/requestPlayAuth";
+		   ///{category}/{ownerKey}/createOrderId
+		
+		AliVodPlayInfo aliVodPlayInfo= new AliVodPlayInfo();
+		aliVodPlayInfo.setVideoId("d4a3b67c4edd4a2891b98aebfa0f3ebe");
+		   JsonRequest jsonRequest =new JsonRequest();
+			System.out.println(baseUrl);
+			ProcessResult processResult = restTemplate.postForObject(
+					baseUrl , aliVodPlayInfo,
+					ProcessResult.class);
+			 if(processResult.getRetCode()==0)
+			 {
+				 //orderId  = (String)processResult.getResponseInfo();
+			 }
+			 System.out.println(processResult);
+		
 	}
 	
 	public void getOrderId()
