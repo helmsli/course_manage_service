@@ -15,6 +15,7 @@ import org.springframework.web.client.RestClientException;
 import com.company.courseManager.Const.CoursemanagerConst;
 import com.company.courseManager.domain.CourseSearch;
 import com.company.courseManager.teacher.domain.CourseClassPublish;
+import com.company.courseManager.teacher.domain.TeacherInfo;
 import com.company.courseManager.teacher.service.TeacherCourseManager;
 import com.company.coursestudent.domain.DraftDocument;
 import com.company.coursestudent.domain.StudentBuyOrder;
@@ -53,6 +54,13 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 	@Value("${course.searchUrl}")
 	private String courseSearchUrl;
 	
+	@Value("${course.newCourseSearchUrl}")
+	private String newCourseSearchUrl;
+	
+	@Value("${course.hotCourseSearchUrl}")
+	private String hotCourseSearchUrl;
+	
+	
 	
 	@Override
 	public ProcessResult configureTecherCourses(String category, String dbId, String orderid) {
@@ -68,6 +76,16 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 			if(processResult.getRetCode()==0)
 			{
 				this.courseRedisManager.delCourse(course.getCourseId());
+				String retMsg= processResult.getRetMsg();
+				/*
+				if(!StringUtils.isEmpty(retMsg)&& retMsg.contains("insert"))
+				{
+					//记录是新发布的课程
+					Map<String,String> newMaps = new HashMap<String,String>();
+					newMaps.put("courseInsert", "1"); 
+					this.putContextData(category, dbId, orderid, newMaps);
+				}
+				*/
 			}
 			return processResult;
 		}
@@ -261,7 +279,18 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		CourseSearch courseSearch = new CourseSearch();
 		courseSearch.setCourse(courses);
 		ProcessResult result = null;
+		//发布课程到搜索引擎
 		result  = restTemplate.postForObject(courseSearchUrl + "/saveCourse"  ,courseSearch ,ProcessResult.class);
+		if(result.getRetCode()!=0)
+		{
+			return result;
+		}
+		//如果时间小于48小时，发布到新课程中；
+		if(System.currentTimeMillis() - courses.getCreateTime().getTime() <48 * 3600 * 1000)
+		{
+			result  = restTemplate.postForObject(newCourseSearchUrl + "/saveCourse"  ,courseSearch ,ProcessResult.class);
+			
+		}
 		
 		return result;
 	}
@@ -643,6 +672,37 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		result.setResponseInfo(orderId);
 		return result;
 		
+	}
+
+	@Override
+	public ProcessResult configureTeacher(TeacherInfo teacherInfo) {
+		// TODO Auto-generated method stub
+		UserOrder userOrder = new UserOrder();
+		userOrder.setCategory("teacher");
+		userOrder.setOrderId(teacherInfo.getuserId());
+		userOrder.setUserId(teacherInfo.getuserId());
+		userOrder.setConstCreateTime();
+		userOrder.setOrderData(JsonUtil.toJson(teacherInfo));
+		return this.saveUserOrder(this.courseUserDbWriteUrl, userOrder);
+		
+	}
+
+	@Override
+	public ProcessResult queryTeacher(TeacherInfo teacherInfo) {
+		UserOrder userOrder = new UserOrder();
+		userOrder.setCategory("teacher");
+		userOrder.setOrderId(teacherInfo.getuserId());
+		userOrder.setUserId(teacherInfo.getuserId());
+		userOrder.setConstCreateTime();
+		//userOrder.setOrderData(JsonUtil.toJson(teacherInfo));
+		ProcessResult processResult = this.queryOneOrder(courseUserDbWriteUrl, userOrder);
+		if(processResult.getRetCode()==0)
+		{
+			UserOrder UserOrder = (UserOrder)processResult.getResponseInfo();
+			TeacherInfo teacherRet = JsonUtil.fromJson(UserOrder.getOrderData(), TeacherInfo.class);
+			processResult.setResponseInfo(teacherRet);
+		}
+		return processResult;
 	}
 	
 

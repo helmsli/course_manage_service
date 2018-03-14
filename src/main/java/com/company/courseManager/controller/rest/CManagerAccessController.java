@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.company.courseManager.Const.CoursemanagerConst;
+import com.company.courseManager.teacher.domain.TeacherInfo;
 import com.company.courseManager.teacher.service.TeacherCourseManager;
 import com.company.coursestudent.domain.DraftDocument;
 import com.company.coursestudent.domain.UserInfo;
@@ -144,6 +146,49 @@ public class CManagerAccessController {
 		}
 		return processResult;
 	}
+/**
+ * 配置教师信息
+ * @param userId
+ * @param teacherInfo
+ * @return
+ */
+	@RequestMapping(method = RequestMethod.POST,value = "{userId}/confTeacherInfo")
+	public  ProcessResult configureTecher(@PathVariable String userId,@RequestBody TeacherInfo teacherInfo) {
+		ProcessResult processResult = new ProcessResult();
+		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
+		try {
+			teacherInfo.setuserId(userId);
+			processResult =teacherCourseManager.configureTeacher(teacherInfo);
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			saveExceptionToResult(processResult,e);
+		}
+		return processResult;
+	}
+/**
+ * 查询教师信息
+ * @param userId
+ * @return
+ */
+	@RequestMapping(method = RequestMethod.GET,value = "{userId}/getTeacherInfo")
+	public  ProcessResult getTecherInfo(@PathVariable String userId) {
+		ProcessResult processResult = new ProcessResult();
+		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
+		try {
+			TeacherInfo teacherInfo = new TeacherInfo();
+			teacherInfo.setuserId(userId);
+			processResult =teacherCourseManager.queryTeacher(teacherInfo);
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			saveExceptionToResult(processResult,e);
+		}
+		return processResult;
+	}
+
 	
 	protected void saveExceptionToResult(ProcessResult processResult,Exception e)
 	{

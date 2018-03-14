@@ -1,5 +1,6 @@
 package com.company.courseManager.teacher.service;
 
+import com.company.courseManager.teacher.domain.TeacherInfo;
 import com.company.coursestudent.domain.DraftDocument;
 import com.xinwei.nnl.common.domain.ProcessResult;
 
@@ -80,5 +81,11 @@ public interface TeacherCourseManager {
 	 * @return CourseClass 列表
 	 */
 	public ProcessResult getAllClass(String courseId);
+	
+	
+	public ProcessResult configureTeacher(TeacherInfo teacherInfo);
+	
+	public ProcessResult queryTeacher(TeacherInfo teacherInfo);
+	
 		
 }

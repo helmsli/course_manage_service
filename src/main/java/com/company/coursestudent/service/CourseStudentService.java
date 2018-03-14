@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.company.courseManager.Const.CoursemanagerConst;
+import com.company.courseManager.domain.CourseSearch;
 import com.company.courseManager.teacher.service.TeacherCourseManager;
 import com.company.coursestudent.domain.Classbuyerorder;
 import com.company.coursestudent.domain.StudentBuyOrder;
@@ -47,6 +48,18 @@ public class CourseStudentService extends OrderClientService {
 
 	@Resource(name = "weChatScanPayService")
 	private WeChatScanPayService weChatScanPayService;
+	
+	/**
+	 * 钩锁
+	 */
+	@Value("${course.searchUrl}")
+	private String courseSearchUrl;
+	
+	@Value("${course.newCourseSearchUrl}")
+	private String newCourseSearchUrl;
+	
+	@Value("${course.hotCourseSearchUrl}")
+	private String hotCourseSearchUrl;
 
 	/**
 	 * 校验用户购买的课程是否符合要求
@@ -504,5 +517,29 @@ public class CourseStudentService extends OrderClientService {
 			return this.updateUserBuyCourse(studentBuyOrder);
 		}
 
+	}
+	
+	
+	/**
+	 * 更新搜索引擎的购买量数据
+	 * @param courses
+	 * @return
+	 */
+	public ProcessResult publishBuyAmountToSearch(Courses courses)
+	{
+		CourseSearch courseSearch = new CourseSearch();
+		courseSearch.setCourse(courses);
+		ProcessResult result = null;
+		result  = restTemplate.postForObject(this.courseSearchUrl + "/saveCourse"  ,courseSearch ,ProcessResult.class);
+		if(result.getRetCode()!=0)
+		{
+			return result;
+		}
+		if(System.currentTimeMillis() - courses.getCreateTime().getTime() <48 * 3600 * 1000)
+		{
+			result  = restTemplate.postForObject(newCourseSearchUrl + "/saveCourse"  ,courseSearch ,ProcessResult.class);
+		}
+		
+		return result;
 	}
 }
