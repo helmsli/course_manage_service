@@ -3,6 +3,7 @@ package com.company.courseManager.interceptor;
 import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -47,6 +48,11 @@ public class TokenInterceptor implements HandlerInterceptor,InitializingBean {
 	@Resource (name = "redisTemplate")
 	protected RedisTemplate<Object, Object> redisTemplate;
 	
+	@Value("${token.expireMillSeconds:1800000}")  
+	private int tokenExpireSeconds;
+	
+	@Value("${token.redisDuration:36000}")  
+	private int durationSeconds = 3600;
 	/**
 	 * 用户rest的白名单key
 	 */
@@ -91,14 +97,33 @@ public class TokenInterceptor implements HandlerInterceptor,InitializingBean {
 	 */
 	protected long getSessionAccessTime(String token)
 	{
-		String accessKey  =SecurityConst.getTokenRediskey(token);
-		ValueOperations<Object, Object> opsForValue = redisTemplate.opsForValue();
-		String accessTime = (String)(opsForValue.get(accessKey)); 
-		if(StringUtils.isEmpty(accessTime))
-		{
-			return 0;
+		try {
+			String accessKey  =SecurityConst.getTokenRediskey(token);
+			ValueOperations<Object, Object> opsForValue = redisTemplate.opsForValue();
+			String accessTime = (String)(opsForValue.get(accessKey)); 
+			if(StringUtils.isEmpty(accessTime))
+			{
+				return 0;
+			}
+			
+			long tokenCreateTime = Long.parseLong(accessTime);
+			
+			if(System.currentTimeMillis() - tokenCreateTime>tokenExpireSeconds)
+			{
+				return 0;
+			}
+			if(System.currentTimeMillis() - tokenCreateTime>600000)
+			{
+				opsForValue.set(accessKey, String.valueOf(System.currentTimeMillis()),durationSeconds,TimeUnit.SECONDS);
+			
+			}
+			return Long.parseLong(accessTime);
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			
 		}
-		return Long.parseLong(accessTime);
+		return 0;
 	}
 	/**
 	 * 判断是否允许方位兄台那个资源

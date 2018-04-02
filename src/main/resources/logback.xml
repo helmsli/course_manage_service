@@ -19,7 +19,7 @@
 	<root level="INFO">
 		<appender-ref ref="CONSOLE" />
 	</root>
-	<logger name="com.company" level="INFO">
+	<logger name="com.company" level="DEBUG">
 		<appender-ref ref="dailyRollingFileAppender" />
 	</logger>
 </configuration>

@@ -41,7 +41,36 @@ public class ControllerUtils {
 		}
 	    return processResult;
 	}
-	
+	public static ProcessResult getFromResponse(Throwable e,int errorCode,ProcessResult processResult)
+	{
+		if(processResult==null)
+		{
+			processResult = new ProcessResult();
+		}
+		processResult.setRetCode(errorCode);
+		if(StringUtils.isEmpty(e.getMessage()))
+		{
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			String errorStr = errors.toString();
+			if(!StringUtils.isEmpty(errorStr))
+			{
+				processResult.setRetMsg(errorStr.substring(0,1000));
+			}
+		}
+		else
+		{
+		
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			String errorStr = errors.toString();
+			if(!StringUtils.isEmpty(errorStr))
+			{
+				processResult.setRetMsg(errorStr.substring(0,1000));
+			}
+		}
+	    return processResult;
+	}
 	public static ProcessResult getErrorResponse(int errorCode,String errorMsg)
 	{
 		

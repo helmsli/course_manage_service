@@ -46,7 +46,12 @@ public class TestCourse {
 		testCourse.publishClass();
 		testCourse.configUserOrder();
 		*/
-		testCourse.testQueryPlayAuth();
+		//testCourse.testQueryPlayAuth();
+		System.out.println(System.currentTimeMillis());
+		System.out.println(("1521103496703".compareToIgnoreCase("1522103496703")));
+		
+		System.out.println(("1521103496703".compareToIgnoreCase("15211034")));
+		System.out.println(("1521103496703".compareToIgnoreCase("152-")));
 	}
 	
 	

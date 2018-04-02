@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.RestTemplate;
 
+import com.company.courseManager.teacher.domain.UserOrderQueryResult;
+import com.company.userOrder.domain.QueryUserOrderRequest;
 import com.company.userOrder.domain.UserOrder;
 import com.company.videodb.domain.Courses;
 import com.google.gson.reflect.TypeToken;
@@ -202,6 +204,19 @@ public class OrderClientService {
 		result  = restTemplate.postForObject(userDbWriteUrl + "/" +  userOrder.getCategory()+ "/" + userOrder.getUserId() + "/configUserOrder" ,userOrder ,ProcessResult.class);
 		return result;
 	}
+	/**
+	 * 对userorder的amount增加
+	 * @param userDbWriteUrl
+	 * @param userOrder
+	 * @return
+	 */
+	public ProcessResult plusUserOrderAmount(String userDbWriteUrl,UserOrder userOrder)
+	{
+		
+		ProcessResult result = null;
+		result  = restTemplate.postForObject(userDbWriteUrl + "/" +  userOrder.getCategory()+ "/" + userOrder.getUserId() + "/plusUserStatus" ,userOrder ,ProcessResult.class);
+		return result;
+	}
 	
 	public ProcessResult updateUserOrderStatus(String userDbWriteUrl,UserOrder userOrder)
 	{
@@ -220,6 +235,21 @@ public class OrderClientService {
 		{
 			UserOrder retUserOrder = JsonUtil.fromJson((String)result.getResponseInfo(), UserOrder.class);
 			result.setResponseInfo(retUserOrder);
+		}
+		return result;
+	}
+	
+	public ProcessResult queryOrdersByUserId(String userDbWriteUrl,QueryUserOrderRequest queryUserOrderRequest)
+	{
+		
+		ProcessResult result = null;
+		result  = restTemplate.postForObject(userDbWriteUrl + "/" +  queryUserOrderRequest.getCategory()+ "/" + queryUserOrderRequest.getUserId() + "/queryUserOrder" ,queryUserOrderRequest ,ProcessResult.class);
+		if(result.getRetCode()==0)
+		{
+			String lsUserOrder = JsonUtil.toJson(result.getResponseInfo());
+			UserOrderQueryResult userOrderQueryResult = JsonUtil.fromJson(lsUserOrder, UserOrderQueryResult.class);
+			List<UserOrder> lists = userOrderQueryResult.getList();
+			result.setResponseInfo(lists);
 		}
 		return result;
 	}

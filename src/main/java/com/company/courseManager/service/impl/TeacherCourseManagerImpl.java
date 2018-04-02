@@ -24,6 +24,7 @@ import com.company.coursestudent.domain.StudentMyCourse;
 import com.company.coursestudent.service.CourseStudentService;
 import com.company.platform.controller.rest.ControllerUtils;
 import com.company.platform.order.OrderClientService;
+import com.company.userOrder.domain.QueryUserOrderRequest;
 import com.company.userOrder.domain.UserOrder;
 import com.company.videodb.Const.VideodbConst;
 import com.company.videodb.domain.CourseClass;
@@ -696,6 +697,28 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		userOrder.setConstCreateTime();
 		//userOrder.setOrderData(JsonUtil.toJson(teacherInfo));
 		ProcessResult processResult = this.queryOneOrder(courseUserDbWriteUrl, userOrder);
+		if(processResult.getRetCode()==0)
+		{
+			UserOrder UserOrder = (UserOrder)processResult.getResponseInfo();
+			TeacherInfo teacherRet = JsonUtil.fromJson(UserOrder.getOrderData(), TeacherInfo.class);
+			processResult.setResponseInfo(teacherRet);
+		}
+		return processResult;
+	}
+
+	@Override
+	public ProcessResult queryRecommandTeacher(String userId) {
+		QueryUserOrderRequest queryUserOrderRequest = new QueryUserOrderRequest();
+		queryUserOrderRequest.setCategory("Recommteacher");
+		queryUserOrderRequest.setUserId("000000");
+		UserOrder userOrder = new UserOrder();
+		queryUserOrderRequest.setStartCreateTime(userOrder.getConstCreateDate());
+		queryUserOrderRequest.setEndCreateTime(userOrder.getConstCreateDate());
+		queryUserOrderRequest.setPageNum(1);
+		queryUserOrderRequest.setPageSize(100);
+		
+		//userOrder.setOrderData(JsonUtil.toJson(teacherInfo));
+		ProcessResult processResult = this.queryOrdersByUserId(courseUserDbWriteUrl, queryUserOrderRequest);
 		if(processResult.getRetCode()==0)
 		{
 			UserOrder UserOrder = (UserOrder)processResult.getResponseInfo();

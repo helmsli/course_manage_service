@@ -189,6 +189,29 @@ public class CManagerAccessController {
 		return processResult;
 	}
 
+	/**
+	 * 查询推荐的老师教师信息
+	 * @param userId
+	 * @return
+	 */
+		@RequestMapping(method = RequestMethod.GET,value = "{userId}/getRecommandTeacher")
+		public  ProcessResult getRecommandTecherInfo(@PathVariable String userId) {
+			ProcessResult processResult = new ProcessResult();
+			processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
+			try {
+				TeacherInfo teacherInfo = new TeacherInfo();
+				teacherInfo.setuserId(userId);
+				processResult =teacherCourseManager.queryRecommandTeacher(userId);
+				
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				saveExceptionToResult(processResult,e);
+			}
+			return processResult;
+		}
+
+
 	
 	protected void saveExceptionToResult(ProcessResult processResult,Exception e)
 	{

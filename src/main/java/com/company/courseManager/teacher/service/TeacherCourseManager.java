@@ -87,5 +87,7 @@ public interface TeacherCourseManager {
 	
 	public ProcessResult queryTeacher(TeacherInfo teacherInfo);
 	
+	public ProcessResult queryRecommandTeacher(String userId);
+	
 		
 }
