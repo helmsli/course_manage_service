@@ -4,17 +4,19 @@ import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import com.company.courseManager.domain.CourseTeacher;
 import com.company.courseManager.teacher.domain.CourseClassPublish;
 import com.company.videodb.domain.Courses;
 
 public class StudentMyCourse {
-	private Courses courseInfo;
+	private CourseTeacher courseTeacher;
 	private List<CourseClassPublish> courseClass;
-	public Courses getCourseInfo() {
-		return courseInfo;
+	
+	public CourseTeacher getCourseTeacher() {
+		return courseTeacher;
 	}
-	public void setCourseInfo(Courses courseInfo) {
-		this.courseInfo = courseInfo;
+	public void setCourseTeacher(CourseTeacher courseTeacher) {
+		this.courseTeacher = courseTeacher;
 	}
 	public List<CourseClassPublish> getCourseClass() {
 		return courseClass;

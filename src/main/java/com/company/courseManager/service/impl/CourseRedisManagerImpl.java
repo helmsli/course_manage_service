@@ -10,8 +10,10 @@ import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import com.company.courseManager.domain.CourseTeacher;
 import com.company.videodb.domain.CourseClass;
 import com.company.videodb.domain.Courses;
+import com.xinwei.nnl.common.util.JsonUtil;
 
 @Service("courseRedisManager")
 public class CourseRedisManagerImpl {
@@ -38,8 +40,13 @@ public class CourseRedisManagerImpl {
 	
 	public void putCourseToCache(Courses courses)
 	{
-		String key = this.getCourseKey(courses.getCourseId());
-		redisTemplate.opsForValue().set(key, courses, courseCacheExpireHours, TimeUnit.HOURS);
+		try {
+			String key = this.getCourseKey(courses.getCourseId());
+			redisTemplate.opsForValue().set(key, JsonUtil.toJson(courses), courseCacheExpireHours, TimeUnit.HOURS);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void delCourse(String courseId)
@@ -55,11 +62,12 @@ public class CourseRedisManagerImpl {
 		}
 	}
 	
-	public Courses getCourseFromCache(String courseId)
+	public CourseTeacher getCourseFromCache(String courseId)
 	{
 		try {
 			String key = this.getCourseKey(courseId);
-			return (Courses)redisTemplate.opsForValue().get(key);
+			String lsStr = (String)redisTemplate.opsForValue().get(key);
+			return (CourseTeacher)JsonUtil.fromJson(lsStr, CourseTeacher.class);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

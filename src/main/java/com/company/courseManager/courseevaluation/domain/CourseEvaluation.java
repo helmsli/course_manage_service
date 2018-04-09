@@ -66,6 +66,10 @@ public class CourseEvaluation implements Serializable {
 	/** 评论内容. */
 	private String content;
 
+	/**
+	 * 评价等级
+	 */
+	private int starLevel=5;
 	
 	/** 评论还是回复. 0--pinglun */
 	private int createrIsReply;
@@ -84,6 +88,13 @@ public class CourseEvaluation implements Serializable {
 	public CourseEvaluation() {
 	}
 
+	public int getStarLevel() {
+		return starLevel;
+	}
+
+	public void setStarLevel(int starLevel) {
+		this.starLevel = starLevel;
+	}
 	public String getEvaluationId() {
 		return evaluationId;
 	}

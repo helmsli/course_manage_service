@@ -20,7 +20,8 @@ public class CourseLove implements Serializable {
 
 	/** 评价人头像. */
 	private String createrAvatar;
-
+	
+	
 	public String getEvaluationId() {
 		return evaluationId;
 	}
@@ -69,12 +70,18 @@ public class CourseLove implements Serializable {
 		this.createrAvatar = createrAvatar;
 	}
 
+	
+	
+	
+
 	@Override
 	public String toString() {
 		return "CourseLove [evaluationId=" + evaluationId + ", courseId=" + courseId + ", createTime=" + createTime
-				+ ", createrUserid=" + createrUserId + ", createrUsername=" + createrUserName + ", createrAvatar="
-				+ createrAvatar + "]";
+				+ ", createrUserId=" + createrUserId + ", createrUserName=" + createrUserName + ", createrAvatar="
+				+ createrAvatar ;
 	}
+
+	
 
 	
 }

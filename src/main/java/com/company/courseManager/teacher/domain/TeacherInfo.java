@@ -6,6 +6,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class TeacherInfo implements Serializable {
 	private String userId;
+	
+	
 	/**
 	 * 教师照
 	 */

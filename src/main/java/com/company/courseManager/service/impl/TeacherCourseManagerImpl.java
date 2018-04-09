@@ -8,14 +8,21 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
 import com.company.courseManager.Const.CoursemanagerConst;
+import com.company.courseManager.courseevaluation.service.CourseEvaluationService;
 import com.company.courseManager.domain.CourseSearch;
+import com.company.courseManager.domain.CourseTeacher;
 import com.company.courseManager.teacher.domain.CourseClassPublish;
 import com.company.courseManager.teacher.domain.TeacherInfo;
+import com.company.courseManager.teacher.domain.TeacherInfoResponse;
+import com.company.courseManager.teacher.domain.UserOrderQueryResult;
 import com.company.courseManager.teacher.service.TeacherCourseManager;
 import com.company.coursestudent.domain.DraftDocument;
 import com.company.coursestudent.domain.StudentBuyOrder;
@@ -24,6 +31,7 @@ import com.company.coursestudent.domain.StudentMyCourse;
 import com.company.coursestudent.service.CourseStudentService;
 import com.company.platform.controller.rest.ControllerUtils;
 import com.company.platform.order.OrderClientService;
+import com.company.security.domain.SecurityUser;
 import com.company.userOrder.domain.QueryUserOrderRequest;
 import com.company.userOrder.domain.UserOrder;
 import com.company.videodb.Const.VideodbConst;
@@ -37,6 +45,9 @@ import com.xinwei.nnl.common.util.JsonUtil;
 public class TeacherCourseManagerImpl extends OrderClientService implements TeacherCourseManager {
 	@Value("${course.serviceDbWriteUrl}")
 	private String courseDbWriteUrl;
+	
+	@Resource(name="courseEvaluationService")
+	private CourseEvaluationService courseEvaluationService;
 	
 	@Value("${course.serviceDbReadUrl}")
 	private String courseDbReadUrl;
@@ -62,6 +73,7 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 	private String hotCourseSearchUrl;
 	
 	
+	private Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Override
 	public ProcessResult configureTecherCourses(String category, String dbId, String orderid) {
@@ -248,7 +260,7 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		
 		if(result.getRetCode()==0)
 		{
-			Courses courses = JsonUtil.fromJson((String)result.getResponseInfo(), Courses.class); 
+			CourseTeacher courses = JsonUtil.fromJson((String)result.getResponseInfo(), CourseTeacher.class); 
 			result.setResponseInfo(courses);
 		}
 		return result;
@@ -361,10 +373,17 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 	@Override
 	public ProcessResult getCourse(String courseId) {
 		// TODO Auto-generated method stub
-		Courses courses = this.courseRedisManager.getCourseFromCache(courseId);
+		CourseTeacher courses = this.courseRedisManager.getCourseFromCache(courseId);
 		if(courses!=null)
 		{
 			ProcessResult processResult = new ProcessResult();
+			TeacherInfo teacherInfo = new TeacherInfo();
+			teacherInfo.setuserId(courses.getOwner());
+			ProcessResult teacharRet = this.queryTeacher(teacherInfo);
+			if(teacharRet.getRetCode()==0)
+			{
+				courses.setTeacherInfo((TeacherInfo)teacharRet.getResponseInfo());
+			}
 			processResult.setResponseInfo(courses);
 			processResult.setRetCode(VideodbConst.RESULT_SUCCESS);
 			return processResult;
@@ -373,7 +392,14 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		ProcessResult processResult = this.selectCourseFromDb(dbId, courseId);
 		if(processResult.getRetCode()==VideodbConst.RESULT_SUCCESS)
 		{
-			 courses = (Courses)processResult.getResponseInfo();
+			 courses = (CourseTeacher)processResult.getResponseInfo();
+			 TeacherInfo teacherInfo = new TeacherInfo();
+				teacherInfo.setuserId(courses.getOwner());
+				ProcessResult teacharRet = this.queryTeacher(teacherInfo);
+				if(teacharRet.getRetCode()==0)
+				{
+					courses.setTeacherInfo((TeacherInfo)teacharRet.getResponseInfo());
+				}
 			this.courseRedisManager.putCourseToCache(courses);
 		}
 		else if(VideodbConst.RESULT_Error_dbNotExist==processResult.getRetCode())
@@ -465,7 +491,7 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		{
 			return processResult;
 		}
-		Courses course = (Courses)processResult.getResponseInfo();
+		CourseTeacher course = (CourseTeacher)processResult.getResponseInfo();
 		processResult = this.getCourseAllClass(courseId);
 		if(processResult.getRetCode()!=VideodbConst.RESULT_SUCCESS)
 		{
@@ -526,7 +552,7 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 				 course.setStatus(CoursemanagerConst.STATUS_HAVEDPAID);
 			 }
 		}
-		studentMyCourse.setCourseInfo(course);
+		studentMyCourse.setCourseTeacher(course);
 		studentMyCourse.setCourseClass(publishList);
 		processResult.setResponseInfo(studentMyCourse);
 		return processResult;
@@ -700,7 +726,9 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		if(processResult.getRetCode()==0)
 		{
 			UserOrder UserOrder = (UserOrder)processResult.getResponseInfo();
-			TeacherInfo teacherRet = JsonUtil.fromJson(UserOrder.getOrderData(), TeacherInfo.class);
+			TeacherInfoResponse teacherRet = JsonUtil.fromJson(UserOrder.getOrderData(), TeacherInfoResponse.class);
+			SecurityUser securityUser =courseEvaluationService.getUserInfo(teacherRet.getuserId());
+			teacherRet.setSecurityUser(securityUser);
 			processResult.setResponseInfo(teacherRet);
 		}
 		return processResult;
@@ -721,11 +749,21 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		ProcessResult processResult = this.queryOrdersByUserId(courseUserDbWriteUrl, queryUserOrderRequest);
 		if(processResult.getRetCode()==0)
 		{
-			UserOrder UserOrder = (UserOrder)processResult.getResponseInfo();
-			TeacherInfo teacherRet = JsonUtil.fromJson(UserOrder.getOrderData(), TeacherInfo.class);
-			processResult.setResponseInfo(teacherRet);
+			
+			List<UserOrder> lists = (List<UserOrder>)processResult.getResponseInfo();
+			List<TeacherInfoResponse>listTeacherInfo = new ArrayList<TeacherInfoResponse>();
+			for(UserOrder userOrderRet:lists)
+			{
+				
+				TeacherInfoResponse teacharResponse = JsonUtil.fromJson(userOrderRet.getOrderData(), TeacherInfoResponse.class);
+				SecurityUser securityUser =courseEvaluationService.getUserInfo(teacharResponse.getuserId());
+				teacharResponse.setSecurityUser(securityUser);
+				listTeacherInfo.add(teacharResponse);
+			}
+			processResult.setResponseInfo(listTeacherInfo);
+			
 		}
-		return processResult;
+		return processResult; 
 	}
 	
 

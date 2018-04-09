@@ -135,7 +135,7 @@ public class CourseEvaluationService extends OrderClientService{
 		ProcessResult ret = this.saveUserOrder(evaluationCenter, userOrder);
 		if(ret.getRetCode()==0)
 		{
-			ret.setResponseInfo(courseEvaluation);
+			ret.setResponseInfo(userOrder);
 		}
 		return ret;
 	}
