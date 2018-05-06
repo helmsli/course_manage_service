@@ -28,6 +28,8 @@ import com.aliyuncs.exceptions.ServerException;
 import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.vod.model.v20170321.CreateUploadVideoRequest;
 import com.aliyuncs.vod.model.v20170321.CreateUploadVideoResponse;
+import com.aliyuncs.vod.model.v20170321.GetVideoInfoRequest;
+import com.aliyuncs.vod.model.v20170321.GetVideoInfoResponse;
 import com.aliyuncs.vod.model.v20170321.GetVideoPlayAuthRequest;
 import com.aliyuncs.vod.model.v20170321.GetVideoPlayAuthResponse;
 import com.aliyuncs.vod.model.v20170321.RefreshUploadVideoRequest;
@@ -41,6 +43,7 @@ import com.company.videoPlay.domain.AliVodUploadInfo;
 import com.company.videoPlay.service.AliVodService;
 import com.company.videoPlay.service.MyPlayClassService;
 import com.xinwei.nnl.common.domain.ProcessResult;
+import com.xinwei.nnl.common.util.JsonUtil;
 @Service("aliVodService")
 public class AliVodInfoServiceImpl implements AliVodService,InitializingBean {
 	@Value("${alidayuVod.accessKeyId}")
@@ -177,6 +180,33 @@ public class AliVodInfoServiceImpl implements AliVodService,InitializingBean {
 		return getVideoPlayAuth(aliVodPlayInfo);
 	}
 	
+	@Override
+	public ProcessResult   getVideoInfo(AliVodPlayInfo aliVodPlayInfo)
+	{
+		ProcessResult processResult= new ProcessResult();
+		processResult.setRetCode(VodServiceConst.RESULT_Error_Fail);
+		GetVideoInfoRequest request = new GetVideoInfoRequest();
+		request.setVideoId(aliVodPlayInfo.getVideoId());
+		
+		GetVideoInfoResponse response = null;
+		try {
+			response = this.aliyunClient.getAcsResponse(request);
+			processResult.setResponseInfo(JsonUtil.toJson(response.getVideo()));
+			processResult.setRetCode(VodServiceConst.RESULT_Success);
+		} catch (ServerException e) {
+			e.printStackTrace();
+		} catch (ClientException e) {
+			e.printStackTrace();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return processResult;
+		
+	}
+	
 	/**
 	 * 从阿里服务器查询播放授权
 	 * @param aliVodPlayInfo
@@ -187,6 +217,7 @@ public class AliVodInfoServiceImpl implements AliVodService,InitializingBean {
 		processResult.setRetCode(VodServiceConst.RESULT_Error_Fail);
 		GetVideoPlayAuthRequest request = new GetVideoPlayAuthRequest();
 		request.setVideoId(aliVodPlayInfo.getVideoId());
+		
 		GetVideoPlayAuthResponse response = null;
 		try {
 			response = this.aliyunClient.getAcsResponse(request);

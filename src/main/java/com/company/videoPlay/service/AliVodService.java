@@ -27,6 +27,12 @@ public interface AliVodService {
 	 */
 	public ProcessResult   requestPlayVideo(AliVodPlayInfo aliVodPlayInfo);
 
+	/**
+	 * 获取上传的视频的信息
+	 * @param aliVodPlayInfo
+	 * @return
+	 */
+	public ProcessResult  getVideoInfo(AliVodPlayInfo aliVodPlayInfo);
 	
 	
 }

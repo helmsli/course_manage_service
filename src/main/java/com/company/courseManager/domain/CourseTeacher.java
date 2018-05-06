@@ -3,17 +3,18 @@ package com.company.courseManager.domain;
 
 
 import com.company.courseManager.teacher.domain.TeacherInfo;
+import com.company.courseManager.teacher.domain.TeacherInfoResponse;
 import com.company.videodb.domain.Courses;
 
 public class CourseTeacher extends Courses {
 	
-	private transient TeacherInfo teacherInfo;
+	private  TeacherInfoResponse teacherInfo;
 
-	public TeacherInfo getTeacherInfo() {
+	public TeacherInfoResponse getTeacherInfo() {
 		return teacherInfo;
 	}
 
-	public void setTeacherInfo(TeacherInfo teacherInfo) {
+	public void setTeacherInfo(TeacherInfoResponse teacherInfo) {
 		this.teacherInfo = teacherInfo;
 	}
 	

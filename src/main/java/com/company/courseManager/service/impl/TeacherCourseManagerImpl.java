@@ -382,7 +382,7 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 			ProcessResult teacharRet = this.queryTeacher(teacherInfo);
 			if(teacharRet.getRetCode()==0)
 			{
-				courses.setTeacherInfo((TeacherInfo)teacharRet.getResponseInfo());
+				courses.setTeacherInfo((TeacherInfoResponse)teacharRet.getResponseInfo());
 			}
 			processResult.setResponseInfo(courses);
 			processResult.setRetCode(VideodbConst.RESULT_SUCCESS);
@@ -398,7 +398,7 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 				ProcessResult teacharRet = this.queryTeacher(teacherInfo);
 				if(teacharRet.getRetCode()==0)
 				{
-					courses.setTeacherInfo((TeacherInfo)teacharRet.getResponseInfo());
+					courses.setTeacherInfo((TeacherInfoResponse)teacharRet.getResponseInfo());
 				}
 			this.courseRedisManager.putCourseToCache(courses);
 		}
@@ -713,7 +713,8 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		return this.saveUserOrder(this.courseUserDbWriteUrl, userOrder);
 		
 	}
-
+	
+	
 	@Override
 	public ProcessResult queryTeacher(TeacherInfo teacherInfo) {
 		UserOrder userOrder = new UserOrder();
@@ -728,9 +729,29 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 			UserOrder UserOrder = (UserOrder)processResult.getResponseInfo();
 			TeacherInfoResponse teacherRet = JsonUtil.fromJson(UserOrder.getOrderData(), TeacherInfoResponse.class);
 			SecurityUser securityUser =courseEvaluationService.getUserInfo(teacherRet.getuserId());
+			securityUser.setPassword(null);
+			securityUser.setOldPasswordExt(null);
+			securityUser.setPasswordExt("");
+			securityUser.setCreateSource(null);
+			securityUser.setRoles(null);
 			teacherRet.setSecurityUser(securityUser);
 			processResult.setResponseInfo(teacherRet);
 		}
+		//用户不存在
+		else if(processResult.getRetCode()==10002)
+		{
+			TeacherInfoResponse teacherRet = new TeacherInfoResponse();
+			SecurityUser securityUser =courseEvaluationService.getUserInfo(teacherInfo.getuserId());
+			securityUser.setPassword(null);
+			securityUser.setOldPasswordExt(null);
+			securityUser.setPasswordExt("");
+			securityUser.setCreateSource(null);
+			securityUser.setRoles(null);
+			teacherRet.setSecurityUser(securityUser);
+			processResult.setResponseInfo(teacherRet);
+			processResult.setRetCode(0);
+		}
+			
 		return processResult;
 	}
 
@@ -757,6 +778,11 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 				
 				TeacherInfoResponse teacharResponse = JsonUtil.fromJson(userOrderRet.getOrderData(), TeacherInfoResponse.class);
 				SecurityUser securityUser =courseEvaluationService.getUserInfo(teacharResponse.getuserId());
+				securityUser.setPassword(null);
+				securityUser.setOldPasswordExt(null);
+				securityUser.setPasswordExt("");
+				securityUser.setCreateSource(null);
+				securityUser.setRoles(null);
 				teacharResponse.setSecurityUser(securityUser);
 				listTeacherInfo.add(teacharResponse);
 			}

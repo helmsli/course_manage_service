@@ -5,6 +5,8 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 /**
  * 点播业务接入请求
@@ -62,6 +64,22 @@ public class VodController {
 		return processResult;
 	}
 	
+	@GetMapping(value = "/{videoId}/getVideoInfo")
+	public  ProcessResult getVideoInfo(HttpServletRequest request,@PathVariable String videoId) {
+		ProcessResult processResult = new ProcessResult();
+		processResult.setRetCode(VodServiceConst.RESULT_Error_Fail);
+		try {
+			AccessContext AccessContext = new AccessContext();
+			AliVodPlayInfo aliVodPlayInfo = new AliVodPlayInfo();
+			aliVodPlayInfo.setVideoId(videoId);
+			return  aliVodService.getVideoInfo(aliVodPlayInfo);
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return processResult;
+	}
 	@RequestMapping(method = RequestMethod.POST,value = "/requestUpVideoList")
 	public  ProcessResult createUploadVideos(HttpServletRequest request,@RequestBody RequestAjax requestAjax) {
 		ProcessResult processResult = new ProcessResult();
