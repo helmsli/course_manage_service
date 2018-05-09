@@ -408,7 +408,7 @@ public class CourseStudentService extends OrderClientService {
 		return oldStudentBuyOrder;
 	}
 
-	public ProcessResult getPayOrderInfo(String orderId) {
+	public ProcessResult getPayOrderInfo(String orderId,String payType) {
 		String dbid = OrderMainContext.getDbId(orderId);
 		String paymentKey = getOrderWillPayKey();
 		List<String> keys = new ArrayList<String>();
@@ -417,6 +417,7 @@ public class CourseStudentService extends OrderClientService {
 		// 获取订单的key
 		ProcessResult processResult = getContextData(StudentConst.ORDER_BUYER_CATEGORY, dbid, orderId, keys);
 		if (processResult.getRetCode() != StudentConst.RESULT_Success) {
+			log.debug("getcontext error");
 			return processResult;
 		}
 		Map<String, String> maps = (Map<String, String>) processResult.getResponseInfo();
@@ -448,6 +449,8 @@ public class CourseStudentService extends OrderClientService {
 				.setNotify_action(StudentConst.ORDER_BUYER_CATEGORY + "/" + dbid + "/" + orderId + "/notifyPaySuccess");
 		weChatScanPayRequest.setProduct_id(orderId);
 
+		
+		weChatScanPayRequest.setTrade_type(payType);
 		processResult = weChatScanPayService.doUnifiedPay(weChatScanPayRequest);
 
 		return processResult;

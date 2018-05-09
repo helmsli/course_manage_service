@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,6 +27,7 @@ import com.company.coursestudent.domain.StudentBuyOrder;
 import com.company.coursestudent.domain.StudentConst;
 import com.company.coursestudent.domain.UserInfo;
 import com.company.coursestudent.service.CourseStudentService;
+import com.company.pay.wechat.domain.WeChatScanPayRequest;
 import com.company.platform.controller.rest.ControllerUtils;
 import com.xinwei.nnl.common.domain.JsonRequest;
 import com.xinwei.nnl.common.domain.ProcessResult;
@@ -116,18 +118,19 @@ public class CStudentCourseController {
 		
 	}
 	
-	@RequestMapping(method = RequestMethod.GET,value = "/{userid}/{orderId}/getOrderPayInfo")
-	public ProcessResult getOrderPayInfo(@PathVariable String userid,@PathVariable String orderId)
+	@PostMapping(value = "/{userid}/{orderId}/getOrderPayInfo")
+	public ProcessResult getOrderPayInfo(@PathVariable String userid,@PathVariable String orderId,@RequestBody WeChatScanPayRequest weChatScanPayRequest)
 	{
 		
 		try {
-			ProcessResult processResult= courseStudentService.getPayOrderInfo(orderId);
+			ProcessResult processResult= courseStudentService.getPayOrderInfo(orderId,weChatScanPayRequest.getTrade_type());
 			if(processResult.getRetCode()==StudentConst.RESULT_Success)
 			{
 				 Map<String, String> responseData = (Map<String, String>)processResult.getResponseInfo();
-				 Map<String, String> retMap = new HashMap<String,String>();
-				 retMap.put(StudentConst.PAY_QRCODEURL_KEY, responseData.get(StudentConst.PAY_QRCODEURL_KEY));
-				 processResult.setResponseInfo(retMap);
+				// Map<String, String> retMap = new HashMap<String,String>();
+				// retMap.put(StudentConst.PAY_QRCODEURL_KEY, responseData.get(StudentConst.PAY_QRCODEURL_KEY));
+				// retMap.
+				 processResult.setResponseInfo(responseData);
 			}
 			return processResult;
 		} catch (Exception e) {

@@ -27,10 +27,15 @@ public  class WeChatScanPayRequest implements Serializable {
     private String spbill_create_ip="127.0.0.1";
 	//微信回调地址
     private String notify_action;
-	 /*
+	 
+    public static  final String CLIENT_H5_Pay = "H5"; 
+    /*
     * JSAPI--公众号支付、NATIVE--原生扫码支付、APP--app支付，统一下单接口trade_type的传参可参考这里
-MICROPAY--刷卡支付，刷卡支付有单独的支付接口，不调用统一下单接口
+MICROPAY--刷卡支付，刷卡支付有单独的支付接口，不调用统一下单接口   H5支付的交易类型为MWEB
     */
+    public static final String TRADE_TYPE_H5="MWEB";
+    public static final String TRADE_TYPE_Native="NATIVE";
+    
     private String trade_type="NATIVE";
     /*
      * trade_type=NATIVE时（即扫码支付），此参数必传。此参数为二维码中包含的商品ID，商户自行定义

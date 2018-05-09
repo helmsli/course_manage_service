@@ -22,6 +22,8 @@ public class BaseServiceImpl {
 		 String RETURN_CODE_KEY = "result_code";
 		 String ERROR_CODE = "err_code";
 		 String code_url  ="code_url";
+		 //h5pay
+		 String mweb_url  = "mweb_url";
 				 
 		 String result_code="";
 		 if (respData.containsKey(RETURN_CODE_KEY)) {
@@ -29,6 +31,12 @@ public class BaseServiceImpl {
 	            //StringEscapeUtils.unescapeJava(return_code);
 	            //respData.put(RETURN_CODE, StringEscapeUtils.unescapeJava(return_code));
 	     }
+		 
+		 if(respData.containsKey(mweb_url))
+		 {
+			 respData.put(mweb_url, StringEscapeUtils.unescapeJava(respData.get(mweb_url)));
+				 
+		 }
 		 if (result_code.equals(WXPayConstants.SUCCESS))
 		 {
 			 processResult.setRetCode(WeChatPayConst.RESULT_Success);

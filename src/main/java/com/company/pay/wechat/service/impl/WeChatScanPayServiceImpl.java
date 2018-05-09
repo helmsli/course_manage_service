@@ -29,6 +29,14 @@ public class WeChatScanPayServiceImpl extends BaseServiceImpl implements WeChatS
 	@Override
 	public ProcessResult doUnifiedPay(WeChatScanPayRequest weChatScanPayRequest) {
 		log.error(weChatScanPayRequest.toString());
+		if(weChatScanPayRequest.CLIENT_H5_Pay.compareToIgnoreCase(weChatScanPayRequest.getTrade_type() )==0)
+		{
+			weChatScanPayRequest.setTrade_type(weChatScanPayRequest.TRADE_TYPE_H5);
+		}
+		else
+		{
+			weChatScanPayRequest.setTrade_type(weChatScanPayRequest.TRADE_TYPE_Native);
+		}
 		HashMap<String, String> data = new HashMap<String, String>();
 	        /*
 	         * PC网站	扫码支付	浏览器打开的网站主页title名 -商品概述	腾讯充值中心-QQ会员充
