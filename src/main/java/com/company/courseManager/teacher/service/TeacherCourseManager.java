@@ -14,6 +14,13 @@ public interface TeacherCourseManager {
 	public ProcessResult createDraftDoc(DraftDocument draftDocument);
 	
 	
+	/**
+	 * 客户端发布课程到课程库
+	 * @param draftDocument
+	 * @return
+	 */
+	public ProcessResult clientPublishCourse(String category,String orderid);
+	
 	
 	/**
 	 * 根据发布订单，创建教师中心的课程信息

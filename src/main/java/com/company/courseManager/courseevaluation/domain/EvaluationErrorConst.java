@@ -7,4 +7,6 @@ public class EvaluationErrorConst {
 	public static final int RESULT_FAILURE_ReplyCourseIdisNull=RESULT_FAILURE+2;
 	
 	
+	
+	
 }

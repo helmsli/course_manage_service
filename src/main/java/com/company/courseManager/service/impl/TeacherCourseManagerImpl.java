@@ -1,5 +1,6 @@
 package com.company.courseManager.service.impl;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +25,7 @@ import com.company.courseManager.teacher.domain.TeacherInfo;
 import com.company.courseManager.teacher.domain.TeacherInfoResponse;
 import com.company.courseManager.teacher.domain.UserOrderQueryResult;
 import com.company.courseManager.teacher.service.TeacherCourseManager;
+import com.company.coursestudent.domain.Classbuyerorder;
 import com.company.coursestudent.domain.DraftDocument;
 import com.company.coursestudent.domain.StudentBuyOrder;
 import com.company.coursestudent.domain.StudentConst;
@@ -41,6 +43,7 @@ import com.google.gson.reflect.TypeToken;
 import com.xinwei.nnl.common.domain.JsonRequest;
 import com.xinwei.nnl.common.domain.ProcessResult;
 import com.xinwei.nnl.common.util.JsonUtil;
+import com.xinwei.orderDb.domain.OrderMain;
 @Service("teacherCourseManager")
 public class TeacherCourseManagerImpl extends OrderClientService implements TeacherCourseManager {
 	@Value("${course.serviceDbWriteUrl}")
@@ -359,6 +362,63 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		result  = restTemplate.postForObject(courseUserDbWriteUrl + "/" +  category+ "/" + userOrder.getUserId() + "/configUserOrder" ,userOrder ,ProcessResult.class);
 		return result;
 	}
+	
+	/**
+	 * 客户端发布课程到订单系统，进行必要的校验
+	 */
+	@Override
+	public ProcessResult clientPublishCourse(String category, String orderid) {
+		// TODO Auto-generated method stub
+		//获取课程数据和课时数据
+		List<CourseClass> willAddClassList=new ArrayList<CourseClass>();
+		List<String> keys = new ArrayList<String>();
+		String courseClassKey = "courseClass";
+		String courseKey = "course";
+		keys.add(courseKey);
+		keys.add(courseClassKey);
+		Map<String,String>maps= getOrderContextMap(category, OrderMain.getDbId(orderid), orderid, keys);
+		//todo:
+		Courses course = null;
+		if(maps.containsKey(courseKey))
+		{
+			course =JsonUtil.fromJson(maps.get(courseKey), Courses.class);
+			
+		}	
+		
+		 float totalClassPrice = 0;
+		if(maps.containsKey(courseClassKey))
+		{					
+			List<CourseClassPublish> classPublishList =JsonUtil.fromJson(maps.get(courseClassKey), new TypeToken<List<CourseClassPublish>>() {}.getType());
+			//获取章节信息
+			for(int i=0;i<classPublishList.size();i++)
+			{
+				CourseClassPublish classPublish = classPublishList.get(i);
+				//获取章节的课时信息
+				if(classPublish.getCourseList()!=null)
+				{
+					for(int j=0;j<classPublish.getCourseList().size();j++)
+					{
+						CourseClass courseClass = classPublish.getCourseList().get(j);
+						totalClassPrice = totalClassPrice + courseClass.getRealPrice();
+					}
+				}
+				
+			}
+		}
+		//如果课程总价格大于课时价格	
+		if(course.getRealPrice()>totalClassPrice)
+		{
+			ProcessResult ret =  ControllerUtils.getErrorResponse(CoursemanagerConst.RESULT_FAILURE_COURSEPRICE, CoursemanagerConst.RESULT_FAILURE_STRING_COURSEPRICE);
+			Map<String,String> errMsg = new HashMap<String,String>();
+			errMsg.put("coursePrice", new  DecimalFormat("###,###,###.##").format(course.getRealPrice()));
+			errMsg.put("totalClassPrice", new  DecimalFormat("###,###,###.##").format(totalClassPrice));
+			ret.setResponseInfo(errMsg);
+			return ret;
+		}
+		return startOrder(category,orderid);
+	}
+	
+	
 	/**
 	 * 
 	 * @return
@@ -513,21 +573,21 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		StudentMyCourse studentMyCourse = new StudentMyCourse();
 		if(studentBuyOrder!=null)
 		{
-			 List<CourseClassPublish> listmyBuyClass = studentMyCourse.getCourseClass();
+			// List<CourseClassPublish> listmyBuyClass = studentMyCourse.getCourseClass();
+			 List<Classbuyerorder> listmyBuyClass= studentBuyOrder.getCourseClasses();
 			 if(listmyBuyClass!=null&&listmyBuyClass.size()>0)
 			 {
 				 Map<String,String> buyCourseMaps = new HashMap<String,String>();
 				 //遍历购买的列表
 				 for(int i=0;i<listmyBuyClass.size();i++)
 				 {
-					 CourseClassPublish courseClassPublish = listmyBuyClass.get(i);
-					 List<CourseClass> classList = courseClassPublish.getCourseList();
-					 if(classList!=null)
+					 Classbuyerorder classbuyerorder = listmyBuyClass.get(i);
+					// List<CourseClass> classList = courseClassPublish.getCourseList();
+					 if(classbuyerorder!=null)
 					 {
-						 for(int j=0;j<classList.size();j++)
-						 {
-							 buyCourseMaps.put(classList.get(j).getClassId(), "");
-						 }
+						 
+							 buyCourseMaps.put(classbuyerorder.getClassId(), "");
+						 
 					 }
 				 }
 				 //遍历多有的课程列表
@@ -791,6 +851,7 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		}
 		return processResult; 
 	}
+
 	
 
 }

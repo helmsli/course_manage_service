@@ -18,14 +18,16 @@ import com.company.courseManager.Const.CoursemanagerConst;
 import com.company.courseManager.teacher.domain.TeacherInfo;
 import com.company.courseManager.teacher.service.TeacherCourseManager;
 import com.company.coursestudent.domain.DraftDocument;
+import com.company.coursestudent.domain.StudentConst;
 import com.company.coursestudent.domain.UserInfo;
+import com.company.platform.controller.rest.ControllerUtils;
 import com.company.videoPlay.domain.AliVodUploadInfo;
 import com.company.videodb.Const.VideodbConst;
 import com.company.videodb.domain.Courses;
 import com.xinwei.nnl.common.domain.JsonRequest;
 import com.xinwei.nnl.common.domain.ProcessResult;
 import com.xinwei.orderDb.domain.OrderMain;
-
+	
 /**
  * course manager access controller
  * @author helmsli
@@ -36,6 +38,23 @@ import com.xinwei.orderDb.domain.OrderMain;
 public class CManagerAccessController {
 	@Resource(name="teacherCourseManager")
 	private TeacherCourseManager teacherCourseManager;
+	
+	/**
+	 * 发布课程  tcoursepub
+	 * @param category
+	 * @param draftDocument
+	 * @return
+	 */
+	@GetMapping(value = "{orderId}/published")
+	public  ProcessResult clientPublishCourse(@PathVariable String orderId) {
+		try {
+			return teacherCourseManager.clientPublishCourse(StudentConst.USER_DRAFT_CATEGORY,orderId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ControllerUtils.getFromResponse(e, StudentConst.RESULT_Error_Fail, null);
+		}
+	}
 	
 	
 	/**
