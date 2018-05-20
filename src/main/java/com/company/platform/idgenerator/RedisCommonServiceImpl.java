@@ -73,6 +73,10 @@ public class RedisCommonServiceImpl {
 
 	public void releaseCommonLock(String lockKey, long requestTime) {
 		try {
+			if(requestTime==0)
+			{
+				return;
+			}
 			String requestTimeS = (String) redisTemplate.opsForValue().get(lockKey);
 			long requestTimeL = Long.parseLong(requestTimeS);
 			if (requestTimeL == requestTime) {

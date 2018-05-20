@@ -1,6 +1,5 @@
 package com.company.courseManager.courseevaluation.service;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -10,91 +9,55 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 import com.company.courseManager.courseevaluation.domain.CourseEvaluation;
-import com.company.courseManager.courseevaluation.domain.CourseLove;
+import com.company.courseManager.courseevaluation.domain.CourseQuestion;
 import com.company.courseManager.courseevaluation.domain.EvaluationErrorConst;
+import com.company.courseManager.courseevaluation.domain.QuestionErrorConst;
 import com.company.platform.controller.rest.ControllerUtils;
 import com.company.platform.order.OrderClientService;
+import com.company.security.domain.SecurityUser;
 import com.company.userOrder.domain.UserOrder;
 import com.xinwei.nnl.common.domain.ProcessResult;
 import com.xinwei.nnl.common.util.JsonUtil;
-import com.company.security.domain.SecurityUser;
 
-@Service("courseEvaluationService")
-public class CourseEvaluationService extends OrderClientService{
-	 private Logger logger = LoggerFactory.getLogger(getClass());
-
-	 
-	 
-	 
-	 
+public class CourseQuestionService extends OrderClientService{
+private Logger logger = LoggerFactory.getLogger(getClass());
 	
-	@Value("${course.evaluationCenter}")
+	@Value("${course.questionCenter}")
 	private String evaluationCenter;
 	
 	@Value("${security.userCenter}")
 	private String securityUserCenter;
+
 	
-	@Value("${course.evaluationCenter.nodeId:1}")
-	private String evaluationCenterNodeId;
+	@Value("${course.questionCenter.nodeId:1}")
+	private String questionNodeId;
+
 	
 	Random rand = new Random();
 
 	
-	public ProcessResult configureCourseLove(CourseLove courseLove) {
-		if(StringUtils.isEmpty(courseLove.getEvaluationId())||StringUtils.isEmpty(courseLove.getCourseId())||StringUtils.isEmpty(courseLove.getCreaterUserId()))
-		{
-			return ControllerUtils.getErrorResponse(EvaluationErrorConst.RESULT_FAILURE_ReplyCourseIdisNull, "course id or evaluation is null");
-		}
-		//从回复的父亲帖子中获取时间，为了保持排序的时候按照一组排序
-		UserOrder userOrder = new UserOrder();
-		userOrder.setCategory("courseEval");
-		userOrder.setUserId(courseLove.getCourseId());
-		Date createTime =this.getReplayCreateDate(courseLove.getEvaluationId());
-		userOrder.setCreateTime(createTime);
-		userOrder.setOrderId(courseLove.getEvaluationId());
-		userOrder.setAmount(1);
-		ProcessResult ret  = plusUserOrderAmount(evaluationCenter, userOrder);
-		if(ret.getRetCode()!=0)
-		{
-			logger.error("course Love error:" + userOrder.toString());
-		}
-		userOrder = new UserOrder();
-		userOrder.setCategory("courseLove");
-		userOrder.setUserId(courseLove.getCreaterUserId());
-		//userOrder.setCreateTime();
-		userOrder.setOrderId(courseLove.getEvaluationId());
-		userOrder.setAmount(1);
-		ret=this.saveUserOrder(evaluationCenter, userOrder);
-		if(ret.getRetCode()!=0)
-		{
-			logger.error("course Love save user error:" + userOrder.toString());
-		}
-		return ControllerUtils.getSuccessResponse(null);
-		
-		
-	}	
+	
 	
 	/**
 	 * 
 	 * @param courseEvaluation
 	 * @return
 	 */
-	public ProcessResult configureEvaluation(CourseEvaluation courseEvaluation) {
+	public ProcessResult submitQuestion(CourseQuestion courseQuestion) {
 		
-		if(StringUtils.isEmpty(courseEvaluation.getCourseId()))
+		/*
+		if(StringUtils.isEmpty(courseQuestion.getCourseId()))
 		{
 			return ControllerUtils.getErrorResponse(EvaluationErrorConst.RESULT_FAILURE_CourseIdisNull, "course id is null");
 		}
-		SecurityUser securityUser =getUserInfo(courseEvaluation.getCreaterUserId());
+		SecurityUser securityUser =getUserInfo(courseQuestion.getCreaterUserId());
 		if(securityUser!=null)
 		{
-			courseEvaluation.setCreaterAvatar(securityUser.getAvatar());
-			courseEvaluation.setCreaterUserName(securityUser.getDisplayName());
+			courseQuestion.setCreaterAvatar(securityUser.getAvatar());
+			courseQuestion.setCreaterUserName(securityUser.getDisplayName());
 			
-			//courseEvaluation.setCreaterLevel(securityUser.get);
 		}
 		else
 		{
@@ -106,7 +69,7 @@ public class CourseEvaluationService extends OrderClientService{
 		
 		UserOrder userOrder = new UserOrder();
 		userOrder.setCategory("courseEval");
-		userOrder.setUserId(courseEvaluation.getCourseId());
+		userOrder.setUserId(courseQuestion.getCourseId());
 		
 		if(courseEvaluation.isReply())
 		{
@@ -140,38 +103,24 @@ public class CourseEvaluationService extends OrderClientService{
 			ret.setResponseInfo(userOrder);
 		}
 		return ret;
+		*/
+		return null;
 	}
+
 	
-	
-	
-	protected CourseEvaluation configureReply(CourseEvaluation courseEvaluation)
-	{
+	public String createQuestionId(Date createTime) {
 		
-		return null;
+		SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
+		String times = format.format(createTime);
+		return createQuestionIdbyTime(times,false);
 	}
-
-	
-	public Date getReplayCreateDate(String parentEvaluationId)
-	{
-
-		try {
-			String times = parentEvaluationId.substring(0, 14);
-			SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
-			return format.parse(times);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
 	/**
 	 * 创建回复的评价ID
 	 * 
 	 * @param parentEvaluationId
 	 * @return
 	 */
-	public String createReplyEvaluationId(String parentEvaluationId,boolean isReply) {
+	public String createQuestionIdbyTime(String parentQuestionId,boolean isReply) {
 		// 生成10到99之间的随机数
 		int randNumber = rand.nextInt(89) + 10;
 
@@ -179,7 +128,7 @@ public class CourseEvaluationService extends OrderClientService{
 		/**
 		 * 插入YYYYMMDDmmHiSS
 		 */
-		evaluationBuff.append(parentEvaluationId.substring(0, 14));
+		evaluationBuff.append(parentQuestionId.substring(0, 14));
 		evaluationBuff.append("-");
 		if(isReply)
 		{
@@ -198,24 +147,11 @@ public class CourseEvaluationService extends OrderClientService{
 		 */
 		
 		evaluationBuff.append("-");
-		evaluationBuff.append(evaluationCenterNodeId);
+		evaluationBuff.append(questionNodeId);
 		evaluationBuff.append("-");
 		evaluationBuff.append(randNumber);
-
 		return evaluationBuff.toString();
 	}
-	/**
-	 * 根据创建时间获取ID
-	 * @param createTime
-	 * @return
-	 */
-	public String createEvaluationId(Date createTime) {
-	
-		SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
-		String times = format.format(createTime);
-		return createReplyEvaluationId(times,false);
-	}
-	
 	
 	public SecurityUser getUserInfo(String userId)
 	{
@@ -233,4 +169,5 @@ public class CourseEvaluationService extends OrderClientService{
 		}
 		return null;
 	}
+
 }

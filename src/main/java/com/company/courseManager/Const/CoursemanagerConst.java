@@ -25,6 +25,12 @@ public class CoursemanagerConst {
 	public static final int RESULT_FAILURE_COURSEPRICE = RESULT_FAILURE+3;
 	public static final String RESULT_FAILURE_STRING_COURSEPRICE = "course price large than all class";
 	
+	public static final int RESULT_FAILURE_COURSTeacherSTAT = RESULT_FAILURE+4;
+	public static final String RESULT_FAILURE_STRING_TeacherSTAT = "course teacher amount stat lock error";
+	
+	public static final int RESULT_FAIL_NotExitCourseTeaRedsAmount = RESULT_FAILURE+5;
+	public static final String RESULT_FAIL_STRING_FAIL_NotExitCourseTeaRedsAmount = "not exist course teacher amount in redis";
+	
 	
 	public static final String Rsa_private_key = "_private_key";
 	public static final String Rsa_public_key = "_public_key";

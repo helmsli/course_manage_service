@@ -25,6 +25,7 @@ import com.company.courseManager.teacher.domain.TeacherInfo;
 import com.company.courseManager.teacher.domain.TeacherInfoResponse;
 import com.company.courseManager.teacher.domain.UserOrderQueryResult;
 import com.company.courseManager.teacher.service.TeacherCourseManager;
+import com.company.courseManager.teacher.service.TeacherCourseStatService;
 import com.company.coursestudent.domain.Classbuyerorder;
 import com.company.coursestudent.domain.DraftDocument;
 import com.company.coursestudent.domain.StudentBuyOrder;
@@ -65,6 +66,8 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 	@Resource(name="courseStudentService")
 	private CourseStudentService courseStudentService;
 	
+	@Resource(name="teacherCourseStatService")
+	private TeacherCourseStatService teacherCourseStatService;
 	
 	@Value("${course.searchUrl}")
 	private String courseSearchUrl;
@@ -348,19 +351,39 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		
 		//end 删除草稿
 		
+		//查询草稿信息，如果草稿已经存在，则不登记道系统
+		
+		
 		userOrder = new UserOrder();
 		userOrder.setCategory(category);
 		if(courses.getCreateTime()!=null)
 		{
 			userOrder.setCreateTime(courses.getCreateTime());
 		}
-		userOrder.setOrderData(JsonUtil.toJson(courses));
 		userOrder.setOrderId(courses.getCourseId());
 		userOrder.setStatus(UserOrder.STATUS_FinishOrder);
 		userOrder.setUserId(courses.getOwner());
 		userOrder.setConstCreateTime();
+		userOrder.setOrderData(JsonUtil.toJson(courses));
+		
 		result  = restTemplate.postForObject(courseUserDbWriteUrl + "/" +  category+ "/" + userOrder.getUserId() + "/configUserOrder" ,userOrder ,ProcessResult.class);
+		if(result.getRetCode()==0)
+		{
+			result = plusTeacherCourseAmount(courses.getOwner(),courses.getCourseId());		
+				
+		}	
+		
 		return result;
+	}
+	/**
+	 * 教师发布课程，增加教师发布课程的计数
+	 * @param userId
+	 * @param courseId
+	 * @return
+	 */
+	protected ProcessResult plusTeacherCourseAmount(String userId,String courseId)
+	{
+		return teacherCourseStatService.plusTeacherCourseAmountOne(userId, courseId);
 	}
 	
 	/**
