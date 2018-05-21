@@ -39,6 +39,7 @@ public class Classbuyerorder implements Serializable {
 	/** 教师名称. */
 	private String teacherName;
 
+	
 	/**
 	 * Constructor.
 	 */
@@ -111,5 +112,6 @@ public class Classbuyerorder implements Serializable {
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
 	}
+
 	
 }

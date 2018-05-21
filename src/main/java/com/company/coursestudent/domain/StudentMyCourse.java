@@ -6,10 +6,13 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.company.courseManager.domain.CourseTeacher;
 import com.company.courseManager.teacher.domain.CourseClassPublish;
+import com.company.courseManager.teacher.domain.TeacherCounter;
 import com.company.videodb.domain.Courses;
 
 public class StudentMyCourse {
 	private CourseTeacher courseTeacher;
+	private TeacherCounter teacherCounter;
+	private CourseCounter courseCounter;
 	private List<CourseClassPublish> courseClass;
 	
 	public CourseTeacher getCourseTeacher() {
@@ -24,7 +27,22 @@ public class StudentMyCourse {
 	public void setCourseClass(List<CourseClassPublish> courseClass) {
 		this.courseClass = courseClass;
 	}
+	
+	
+	public TeacherCounter getTeacherCounter() {
+		return teacherCounter;
+	}
+	public void setTeacherCounter(TeacherCounter teacherCounter) {
+		this.teacherCounter = teacherCounter;
+	}
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
 	}
+	public CourseCounter getCourseCounter() {
+		return courseCounter;
+	}
+	public void setCourseCounter(CourseCounter courseCounter) {
+		this.courseCounter = courseCounter;
+	}
+	
 }

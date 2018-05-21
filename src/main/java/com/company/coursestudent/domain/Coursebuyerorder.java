@@ -47,7 +47,9 @@ public class Coursebuyerorder implements Serializable {
 	private Date createTime;
 
 	private String feeType="CNY";
-	
+
+	private String techerUserId;
+
 	/**
 	 * Constructor.
 	 */
@@ -149,6 +151,16 @@ public class Coursebuyerorder implements Serializable {
 			return calenCreate.getTime();
 		}
 		return sourceDate;
+	}
+
+	
+	
+	public String getTecherUserId() {
+		return techerUserId;
+	}
+
+	public void setTecherUserId(String techerUserId) {
+		this.techerUserId = techerUserId;
 	}
 
 	public void setCreateTime(Date createTime) {

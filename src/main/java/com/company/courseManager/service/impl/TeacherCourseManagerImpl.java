@@ -21,6 +21,7 @@ import com.company.courseManager.courseevaluation.service.CourseEvaluationServic
 import com.company.courseManager.domain.CourseSearch;
 import com.company.courseManager.domain.CourseTeacher;
 import com.company.courseManager.teacher.domain.CourseClassPublish;
+import com.company.courseManager.teacher.domain.TeacherCounter;
 import com.company.courseManager.teacher.domain.TeacherInfo;
 import com.company.courseManager.teacher.domain.TeacherInfoResponse;
 import com.company.courseManager.teacher.domain.UserOrderQueryResult;
@@ -69,6 +70,7 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 	@Resource(name="teacherCourseStatService")
 	private TeacherCourseStatService teacherCourseStatService;
 	
+	
 	@Value("${course.searchUrl}")
 	private String courseSearchUrl;
 	
@@ -77,6 +79,7 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 	
 	@Value("${course.hotCourseSearchUrl}")
 	private String hotCourseSearchUrl;
+	
 	
 	
 	private Logger logger = LoggerFactory.getLogger(getClass());
@@ -638,6 +641,36 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		studentMyCourse.setCourseTeacher(course);
 		studentMyCourse.setCourseClass(publishList);
 		processResult.setResponseInfo(studentMyCourse);
+		/**
+		 * 获取课程学生数和老师学生数
+		 */
+		try {
+			TeacherCounter teacherCounter = new TeacherCounter();
+			studentMyCourse.setTeacherCounter(teacherCounter);
+			teacherCourseStatService.getCourseStudentCounter(courseId);
+			
+			ProcessResult ret = teacherCourseStatService.getTeacherStudentCounter(studentMyCourse.getCourseTeacher().getTeacherInfo().getuserId());
+			
+			if(ret.getRetCode()==0)
+			{
+				Long amountValue = (Long)ret.getResponseInfo();
+				teacherCounter.setStudentAmount((int)(amountValue.longValue()));
+			}
+			
+			ret = teacherCourseStatService.getTeacherCourseCounter(studentMyCourse.getCourseTeacher().getTeacherInfo().getuserId());
+			
+			
+			if(ret.getRetCode()==0)
+			{
+				Long amountValue = (Long)ret.getResponseInfo();
+				teacherCounter.setCourseAmount((int)amountValue.longValue());
+			}
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return processResult;
 	}
 

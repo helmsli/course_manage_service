@@ -21,23 +21,38 @@ public class CourseCounterConst {
 	{
 		return "teacher:" + userId;
 	}
-	public static String getTeacherCourseCourseId(String courseId)
+	public static String getTeacherCourseCourseId()
 	{
-		return "course:" + courseId;
+		return "teacherCourse";
 	}
 	//定义教师的学生信息的courter
-	public static String getTeacherStudentCounterKey(String teacherUserId,String userId,String courseId)
+	public static String getTeacherStudentCounterKey(String teacherUserId,String userId)
 	{
-		return "course:" + teacherUserId + ":" + userId + ":" +courseId;
+		return "teacherStud:" + teacherUserId + ":" + userId ;
 	}
 	
 	public static String getTeacherStudentUserId(String userId)
 	{
 		return "teacher:" + userId;
 	}
-	public static String getTeacherStudentCourseId(String courseId)
+	public static String getTeacherStudentAmountId()
 	{
-		return "student:" + courseId;
+		return "student:";
 	}
 	
+	
+	//定义课程的学生信息的courter
+		public static String getCourseCounterKey(String userId,String courseId)
+		{
+			return "courseStudent:"  + userId + ":" +courseId;
+		}
+		
+		public static String getCourseStudentUserId(String courseId)
+		{
+			return "course:" + courseId;
+		}
+		public static String getCourseStudentAmountId()
+		{
+			return "studentCourse";
+		}
 }

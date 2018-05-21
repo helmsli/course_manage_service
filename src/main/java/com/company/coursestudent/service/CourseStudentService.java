@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import com.company.courseManager.Const.CoursemanagerConst;
 import com.company.courseManager.domain.CourseSearch;
 import com.company.courseManager.teacher.service.TeacherCourseManager;
+import com.company.courseManager.teacher.service.TeacherCourseStatService;
 import com.company.coursestudent.domain.Classbuyerorder;
 import com.company.coursestudent.domain.StudentBuyOrder;
 import com.company.coursestudent.domain.StudentConst;
@@ -29,6 +30,7 @@ import com.company.platform.order.OrderClientService;
 import com.company.platform.order.OrderPayResult;
 import com.company.platform.order.OrderPayResultInfo;
 import com.company.platform.order.OrderWillPayRequest;
+import com.company.platform.order.StatCounterDbService;
 import com.company.userOrder.domain.UserOrder;
 import com.company.videodb.domain.CourseClass;
 import com.company.videodb.domain.Courses;
@@ -48,6 +50,10 @@ public class CourseStudentService extends OrderClientService {
 
 	@Resource(name = "weChatScanPayService")
 	private WeChatScanPayService weChatScanPayService;
+	
+	@Resource(name="teacherCourseStatService")
+	private TeacherCourseStatService teacherCourseStatService;
+
 	
 	/**
 	 * 钩锁
@@ -120,6 +126,7 @@ public class CourseStudentService extends OrderClientService {
 
 		Courses courses = (Courses) processResult.getResponseInfo();
 		studentBuyOrder.setTitle(courses.getTitle());
+		studentBuyOrder.setTecherUserId(courses.getOwner());
 		if (StringUtils.isEmpty(studentBuyOrder.getTitle())) {
 			studentBuyOrder.setTitle("课程");
 		}
@@ -167,7 +174,7 @@ public class CourseStudentService extends OrderClientService {
 						"course real money error:need money " + totalMoney);
 			}
 		}
-
+		processResult.setResponseInfo(courses);
 		return ControllerUtils.getSuccessResponse(processResult);
 	}
 
@@ -248,6 +255,9 @@ public class CourseStudentService extends OrderClientService {
 		}
 		userBuyCourse.setUpdateTime(Calendar.getInstance().getTime());
 		userBuyCourse.setOrderData(JsonUtil.toJson(newStudentBuyOrder));
+		//后续需要放在订单的后处理重
+		teacherCourseStatService.plusTeacherStudentAmountOne(newStudentBuyOrder.getTecherUserId(),newStudentBuyOrder.getUserId());
+		teacherCourseStatService.plusCourseStudentAmountOne(newStudentBuyOrder.getUserId(), newStudentBuyOrder.getCourseId());
 		processResult = this.saveUserOrder(studentUserDbWriteUrl, userBuyCourse);
 		return processResult;
 	}
@@ -472,6 +482,7 @@ public class CourseStudentService extends OrderClientService {
 		if (processResult.getRetCode() != StudentConst.RESULT_Success) {
 			return processResult;
 		}
+		Courses thisCourse = (Courses)processResult.getResponseInfo();
 
 		// 如果不是免费的课程
 		if (studentBuyOrder.getTotalRealPrice() != 0) {
