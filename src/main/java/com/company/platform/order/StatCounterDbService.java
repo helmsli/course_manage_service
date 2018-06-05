@@ -67,4 +67,11 @@ public class StatCounterDbService {
 		result  = restTemplate.postForObject(counterDbCenterUrl + "/" +  category +"/plusOne"  ,statCounter,ProcessResult.class);
 		return result;
 	}
+	public ProcessResult plusGreaterOne(String category,StatCounter statCounter)
+	{
+		
+		ProcessResult result = null;
+		result  = restTemplate.postForObject(counterDbCenterUrl + "/" +  category +"/plusGreaterOne"  ,statCounter,ProcessResult.class);
+		return result;
+	}
 }

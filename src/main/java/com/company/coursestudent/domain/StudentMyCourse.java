@@ -15,6 +15,17 @@ public class StudentMyCourse {
 	private CourseCounter courseCounter;
 	private List<CourseClassPublish> courseClass;
 	
+	private String courseScore;
+	private String courseStarPerson;
+	public StudentMyCourse()
+	{
+		CourseCounter courseCounter = new CourseCounter();
+		courseCounter.setStudentAmount(0);
+		this.setCourseCounter(courseCounter);
+		this.setCourseStarPerson("0");
+	}
+	
+	
 	public CourseTeacher getCourseTeacher() {
 		return courseTeacher;
 	}
@@ -44,5 +55,22 @@ public class StudentMyCourse {
 	public void setCourseCounter(CourseCounter courseCounter) {
 		this.courseCounter = courseCounter;
 	}
+	public String getCourseScore() {
+		return courseScore;
+	}
+	public void setCourseScore(String courseScore) {
+		this.courseScore = courseScore;
+	}
+
+
+	public String getCourseStarPerson() {
+		return courseStarPerson;
+	}
+
+
+	public void setCourseStarPerson(String courseStarPerson) {
+		this.courseStarPerson = courseStarPerson;
+	}
+	
 	
 }

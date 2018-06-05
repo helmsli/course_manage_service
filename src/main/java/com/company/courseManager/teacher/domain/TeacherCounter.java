@@ -12,6 +12,10 @@ public class TeacherCounter implements Serializable  {
 	private int studentAmount;
 	//老师课程数量
 	private int courseAmount;
+	/**
+	 * 老师的综合评分
+	 */
+	private String score;
 	public int getStudentAmount() {
 		return studentAmount;
 	}
@@ -23,6 +27,12 @@ public class TeacherCounter implements Serializable  {
 	}
 	public void setCourseAmount(int courseAmount) {
 		this.courseAmount = courseAmount;
+	}
+	public String getScore() {
+		return score;
+	}
+	public void setScore(String score) {
+		this.score = score;
 	}
 	
 	

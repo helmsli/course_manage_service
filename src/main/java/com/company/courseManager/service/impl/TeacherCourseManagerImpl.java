@@ -28,6 +28,7 @@ import com.company.courseManager.teacher.domain.UserOrderQueryResult;
 import com.company.courseManager.teacher.service.TeacherCourseManager;
 import com.company.courseManager.teacher.service.TeacherCourseStatService;
 import com.company.coursestudent.domain.Classbuyerorder;
+import com.company.coursestudent.domain.CourseCounter;
 import com.company.coursestudent.domain.DraftDocument;
 import com.company.coursestudent.domain.StudentBuyOrder;
 import com.company.coursestudent.domain.StudentConst;
@@ -286,8 +287,10 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 			Courses course = JsonUtil.fromJson(maps.get(courseKey), Courses.class);
 			
 			ProcessResult processResult =  publishCourseDb(category,orderid,course);
+			logger.debug("publishCourseDb result:" + processResult.toString());
 			if(processResult.getRetCode()==0)
 			{
+				courseRedisManager.delCourse(course.getCourseId());
 				return this.publishCourseToSearch(course);
 			}
 			return processResult;
@@ -303,6 +306,7 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		ProcessResult result = null;
 		//发布课程到搜索引擎
 		result  = restTemplate.postForObject(courseSearchUrl + "/saveCourse"  ,courseSearch ,ProcessResult.class);
+		logger.debug("saveto course:" + result.toString());
 		if(result.getRetCode()!=0)
 		{
 			return result;
@@ -313,7 +317,7 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 			result  = restTemplate.postForObject(newCourseSearchUrl + "/saveCourse"  ,courseSearch ,ProcessResult.class);
 			
 		}
-		
+		logger.debug(result.toString());
 		return result;
 	}
 	
@@ -372,8 +376,8 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		result  = restTemplate.postForObject(courseUserDbWriteUrl + "/" +  category+ "/" + userOrder.getUserId() + "/configUserOrder" ,userOrder ,ProcessResult.class);
 		if(result.getRetCode()==0)
 		{
-			result = plusTeacherCourseAmount(courses.getOwner(),courses.getCourseId());		
-				
+			plusTeacherCourseAmount(courses.getOwner(),courses.getCourseId());		
+			//logger.debug("plusTeacherCourseAmount:" + result.toString() + ":" + courses.getOwner()+ ":" + courses.getCourseId());	
 		}	
 		
 		return result;
@@ -666,11 +670,59 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 				teacherCounter.setCourseAmount((int)amountValue.longValue());
 			}
 			
+			double teacherScore= teacherCourseStatService.getTeacherScore(studentMyCourse.getCourseTeacher().getTeacherInfo().getuserId());
+			DecimalFormat df=new DecimalFormat("#.##"); 
+			teacherCounter.setScore(df.format(teacherScore));
+			
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
+		//获取课程的评价数量
+		
+		try
+		{
+			long courseStarCounter = teacherCourseStatService.getCourseStarCounter(courseId);
+		 
+			studentMyCourse.setCourseStarPerson(String.valueOf(courseStarCounter));
+		}
+		catch(Exception e)
+		{
+			logger.error("", e);
+		}
+		//获取学生的课程的评价
+		try
+		{
+			double courseScore = teacherCourseStatService.getCourseScore(courseId);
+			DecimalFormat df=new DecimalFormat("#.##"); 
+			studentMyCourse.setCourseScore(df.format(courseScore));
+		}
+		catch(Exception e)
+		{
+			
+		}
+		//获取课程的学生数目
+		try
+		{
+			ProcessResult ret = teacherCourseStatService.getCourseStudentCounter(courseId);
+			if(ret.getRetCode()==0)
+			{
+				Long amountValue = (Long)ret.getResponseInfo();
+				CourseCounter courseCounter = new CourseCounter();
+				courseCounter.setStudentAmount((int)amountValue.longValue());
+				studentMyCourse.setCourseCounter(courseCounter);
+			}
+			else
+			{
+				logger.debug(ret.toString());
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 		return processResult;
 	}
 
