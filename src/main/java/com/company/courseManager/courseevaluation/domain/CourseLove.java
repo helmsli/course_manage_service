@@ -1,6 +1,7 @@
 package com.company.courseManager.courseevaluation.domain;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 
 public class CourseLove implements Serializable {
@@ -22,6 +23,10 @@ public class CourseLove implements Serializable {
 	private String createrAvatar;
 	
 	
+	public CourseLove()
+	{
+		this.setCreateTime(Calendar.getInstance().getTime());
+	}
 	public String getEvaluationId() {
 		return evaluationId;
 	}

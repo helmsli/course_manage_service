@@ -29,7 +29,7 @@ public class TeacherInfo implements Serializable {
 	 */
 	private String title;
 	/**
-	 * 证书
+	 * 证书，，分割多个证书
 	 */
 	private String certificate;
 	

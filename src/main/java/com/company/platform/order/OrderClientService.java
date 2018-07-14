@@ -19,6 +19,7 @@ import com.xinwei.nnl.common.domain.JsonRequest;
 import com.xinwei.nnl.common.domain.ProcessResult;
 import com.xinwei.nnl.common.util.JsonUtil;
 import com.xinwei.orderDb.domain.OrderFlow;
+import com.xinwei.orderDb.domain.OrderMain;
 import com.xinwei.orderDb.domain.OrderMainContext;
 
 public class OrderClientService {
@@ -167,6 +168,32 @@ public class OrderClientService {
 		
 	}
 	
+	public ProcessResult getOrder(String category, String orderId) {
+		String dbId = OrderMainContext.getDbId(orderId);
+		ProcessResult processResult = restTemplate.postForObject(orderServiceUrl + "/" + category + "/" + dbId + "/" + orderId + "/getOrder", 
+				null, ProcessResult.class);
+		if (processResult.getRetCode() == RESULT_Success) {
+			processResult.setResponseInfo(JsonUtil.fromJson((String) processResult.getResponseInfo(), OrderMain.class));
+		}
+		return processResult;
+	}
+	public ProcessResult manualJumpToNextStep(String category, String orderId, String retCode) {
+		// 获取orderMain
+		ProcessResult processResult = this.getOrder(category, orderId);
+		if (processResult.getRetCode() != RESULT_Success) {
+			return processResult;
+		}
+		String dbId = OrderMainContext.getDbId(orderId);
+		OrderMain orderMain = (OrderMain) processResult.getResponseInfo();
+		OrderFlow orderFlow = new OrderFlow();
+		orderFlow.setOrderId(orderId);
+		orderFlow.setFlowId(orderMain.getFlowId());
+		orderFlow.setStepId(orderMain.getCurrentStep());
+		orderFlow.setCurrentStatus(orderMain.getCurrentStatus());
+		orderFlow.setRetCode(String.valueOf(retCode));
+		processResult = manualJumpToNextStep(category, dbId, orderId, orderMain.getCurrentStep(), orderMain.getFlowId(), orderMain.getCurrentStatus(), retCode);
+		return processResult;
+	}
 	
 	/**
 	 * 用于步骤跳转
