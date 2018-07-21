@@ -2,6 +2,7 @@ package com.company.courseManager.teacher.service;
 
 import com.company.courseManager.teacher.domain.TeacherInfo;
 import com.company.coursestudent.domain.DraftDocument;
+import com.company.videodb.domain.Courses;
 import com.xinwei.nnl.common.domain.ProcessResult;
 
 public interface TeacherCourseManager {
@@ -12,8 +13,10 @@ public interface TeacherCourseManager {
 	 * @return
 	 */
 	public ProcessResult createDraftDoc(DraftDocument draftDocument);
+
 	
-	
+	public ProcessResult clearCourse(Courses course);
+
 	/**
 	 * 客户端发布课程到课程库
 	 * @param draftDocument

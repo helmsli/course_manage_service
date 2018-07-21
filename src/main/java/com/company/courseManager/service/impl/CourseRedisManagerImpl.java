@@ -20,7 +20,7 @@ public class CourseRedisManagerImpl {
 	@Resource (name = "redisTemplate")
 	protected RedisTemplate<Object, Object> redisTemplate;
 	
-	@Value("${course.cache.expireHours:120}")
+	@Value("${course.cache.expireHours:72}")
 	private int courseCacheExpireHours;
 	
 	

@@ -83,6 +83,22 @@ public class CManagerAccessController {
 		return processResult;
 	}
 	
+	
+	@RequestMapping(method = RequestMethod.POST,value = "/clearCourse")
+	public  ProcessResult clearCourse(@PathVariable String category,@RequestBody Courses course) {
+		ProcessResult processResult = new ProcessResult();
+		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
+		try {
+			processResult =teacherCourseManager.clearCourse(course);
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			saveExceptionToResult(processResult,e);
+			
+		}
+		return processResult;
+	}
 	/**
 	 * 将数据从教师的课程发布到学员库
 	 * @param category
@@ -176,7 +192,7 @@ public class CManagerAccessController {
 		ProcessResult processResult = new ProcessResult();
 		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
 		try {
-			teacherInfo.setuserId(userId);
+			teacherInfo.setUserId(userId);
 			processResult =teacherCourseManager.configureTeacher(teacherInfo);
 			
 		} catch (Exception e) {
@@ -197,7 +213,7 @@ public class CManagerAccessController {
 		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
 		try {
 			TeacherInfo teacherInfo = new TeacherInfo();
-			teacherInfo.setuserId(userId);
+			teacherInfo.setUserId(userId);
 			processResult =teacherCourseManager.queryTeacher(teacherInfo);
 			
 		} catch (Exception e) {
@@ -219,7 +235,7 @@ public class CManagerAccessController {
 			processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
 			try {
 				TeacherInfo teacherInfo = new TeacherInfo();
-				teacherInfo.setuserId(userId);
+				teacherInfo.setUserId(userId);
 				processResult =teacherCourseManager.queryRecommandTeacher(userId);
 				
 			} catch (Exception e) {

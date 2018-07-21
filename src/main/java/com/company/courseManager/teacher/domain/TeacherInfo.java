@@ -7,6 +7,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 public class TeacherInfo implements Serializable {
 	private String userId;
 	
+	private String category;
 	
 	/**
 	 * 教师照
@@ -45,14 +46,6 @@ public class TeacherInfo implements Serializable {
 	private String accomplishment;
 
 
-	public String getuserId() {
-		return userId;
-	}
-
-
-	public void setuserId(String userId) {
-		this.userId = userId;
-	}
 
 
 	public String getPhoto() {
@@ -133,6 +126,30 @@ public class TeacherInfo implements Serializable {
 	public void setAccomplishment(String accomplishment) {
 		this.accomplishment = accomplishment;
 	}
+	
+	
+
+
+	public String getUserId() {
+		return userId;
+	}
+
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+
+	public String getCategory() {
+		return category;
+	}
+
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
 	}

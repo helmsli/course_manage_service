@@ -173,7 +173,7 @@ public class CourseEvaluationService extends OrderClientService{
 		{
 			CourseTeacher courses =(CourseTeacher) ret.getResponseInfo();
 			;
-			teacherCourseStatService.plusTeacherScore(courses.getTeacherInfo().getuserId(), startLevel, starUserId, courseId);
+			teacherCourseStatService.plusTeacherScore(courses.getTeacherInfo().getUserId(), startLevel, starUserId, courseId);
 		}
 		else
 		{
