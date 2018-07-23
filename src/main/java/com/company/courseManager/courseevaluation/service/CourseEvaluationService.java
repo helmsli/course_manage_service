@@ -11,6 +11,7 @@ import javax.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -41,9 +42,6 @@ public class CourseEvaluationService extends OrderClientService{
 	@Value("${course.evaluationCenter}")
 	private String evaluationCenter;
 	
-	@Value("${security.userCenter}")
-	private String securityUserCenter;
-	
 	@Value("${course.evaluationCenter.nodeId:1}")
 	private String evaluationCenterNodeId;
 	
@@ -53,8 +51,11 @@ public class CourseEvaluationService extends OrderClientService{
 	@Resource(name="teacherCourseManager")
 	private TeacherCourseManager teacherCourseManager;
 	
+	@Autowired
+	private UserService userService;
 	Random rand = new Random();
 
+	
 	
 	public ProcessResult configureCourseLove(CourseLove courseLove) {
 		if(StringUtils.isEmpty(courseLove.getEvaluationId())||StringUtils.isEmpty(courseLove.getCourseId())||StringUtils.isEmpty(courseLove.getCreaterUserId()))
@@ -101,7 +102,7 @@ public class CourseEvaluationService extends OrderClientService{
 		{
 			return ControllerUtils.getErrorResponse(EvaluationErrorConst.RESULT_FAILURE_CourseIdisNull, "course id is null");
 		}
-		SecurityUser securityUser =getUserInfo(courseEvaluation.getCreaterUserId());
+		SecurityUser securityUser =userService.getUserInfo(courseEvaluation.getCreaterUserId());
 		if(securityUser!=null)
 		{
 			courseEvaluation.setCreaterAvatar(securityUser.getAvatar());
@@ -256,20 +257,5 @@ public class CourseEvaluationService extends OrderClientService{
 	}
 	
 	
-	public SecurityUser getUserInfo(String userId)
-	{
-		//{routerId}/getUserInfoById
-		ProcessResult result = null;
-		SecurityUser securityUser = new SecurityUser();
-		
-		securityUser.setUserId(Long.parseLong(userId));
-		logger.debug(this.securityUserCenter + "/" +  userId+ "/getUserInfoById");
-		result  = restTemplate.postForObject(this.securityUserCenter + "/" +  userId+ "/getUserInfoById" ,securityUser ,ProcessResult.class);
-		if(result.getRetCode()==0)
-		{
-			String ls = JsonUtilSuper.toJson(result.getResponseInfo());
-			return JsonUtilSuper.fromJson(ls, SecurityUser.class);
-		}
-		return null;
-	}
+	
 }

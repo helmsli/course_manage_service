@@ -153,21 +153,6 @@ private Logger logger = LoggerFactory.getLogger(getClass());
 		return evaluationBuff.toString();
 	}
 	
-	public SecurityUser getUserInfo(String userId)
-	{
-		//{routerId}/getUserInfoById
-		ProcessResult result = null;
-		SecurityUser securityUser = new SecurityUser();
-		
-		securityUser.setUserId(Long.parseLong(userId));
-		logger.debug(this.securityUserCenter + "/" +  userId+ "/getUserInfoById");
-		result  = restTemplate.postForObject(this.securityUserCenter + "/" +  userId+ "/getUserInfoById" ,securityUser ,ProcessResult.class);
-		if(result.getRetCode()==0)
-		{
-			String ls = JsonUtil.toJson(result.getResponseInfo());
-			return JsonUtil.fromJson(ls, SecurityUser.class);
-		}
-		return null;
-	}
+	
 
 }

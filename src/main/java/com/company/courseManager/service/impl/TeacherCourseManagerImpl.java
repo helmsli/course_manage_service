@@ -9,22 +9,21 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
 import com.company.courseManager.Const.CoursemanagerConst;
-import com.company.courseManager.courseevaluation.service.CourseEvaluationService;
+import com.company.courseManager.courseevaluation.service.UserService;
 import com.company.courseManager.domain.CourseSearch;
 import com.company.courseManager.domain.CourseTeacher;
 import com.company.courseManager.teacher.domain.CourseClassPublish;
 import com.company.courseManager.teacher.domain.TeacherCounter;
 import com.company.courseManager.teacher.domain.TeacherInfo;
 import com.company.courseManager.teacher.domain.TeacherInfoResponse;
-import com.company.courseManager.teacher.domain.UserOrderQueryResult;
 import com.company.courseManager.teacher.service.TeacherCourseManager;
 import com.company.courseManager.teacher.service.TeacherCourseStatService;
 import com.company.coursestudent.domain.Classbuyerorder;
@@ -53,8 +52,6 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 	@Value("${course.serviceDbWriteUrl}")
 	private String courseDbWriteUrl;
 
-	@Resource(name = "courseEvaluationService")
-	private CourseEvaluationService courseEvaluationService;
 
 	@Value("${course.serviceDbReadUrl}")
 	private String courseDbReadUrl;
@@ -71,6 +68,8 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 	@Resource(name = "teacherCourseStatService")
 	private TeacherCourseStatService teacherCourseStatService;
 
+	@Autowired
+	private UserService userService;
 	@Value("${course.searchUrl}")
 	private String courseSearchUrl;
 
@@ -932,7 +931,7 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		if (processResult.getRetCode() == 0) {
 			UserOrder UserOrder = (UserOrder) processResult.getResponseInfo();
 			TeacherInfoResponse teacherRet = JsonUtil.fromJson(UserOrder.getOrderData(), TeacherInfoResponse.class);
-			SecurityUser securityUser = courseEvaluationService.getUserInfo(teacherRet.getUserId());
+			SecurityUser securityUser = userService.getUserInfo(teacherRet.getUserId());
 			securityUser.setPassword(null);
 			securityUser.setOldPasswordExt(null);
 			securityUser.setPasswordExt("");
@@ -944,7 +943,7 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		// 用户不存在
 		else if (processResult.getRetCode() == 10002) {
 			TeacherInfoResponse teacherRet = new TeacherInfoResponse();
-			SecurityUser securityUser = courseEvaluationService.getUserInfo(teacherInfo.getUserId());
+			SecurityUser securityUser = userService.getUserInfo(teacherInfo.getUserId());
 			securityUser.setPassword(null);
 			securityUser.setOldPasswordExt(null);
 			securityUser.setPasswordExt("");
@@ -979,7 +978,7 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 
 				TeacherInfoResponse teacharResponse = JsonUtil.fromJson(userOrderRet.getOrderData(),
 						TeacherInfoResponse.class);
-				SecurityUser securityUser = courseEvaluationService.getUserInfo(teacharResponse.getUserId());
+				SecurityUser securityUser = userService.getUserInfo(teacharResponse.getUserId());
 				securityUser.setPassword(null);
 				securityUser.setOldPasswordExt(null);
 				securityUser.setPasswordExt("");
@@ -994,4 +993,38 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		return processResult;
 	}
 
+	/**
+	 * 查询老师列表
+	 * @param queryUserOrderRequest
+	 * @return
+	 */
+	public ProcessResult queryTeacherList(QueryUserOrderRequest queryUserOrderRequest) {
+		queryUserOrderRequest.setCategory("teacher");
+		UserOrder userOrder = new UserOrder();
+		queryUserOrderRequest.setStartCreateTime(userOrder.getConstCreateDate());
+		queryUserOrderRequest.setEndCreateTime(userOrder.getConstCreateDate());
+		// userOrder.setOrderData(JsonUtil.toJson(teacherInfo));
+		ProcessResult processResult = this.queryOrdersByUserId(courseUserDbWriteUrl, queryUserOrderRequest);
+		if (processResult.getRetCode() == 0) {
+
+			List<UserOrder> lists = (List<UserOrder>) processResult.getResponseInfo();
+			List<TeacherInfoResponse> listTeacherInfo = new ArrayList<TeacherInfoResponse>();
+			for (UserOrder userOrderRet : lists) {
+
+				TeacherInfoResponse teacharResponse = JsonUtil.fromJson(userOrderRet.getOrderData(),
+						TeacherInfoResponse.class);
+				SecurityUser securityUser = userService.getUserInfo(teacharResponse.getUserId());
+				securityUser.setPassword(null);
+				securityUser.setOldPasswordExt(null);
+				securityUser.setPasswordExt("");
+				securityUser.setCreateSource(null);
+				securityUser.setRoles(null);
+				teacharResponse.setSecurityUser(securityUser);
+				listTeacherInfo.add(teacharResponse);
+			}
+			processResult.setResponseInfo(listTeacherInfo);
+
+		}
+		return processResult;
+	}
 }

@@ -2,6 +2,7 @@ package com.company.courseManager.teacher.service;
 
 import com.company.courseManager.teacher.domain.TeacherInfo;
 import com.company.coursestudent.domain.DraftDocument;
+import com.company.userOrder.domain.QueryUserOrderRequest;
 import com.company.videodb.domain.Courses;
 import com.xinwei.nnl.common.domain.ProcessResult;
 
@@ -98,6 +99,9 @@ public interface TeacherCourseManager {
 	public ProcessResult queryTeacher(TeacherInfo teacherInfo);
 	
 	public ProcessResult queryRecommandTeacher(String userId);
+	
+	public ProcessResult queryTeacherList(QueryUserOrderRequest queryUserOrderRequest);
+
 	
 		
 }

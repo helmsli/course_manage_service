@@ -31,6 +31,13 @@ public class EvaluationController {
 			
 		}
 	}
+	
+	/**
+	 * 课程评价的点赞
+	 * @param courseId
+	 * @param courseLove
+	 * @return
+	 */
 	@PostMapping(value = "{courseId}/addLove")
 	public  ProcessResult addLove(@PathVariable String courseId,@RequestBody CourseLove courseLove) {
 		try {

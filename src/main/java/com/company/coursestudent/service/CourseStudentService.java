@@ -1,5 +1,6 @@
 package com.company.coursestudent.service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -15,13 +16,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.company.courseManager.Const.CourseCounterConst;
 import com.company.courseManager.Const.CoursemanagerConst;
+import com.company.courseManager.courseevaluation.domain.CourseLove;
+import com.company.courseManager.courseevaluation.domain.EvaluationErrorConst;
 import com.company.courseManager.domain.CourseSearch;
 import com.company.courseManager.teacher.service.TeacherCourseManager;
 import com.company.courseManager.teacher.service.TeacherCourseStatService;
 import com.company.coursestudent.domain.Classbuyerorder;
 import com.company.coursestudent.domain.StudentBuyOrder;
 import com.company.coursestudent.domain.StudentConst;
+import com.company.coursestudent.domain.StudentCourseLove;
 import com.company.pay.wechat.domain.WeChatScanPayRequest;
 import com.company.pay.wechat.sdk.WXPayConstants;
 import com.company.pay.wechat.service.WeChatScanPayService;
@@ -30,6 +35,7 @@ import com.company.platform.order.OrderClientService;
 import com.company.platform.order.OrderPayResult;
 import com.company.platform.order.OrderPayResultInfo;
 import com.company.platform.order.OrderWillPayRequest;
+import com.company.platform.order.StatCounter;
 import com.company.platform.order.StatCounterDbService;
 import com.company.userOrder.domain.UserOrder;
 import com.company.videodb.domain.CourseClass;
@@ -54,6 +60,8 @@ public class CourseStudentService extends OrderClientService {
 	@Resource(name="teacherCourseStatService")
 	private TeacherCourseStatService teacherCourseStatService;
 
+	@Resource(name = "statCounterDbService")
+	private StatCounterDbService statCounterDbService;
 	
 	/**
 	 * 钩锁
@@ -464,6 +472,102 @@ public class CourseStudentService extends OrderClientService {
 		processResult = weChatScanPayService.doUnifiedPay(weChatScanPayRequest);
 
 		return processResult;
+	}
+
+	/**
+	 * 学员为自己喜欢的课程点赞
+	 * @param courseLove
+	 * @return
+	 */
+	public ProcessResult configureCourseLove(StudentCourseLove courseLove) {
+		if(StringUtils.isEmpty(courseLove.getCourseId())||StringUtils.isEmpty(courseLove.getUserId()))
+		{
+			return ControllerUtils.getErrorResponse(EvaluationErrorConst.RESULT_FAILURE_ReplyCourseIdisNull, "course id or evaluation is null");
+		}
+		StatCounter statCounter = new StatCounter();
+		statCounter.setUserId(CourseCounterConst.getStudentCourseLoveUserId());
+		statCounter.setAmountId(courseLove.getCourseId());
+		Calendar now = Calendar.getInstance();
+		SimpleDateFormat simpleDataFormat = new SimpleDateFormat("yyyy-MM-ddHH");
+		statCounter.setOwnerKey(courseLove.getUserId() + ":"+simpleDataFormat.format(now.getTime()));
+		ProcessResult ret = this.statCounterDbService.plusOne(CourseCounterConst.Category_course,
+				statCounter);	
+		return ret;
+	}
+	
+	
+	
+	/**
+	 * 获取课程的点赞
+	 * @param courseLove
+	 * @return
+	 */
+	public ProcessResult getCourseLove(StudentCourseLove courseLove) {
+		StatCounter statCounter = new StatCounter();
+		statCounter.setUserId(CourseCounterConst.getStudentCourseLoveUserId());
+		statCounter.setAmountId(courseLove.getCourseId());
+		
+		ProcessResult ret = this.statCounterDbService.getAmount(CourseCounterConst.Category_course,
+				statCounter);
+		if (ret.getRetCode() == 0) {
+			//long amount = Long.parseLong(ret.getResponseInfo().toString());
+		}
+		return ret;
+	}
+
+	
+	/**
+	 * 课程的收藏
+	 * @param courseLove
+	 * @return
+	 */
+	public ProcessResult configureCourseCollection(StudentCourseLove courseLove) {
+		if(StringUtils.isEmpty(courseLove.getCourseId())||StringUtils.isEmpty(courseLove.getUserId()))
+		{
+			return ControllerUtils.getErrorResponse(EvaluationErrorConst.RESULT_FAILURE_ReplyCourseIdisNull, "course id or evaluation is null");
+		}
+		StatCounter statCounter = new StatCounter();
+		statCounter.setUserId(CourseCounterConst.getStudentCourseCollectionUserId());
+		statCounter.setAmountId(courseLove.getCourseId());
+		Calendar now = Calendar.getInstance();
+		SimpleDateFormat simpleDataFormat = new SimpleDateFormat("yyyy-MM-ddHH");
+		statCounter.setOwnerKey(courseLove.getUserId());
+		ProcessResult ret = this.statCounterDbService.plusOne(CourseCounterConst.Category_course,
+				statCounter);
+		if(ret.getRetCode()==StatCounterDbService.Haved_Counter)
+		{
+			return ret;
+		}		
+		ret = teacherCourseManager.getCourse(courseLove.getCourseId());
+		Courses courses = (Courses) ret.getResponseInfo();
+		
+		UserOrder userOrder = new UserOrder();
+		userOrder.setCategory("myCollection");
+		userOrder.setUserId(courseLove.getUserId());
+		userOrder.setOrderId(courseLove.getCourseId());
+		userOrder.setOrderData(JsonUtil.toJson(courses));
+		ret = this.saveUserOrder(studentUserDbWriteUrl, userOrder);
+		return ret;
+	}
+	
+	
+	
+	/**
+	 * 获取课程的点赞
+	 * @param courseLove
+	 * @return
+	 */
+	public ProcessResult getCourseCollection(StudentCourseLove courseLove) {
+		StatCounter statCounter = new StatCounter();
+		statCounter.setUserId(CourseCounterConst.getStudentCourseCollectionUserId());
+		statCounter.setAmountId(courseLove.getCourseId());
+		
+		ProcessResult ret = this.statCounterDbService.getAmount(CourseCounterConst.Category_course,
+				statCounter);
+		if (ret.getRetCode() == 0) {
+			//long amount = Long.parseLong(ret.getResponseInfo().toString());
+		}
+		return ret;
 	}
 
 	public ProcessResult submitBuyOrder(String orderId, StudentBuyOrder studentBuyOrder) {

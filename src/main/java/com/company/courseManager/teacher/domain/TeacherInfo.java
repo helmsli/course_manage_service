@@ -4,7 +4,9 @@ import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class TeacherInfo implements Serializable {
+import com.company.security.domain.SecurityUser;
+
+public class TeacherInfo implements Serializable  {
 	private String userId;
 	
 	private String category;

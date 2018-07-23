@@ -4,7 +4,6 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -13,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,13 +23,12 @@ import com.company.courseManager.Const.CoursemanagerConst;
 import com.company.courseManager.teacher.service.TeacherCourseManager;
 import com.company.coursestudent.domain.StudentBuyOrder;
 import com.company.coursestudent.domain.StudentConst;
+import com.company.coursestudent.domain.StudentCourseLove;
 import com.company.coursestudent.domain.UserInfo;
 import com.company.coursestudent.service.CourseStudentService;
 import com.company.pay.wechat.domain.WeChatScanPayRequest;
 import com.company.platform.controller.rest.ControllerUtils;
-import com.xinwei.nnl.common.domain.JsonRequest;
 import com.xinwei.nnl.common.domain.ProcessResult;
-import com.xinwei.orderDb.domain.OrderMain;
 
 @RestController
 @RequestMapping("/studentCourse")
@@ -59,6 +56,75 @@ public class CStudentCourseController {
 		return processResult;
 	}
 	
+	/**
+	 * 课程点赞
+	 * @param courseId
+	 * @return
+	 */
+	@PostMapping(value = "/{courseId}/addCourseLove")
+	public  ProcessResult addCourseLove(@PathVariable StudentCourseLove courseLove) {
+		ProcessResult processResult = new ProcessResult();
+		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
+		try {
+			return courseStudentService.configureCourseLove(courseLove);
+					
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return processResult;
+	}
+	
+	@PostMapping(value = "/{courseId}/getCourseLove")
+	public  ProcessResult getCourseLove(@PathVariable StudentCourseLove courseLove) {
+		ProcessResult processResult = new ProcessResult();
+		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
+		try {
+			return courseStudentService.getCourseLove(courseLove);
+					
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return processResult;
+	}
+	
+	/**
+	 * 增加课程收藏
+	 * @param courseLove
+	 * @return
+	 */
+	@PostMapping(value = "/{courseId}/addCourseCollect")
+	public  ProcessResult addCourseCollect(@PathVariable StudentCourseLove courseLove) {
+		ProcessResult processResult = new ProcessResult();
+		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
+		try {
+			return courseStudentService.configureCourseCollection(courseLove);
+					
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return processResult;
+	}
+	/**
+	 * 查询课程收藏
+	 * @param courseLove
+	 * @return
+	 */
+	@PostMapping(value = "/{courseId}/getCourseCollect")
+	public  ProcessResult getCourseCollect(@PathVariable StudentCourseLove courseLove) {
+		ProcessResult processResult = new ProcessResult();
+		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
+		try {
+			return courseStudentService.getCourseCollection(courseLove);
+					
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return processResult;
+	}
 	/**
 	 * 查询我的全部课程，如果购买状态为255，其余状态为正常状态
 	 * @param courseId

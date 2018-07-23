@@ -6,6 +6,8 @@ public class CourseCounterConst {
 	 */
 	public static final String Category_Teacher_course="courseTeacher";
 	
+	public static final String Category_course="Course";
+	
 	/**
 	 * 获取教师发布课程数目计数器索引
 	 * @param userId
@@ -21,6 +23,21 @@ public class CourseCounterConst {
 	{
 		return "teacher:" + userId;
 	}
+	
+	/**
+	 * 学员为课程点赞
+	 * @param courseId
+	 * @return
+	 */
+	public static String getStudentCourseLoveUserId()
+	{
+		return "courseLove:";
+	}
+	public static String getStudentCourseCollectionUserId()
+	{
+		return "courseCollect:";
+	}
+	
 	public static String getTeacherCourseCourseId()
 	{
 		return "teacherCourse";
