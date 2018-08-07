@@ -8,7 +8,7 @@ import com.company.security.domain.SecurityUser;
  */
 public class TeacherInfoResponse extends TeacherInfo {
 	private SecurityUser securityUser;
-
+	private TeacherCounter teacherCounter;
 	public SecurityUser getSecurityUser() {
 		return securityUser;
 	}
@@ -16,5 +16,14 @@ public class TeacherInfoResponse extends TeacherInfo {
 	public void setSecurityUser(SecurityUser securityUser) {
 		this.securityUser = securityUser;
 	}
+
+	public TeacherCounter getTeacherCounter() {
+		return teacherCounter;
+	}
+
+	public void setTeacherCounter(TeacherCounter teacherCounter) {
+		this.teacherCounter = teacherCounter;
+	}
+	
 	
 }

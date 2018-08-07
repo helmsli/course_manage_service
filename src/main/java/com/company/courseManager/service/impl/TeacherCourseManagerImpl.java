@@ -1,5 +1,6 @@
 package com.company.courseManager.service.impl;
 
+import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +9,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,9 +23,11 @@ import com.company.courseManager.courseevaluation.service.UserService;
 import com.company.courseManager.domain.CourseSearch;
 import com.company.courseManager.domain.CourseTeacher;
 import com.company.courseManager.teacher.domain.CourseClassPublish;
+import com.company.courseManager.teacher.domain.QueryPageInfo;
 import com.company.courseManager.teacher.domain.TeacherCounter;
 import com.company.courseManager.teacher.domain.TeacherInfo;
 import com.company.courseManager.teacher.domain.TeacherInfoResponse;
+import com.company.courseManager.teacher.domain.UserOrderQueryResult;
 import com.company.courseManager.teacher.service.TeacherCourseManager;
 import com.company.courseManager.teacher.service.TeacherCourseStatService;
 import com.company.coursestudent.domain.Classbuyerorder;
@@ -79,6 +83,7 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 	@Value("${course.hotCourseSearchUrl}")
 	private String hotCourseSearchUrl;
 
+	
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Override
@@ -658,28 +663,8 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 			TeacherCounter teacherCounter = new TeacherCounter();
 			studentMyCourse.setTeacherCounter(teacherCounter);
 			teacherCourseStatService.getCourseStudentCounter(courseId);
-
-			ProcessResult ret = teacherCourseStatService
-					.getTeacherStudentCounter(studentMyCourse.getCourseTeacher().getTeacherInfo().getUserId());
-
-			if (ret.getRetCode() == 0) {
-				Long amountValue = (Long) ret.getResponseInfo();
-				teacherCounter.setStudentAmount((int) (amountValue.longValue()));
-			}
-
-			ret = teacherCourseStatService
-					.getTeacherCourseCounter(studentMyCourse.getCourseTeacher().getTeacherInfo().getUserId());
-
-			if (ret.getRetCode() == 0) {
-				Long amountValue = (Long) ret.getResponseInfo();
-				teacherCounter.setCourseAmount((int) amountValue.longValue());
-			}
-
-			double teacherScore = teacherCourseStatService
-					.getTeacherScore(studentMyCourse.getCourseTeacher().getTeacherInfo().getUserId());
-			DecimalFormat df = new DecimalFormat("#.##");
-			teacherCounter.setScore(df.format(teacherScore));
-
+			teacherCourseStatService.getTeacherCounter(studentMyCourse.getCourseTeacher().getTeacherInfo().getUserId(), teacherCounter);
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -697,6 +682,10 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		// 获取学生的课程的评价
 		try {
 			double courseScore = teacherCourseStatService.getCourseScore(courseId);
+			if(courseScore<=0.01)
+			{
+				courseScore=100;
+			}
 			DecimalFormat df = new DecimalFormat("#.##");
 			studentMyCourse.setCourseScore(df.format(courseScore));
 		} catch (Exception e) {
@@ -774,7 +763,7 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		userOrder.setOrderId(course.getCourseId());
 		userOrder.setUserId(course.getOwner());
 		this.delOneOrder(courseUserDbWriteUrl, userOrder);
-		return null;
+		return ControllerUtils.getSuccessResponse(null);
 	}
 
 	@Override
@@ -939,6 +928,8 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 			securityUser.setRoles(null);
 			teacherRet.setSecurityUser(securityUser);
 			processResult.setResponseInfo(teacherRet);
+			TeacherCounter teacherCounter = teacherCourseStatService.getTeacherCounter(teacherRet.getUserId(), null);
+			teacherRet.setTeacherCounter(teacherCounter);
 		}
 		// 用户不存在
 		else if (processResult.getRetCode() == 10002) {
@@ -950,6 +941,8 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 			securityUser.setCreateSource(null);
 			securityUser.setRoles(null);
 			teacherRet.setSecurityUser(securityUser);
+			TeacherCounter teacherCounter = teacherCourseStatService.getTeacherCounter(teacherRet.getUserId(), null);
+			teacherRet.setTeacherCounter(teacherCounter);
 			processResult.setResponseInfo(teacherRet);
 			processResult.setRetCode(0);
 		}
@@ -985,6 +978,8 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 				securityUser.setCreateSource(null);
 				securityUser.setRoles(null);
 				teacharResponse.setSecurityUser(securityUser);
+				TeacherCounter teacherCounter = teacherCourseStatService.getTeacherCounter(teacharResponse.getUserId(), null);
+				teacharResponse.setTeacherCounter(teacherCounter);
 				listTeacherInfo.add(teacharResponse);
 			}
 			processResult.setResponseInfo(listTeacherInfo);
@@ -1004,10 +999,10 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		queryUserOrderRequest.setStartCreateTime(userOrder.getConstCreateDate());
 		queryUserOrderRequest.setEndCreateTime(userOrder.getConstCreateDate());
 		// userOrder.setOrderData(JsonUtil.toJson(teacherInfo));
-		ProcessResult processResult = this.queryOrdersByUserId(courseUserDbWriteUrl, queryUserOrderRequest);
+		ProcessResult processResult = this.queryAllOrderReturnPage(courseUserDbWriteUrl, queryUserOrderRequest);
 		if (processResult.getRetCode() == 0) {
-
-			List<UserOrder> lists = (List<UserOrder>) processResult.getResponseInfo();
+			UserOrderQueryResult pageInfo = (UserOrderQueryResult)processResult.getResponseInfo();
+			List<UserOrder> lists = pageInfo.getList();
 			List<TeacherInfoResponse> listTeacherInfo = new ArrayList<TeacherInfoResponse>();
 			for (UserOrder userOrderRet : lists) {
 
@@ -1021,8 +1016,21 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 				securityUser.setRoles(null);
 				teacharResponse.setSecurityUser(securityUser);
 				listTeacherInfo.add(teacharResponse);
+				TeacherCounter teacherCounter = teacherCourseStatService.getTeacherCounter(teacharResponse.getUserId(), null);
+				teacharResponse.setTeacherCounter(teacherCounter);
 			}
-			processResult.setResponseInfo(listTeacherInfo);
+			QueryPageInfo<TeacherInfoResponse> ret = new QueryPageInfo<TeacherInfoResponse>();
+			try {
+				BeanUtils.copyProperties(ret,pageInfo);
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			ret.setQueryResult(listTeacherInfo);
+			processResult.setResponseInfo(ret);
 
 		}
 		return processResult;

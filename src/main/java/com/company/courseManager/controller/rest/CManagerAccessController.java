@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -87,7 +88,7 @@ public class CManagerAccessController {
 	}
 
 	@RequestMapping(method = RequestMethod.POST, value = "/clearCourse")
-	public ProcessResult clearCourse(@PathVariable String category, @RequestBody Courses course) {
+	public ProcessResult clearCourse(@RequestBody Courses course) {
 		ProcessResult processResult = new ProcessResult();
 		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
 		try {
@@ -102,6 +103,21 @@ public class CManagerAccessController {
 		return processResult;
 	}
 
+	@RequestMapping(method = RequestMethod.POST, value = "/clearDraft")
+	public ProcessResult clearDraft(@RequestBody Courses course) {
+		ProcessResult processResult = new ProcessResult();
+		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
+		try {
+			processResult = teacherCourseManager.delDraftDoc(course);
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			saveExceptionToResult(processResult, e);
+
+		}
+		return processResult;
+	}
 	/**
 	 * 将数据从教师的课程发布到学员库
 	 * 
@@ -262,8 +278,8 @@ public class CManagerAccessController {
 	 * @param queryUserOrderRequest
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.GET, value = "{userId}/getTeacherList")
-	public ProcessResult getTecherList(@PathVariable QueryUserOrderRequest queryUserOrderRequest) {
+	@PostMapping(value = "{userId}/getTeacherList")
+	public ProcessResult getTecherList(@PathVariable String userId,@RequestBody QueryUserOrderRequest queryUserOrderRequest) {
 		ProcessResult processResult = new ProcessResult();
 		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
 		try {

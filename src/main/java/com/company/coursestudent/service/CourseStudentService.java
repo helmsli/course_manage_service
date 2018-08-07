@@ -515,6 +515,20 @@ public class CourseStudentService extends OrderClientService {
 		return ret;
 	}
 
+	/**
+	 * 取消收藏
+	 * @param courseLove
+	 * @return
+	 */
+	public ProcessResult cancelCourseCollection(StudentCourseLove courseLove) {
+		UserOrder userOrder = new UserOrder();
+		userOrder.setCategory("myCollection");
+		userOrder.setUserId(courseLove.getUserId());
+		userOrder.setOrderId(courseLove.getCourseId());
+		userOrder.setConstCreateTime();
+		ProcessResult ret = this.delOneOrder(studentUserDbWriteUrl, userOrder);
+		return ret;
+	}
 	
 	/**
 	 * 课程的收藏
@@ -534,10 +548,7 @@ public class CourseStudentService extends OrderClientService {
 		statCounter.setOwnerKey(courseLove.getUserId());
 		ProcessResult ret = this.statCounterDbService.plusOne(CourseCounterConst.Category_course,
 				statCounter);
-		if(ret.getRetCode()==StatCounterDbService.Haved_Counter)
-		{
-			return ret;
-		}		
+				
 		ret = teacherCourseManager.getCourse(courseLove.getCourseId());
 		Courses courses = (Courses) ret.getResponseInfo();
 		
@@ -546,6 +557,7 @@ public class CourseStudentService extends OrderClientService {
 		userOrder.setUserId(courseLove.getUserId());
 		userOrder.setOrderId(courseLove.getCourseId());
 		userOrder.setOrderData(JsonUtil.toJson(courses));
+		userOrder.setConstCreateTime();
 		ret = this.saveUserOrder(studentUserDbWriteUrl, userOrder);
 		return ret;
 	}

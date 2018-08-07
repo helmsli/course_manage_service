@@ -1,5 +1,6 @@
 package com.company.courseManager.teacher.service;
 
+import java.text.DecimalFormat;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.company.courseManager.Const.CourseCounterConst;
 import com.company.courseManager.Const.CoursemanagerConst;
+import com.company.courseManager.teacher.domain.TeacherCounter;
 import com.company.platform.controller.rest.ControllerUtils;
 import com.company.platform.idgenerator.RedisCommonServiceImpl;
 import com.company.platform.order.StatCounter;
@@ -998,5 +1000,38 @@ public class TeacherCourseStatService extends RedisCommonServiceImpl {
 			
 		}
 		
+	}
+	
+	
+	public TeacherCounter getTeacherCounter(String teacherUserId,TeacherCounter teacherCounter)
+	{
+		if(teacherCounter==null)
+		{
+			teacherCounter = new TeacherCounter();
+		}
+		try {
+			ProcessResult ret = 
+					getTeacherStudentCounter(teacherUserId);
+
+			if (ret.getRetCode() == 0) {
+				Long amountValue = (Long) ret.getResponseInfo();
+				teacherCounter.setStudentAmount((int) (amountValue.longValue()));
+			}
+
+			ret = getTeacherCourseCounter(teacherUserId);
+
+			if (ret.getRetCode() == 0) {
+				Long amountValue = (Long) ret.getResponseInfo();
+				teacherCounter.setCourseAmount((int) amountValue.longValue());
+			}
+
+			double teacherScore = getTeacherScore(teacherUserId);
+			DecimalFormat df = new DecimalFormat("#.##");
+			teacherCounter.setScore(df.format(teacherScore));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return teacherCounter;
 	}
 }

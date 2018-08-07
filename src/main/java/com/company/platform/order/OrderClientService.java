@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +34,8 @@ public class OrderClientService {
 	@Value("${order.orderIdUrl}")
 	private String orderIdUrl;
 	
+	@Value("${order.userOrderServiceUrl}")
+	private String userOrderServiceUrl;
 	
 	
 	@Autowired
@@ -228,7 +231,12 @@ public class OrderClientService {
 	{
 		
 		ProcessResult result = null;
-		result  = restTemplate.postForObject(userDbWriteUrl + "/" +  userOrder.getCategory()+ "/" + userOrder.getUserId() + "/configUserOrder" ,userOrder ,ProcessResult.class);
+		String requestUrl = userDbWriteUrl;
+		if(StringUtils.isEmpty(userDbWriteUrl))
+		{
+			requestUrl= this.userOrderServiceUrl;
+		}
+		result  = restTemplate.postForObject(requestUrl + "/" +  userOrder.getCategory()+ "/" + userOrder.getUserId() + "/configUserOrder" ,userOrder ,ProcessResult.class);
 		return result;
 	}
 	/**
@@ -249,7 +257,12 @@ public class OrderClientService {
 	{
 		
 		ProcessResult result = null;
-		result  = restTemplate.postForObject(userDbWriteUrl + "/" +  userOrder.getCategory()+ "/" + userOrder.getUserId() + "/updateUserOrderStatus" ,userOrder ,ProcessResult.class);
+		String requestUrl = userDbWriteUrl;
+		if(StringUtils.isEmpty(userDbWriteUrl))
+		{
+			requestUrl= this.userOrderServiceUrl;
+		}
+		result  = restTemplate.postForObject(requestUrl + "/" +  userOrder.getCategory()+ "/" + userOrder.getUserId() + "/updateUserOrderStatus" ,userOrder ,ProcessResult.class);
 		return result;
 	}
 	
@@ -277,6 +290,30 @@ public class OrderClientService {
 			UserOrderQueryResult userOrderQueryResult = JsonUtil.fromJson(lsUserOrder, UserOrderQueryResult.class);
 			List<UserOrder> lists = userOrderQueryResult.getList();
 			result.setResponseInfo(lists);
+		}
+		return result;
+	}
+	/**
+	 * 带分页信息
+	 * @param userDbWriteUrl
+	 * @param queryUserOrderRequest
+	 * @return
+	 */
+	public ProcessResult queryAllOrderReturnPage(String userDbWriteUrl,QueryUserOrderRequest queryUserOrderRequest)
+	{
+		
+		ProcessResult result = null;
+		String queryUrl = userDbWriteUrl;
+		if(queryUrl==null)
+		{
+			queryUrl = this.userOrderServiceUrl;
+		}
+		result  = restTemplate.postForObject(queryUrl + "/" +  queryUserOrderRequest.getCategory()+ "/" + queryUserOrderRequest.getUserId() + "/queryUserOrder" ,queryUserOrderRequest ,ProcessResult.class);
+		if(result.getRetCode()==0)
+		{
+			String lsUserOrder = JsonUtil.toJson(result.getResponseInfo());
+			UserOrderQueryResult userOrderQueryResult = JsonUtil.fromJson(lsUserOrder, UserOrderQueryResult.class);
+			result.setResponseInfo(userOrderQueryResult);
 		}
 		return result;
 	}

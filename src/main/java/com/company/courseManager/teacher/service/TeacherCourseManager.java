@@ -18,6 +18,7 @@ public interface TeacherCourseManager {
 	
 	public ProcessResult clearCourse(Courses course);
 
+	public ProcessResult delDraftDoc(Courses course);
 	/**
 	 * 客户端发布课程到课程库
 	 * @param draftDocument

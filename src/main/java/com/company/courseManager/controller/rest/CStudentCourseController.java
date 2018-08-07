@@ -62,7 +62,7 @@ public class CStudentCourseController {
 	 * @return
 	 */
 	@PostMapping(value = "/{courseId}/addCourseLove")
-	public  ProcessResult addCourseLove(@PathVariable StudentCourseLove courseLove) {
+	public  ProcessResult addCourseLove(@PathVariable String courseId,@RequestBody StudentCourseLove courseLove) {
 		ProcessResult processResult = new ProcessResult();
 		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
 		try {
@@ -76,7 +76,7 @@ public class CStudentCourseController {
 	}
 	
 	@PostMapping(value = "/{courseId}/getCourseLove")
-	public  ProcessResult getCourseLove(@PathVariable StudentCourseLove courseLove) {
+	public  ProcessResult getCourseLove(@PathVariable String courseId,@PathVariable StudentCourseLove courseLove) {
 		ProcessResult processResult = new ProcessResult();
 		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
 		try {
@@ -95,11 +95,24 @@ public class CStudentCourseController {
 	 * @return
 	 */
 	@PostMapping(value = "/{courseId}/addCourseCollect")
-	public  ProcessResult addCourseCollect(@PathVariable StudentCourseLove courseLove) {
+	public  ProcessResult addCourseCollect(@PathVariable String courseId,@RequestBody StudentCourseLove courseLove) {
 		ProcessResult processResult = new ProcessResult();
 		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
 		try {
 			return courseStudentService.configureCourseCollection(courseLove);
+					
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return processResult;
+	}
+	@PostMapping(value = "/{courseId}/cancelCourseCollect")
+	public  ProcessResult cancelCourseCollect(@PathVariable String courseId,@RequestBody StudentCourseLove courseLove) {
+		ProcessResult processResult = new ProcessResult();
+		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
+		try {
+			return courseStudentService.cancelCourseCollection(courseLove);
 					
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -113,7 +126,7 @@ public class CStudentCourseController {
 	 * @return
 	 */
 	@PostMapping(value = "/{courseId}/getCourseCollect")
-	public  ProcessResult getCourseCollect(@PathVariable StudentCourseLove courseLove) {
+	public  ProcessResult getCourseCollect(@PathVariable String courseId,@PathVariable StudentCourseLove courseLove) {
 		ProcessResult processResult = new ProcessResult();
 		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
 		try {

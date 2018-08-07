@@ -15,7 +15,7 @@ public class TeacherCounter implements Serializable  {
 	/**
 	 * 老师的综合评分
 	 */
-	private String score;
+	private String score="100";
 	public int getStudentAmount() {
 		return studentAmount;
 	}
