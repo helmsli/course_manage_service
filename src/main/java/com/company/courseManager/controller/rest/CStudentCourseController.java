@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -183,6 +184,7 @@ public class CStudentCourseController {
 		}
 		return processResult;
 	}
+	//提交订单信息
 	@RequestMapping(method = RequestMethod.POST,value = "/{userid}/{orderId}/submitBuyOrder")
 	public ProcessResult submitBuyOrder(@PathVariable String userid,@PathVariable String orderId,@RequestBody StudentBuyOrder studentBuyOrder)
 	{
@@ -197,6 +199,72 @@ public class CStudentCourseController {
 		
 	}
 	
+	/**
+	 * 获取我的购买信息
+	 * @param userid
+	 * @param orderId
+	 * @param studentBuyOrder
+	 * @return
+	 */
+	@RequestMapping(method = RequestMethod.GET,value = "/{userid}/{courseId}/getMyBuyOrder")
+	public ProcessResult getBuyOrder(@PathVariable String userid,@PathVariable String courseId)
+	{
+		
+		try {
+			
+			StudentBuyOrder studentBuyOrder =  courseStudentService.getByerStudentBuyOrder(userid, courseId);
+			ProcessResult ret = ControllerUtils.getSuccessResponse(null);
+			ret.setResponseInfo(studentBuyOrder);
+			return ret;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ControllerUtils.getFromResponse(e, StudentConst.RESULT_Error_Fail, null);
+		}
+		
+	}
+	/**
+	 * 提供给客户端查询支付结果
+	 * @param userid
+	 * @param orderId
+	 * @return
+	 */
+	@GetMapping(value = "/{userid}/{orderId}/getOrderPayResult")
+	public ProcessResult getOrderPayResult(@PathVariable String userid,@PathVariable String orderId)
+	{
+		try {
+			return courseStudentService.queryPayResult(orderId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		
+			return ControllerUtils.getFromResponse(e, StudentConst.RESULT_Error_Fail, null);
+
+		}
+	}
+	
+	
+	
+	@GetMapping(value = "/{userid}/{orderId}/testPaySuccess")
+	public ProcessResult testPaySuccess(@PathVariable String userid,@PathVariable String orderId)
+	{
+		try {
+			return courseStudentService.testConfirmPaySuccess(orderId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		
+			return ControllerUtils.getFromResponse(e, StudentConst.RESULT_Error_Fail, null);
+
+		}
+	}
+	/**
+	 * 获取支付二维码信息
+	 * @param userid
+	 * @param orderId
+	 * @param weChatScanPayRequest
+	 * @return
+	 */
 	@PostMapping(value = "/{userid}/{orderId}/getOrderPayInfo")
 	public ProcessResult getOrderPayInfo(@PathVariable String userid,@PathVariable String orderId,@RequestBody WeChatScanPayRequest weChatScanPayRequest)
 	{

@@ -118,6 +118,23 @@ public class CManagerAccessController {
 		}
 		return processResult;
 	}
+	
+	@RequestMapping(method = RequestMethod.GET, value = "{category}/{dbid}/{orderid}/teacherpublishCourse")
+	public ProcessResult teacherPublishCourse(@PathVariable String category, @PathVariable String dbid,
+			@PathVariable String orderid) {
+		ProcessResult processResult = new ProcessResult();
+		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
+		try {
+			processResult = teacherCourseManager.teacherPublishCourse(category, dbid, orderid);
+		
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			saveExceptionToResult(processResult, e);
+
+		}
+		return processResult;
+	}
 	/**
 	 * 将数据从教师的课程发布到学员库
 	 * 
@@ -216,7 +233,7 @@ public class CManagerAccessController {
 		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
 		try {
 			teacherInfo.setUserId(userId);
-			processResult = teacherCourseManager.configureTeacher(teacherInfo);
+			processResult = teacherCourseManager.configureTeacher(teacherInfo,"");
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -226,6 +243,53 @@ public class CManagerAccessController {
 		return processResult;
 	}
 
+	/**
+	 * 申请成为老师
+	 * @param userId
+	 * @param teacherInfo
+	 * @return
+	 */
+	@RequestMapping(method = RequestMethod.POST, value = "{userId}/teacherApplication")
+	public ProcessResult techerApplication(@PathVariable String userId, @RequestBody TeacherInfo teacherInfo) {
+		ProcessResult processResult = new ProcessResult();
+		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
+		try {
+			teacherInfo.setUserId(userId);
+			processResult = teacherCourseManager.teacherApplication(teacherInfo);
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			saveExceptionToResult(processResult, e);
+		}
+		return processResult;
+	}
+	/**
+	 * 订单系统调用审批通过后升级为老师
+	 * @param category
+	 * @param dbid
+	 * @param orderid
+	 * @param jsonRequest
+	 * @return
+	 */
+	@RequestMapping(method = RequestMethod.POST, value = "{category}/{dbid}/{orderid}/autoBeTeacher")
+	public ProcessResult autoBeTeacher(@PathVariable String category, @PathVariable String dbid,
+			@PathVariable String orderid, @RequestBody JsonRequest jsonRequest) {
+		
+		ProcessResult processResult = new ProcessResult();
+		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
+		try {
+			
+			processResult = teacherCourseManager.configureTeacher(null,orderid);
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			saveExceptionToResult(processResult, e);
+		}
+		return processResult;
+			
+		}
 	/**
 	 * 查询教师信息
 	 * 

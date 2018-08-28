@@ -50,6 +50,7 @@ import com.xinwei.nnl.common.domain.JsonRequest;
 import com.xinwei.nnl.common.domain.ProcessResult;
 import com.xinwei.nnl.common.util.JsonUtil;
 import com.xinwei.orderDb.domain.OrderMain;
+import com.xinwei.orderDb.domain.OrderMainContext;
 
 @Service("teacherCourseManager")
 public class TeacherCourseManagerImpl extends OrderClientService implements TeacherCourseManager {
@@ -649,6 +650,10 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 						}
 					}
 				}
+				if(course.getRealPrice()<=studentBuyOrder.getTotalRealPrice())
+				{
+					course.setStatus(CoursemanagerConst.STATUS_HAVEDPAID);
+				}
 			} else {
 				course.setStatus(CoursemanagerConst.STATUS_HAVEDPAID);
 			}
@@ -896,17 +901,72 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 	}
 
 	@Override
-	public ProcessResult configureTeacher(TeacherInfo teacherInfo) {
+	public ProcessResult configureTeacher(TeacherInfo teacherInfo,String orderId) {
 		// TODO Auto-generated method stub
+		if(teacherInfo==null)
+		{
+			String category = "lecturer";
+			String KEY_USER_ORDER_DATA = "__taskContext_";
+			String dbId = OrderMain.getDbId(orderId);
+			List<String>keys = new ArrayList<String>();
+			keys.add(KEY_USER_ORDER_DATA);
+			ProcessResult ret = this.getContextData(category, dbId, orderId, keys);
+			if(ret.getRetCode()!=0)
+			{
+				return ret;
+			}
+			Map<String,String>contextMap = (Map<String,String>)ret.getResponseInfo();
+			if(!contextMap.containsKey(KEY_USER_ORDER_DATA))
+			{
+				return ControllerUtils.getErrorResponse(-1, KEY_USER_ORDER_DATA + " is null");
+			}
+			teacherInfo = JsonUtil.fromJson(contextMap.get(KEY_USER_ORDER_DATA), TeacherInfo.class);
+		}
 		UserOrder userOrder = new UserOrder();
 		userOrder.setCategory("teacher");
 		userOrder.setOrderId(teacherInfo.getUserId());
 		userOrder.setUserId(teacherInfo.getUserId());
 		userOrder.setConstCreateTime();
 		userOrder.setOrderData(JsonUtil.toJson(teacherInfo));
-		return this.saveUserOrder(this.courseUserDbWriteUrl, userOrder);
-
+		ProcessResult ret =  this.saveUserOrder(this.courseUserDbWriteUrl, userOrder);
+		if(ret.getRetCode()!=0)
+		{
+			return ret;
+		}
+		String url = "/user/010/beTeacher";
+		SecurityUser securityUser = userService.getUserInfo(teacherInfo.getUserId());
+		securityUser.setRoles("1");
+		return userService.modifyUserInfo(securityUser);
 	}
+	
+	/**
+	 * 申请成为老师
+	 */
+	@Override
+	public ProcessResult teacherApplication(TeacherInfo teacherInfo)
+	{
+		String category = "lecturer";
+		String KEY_USER_ORDER_DATA = "__taskContext_";
+		if(StringUtils.isEmpty(teacherInfo.getUserId()))
+		{
+			return ControllerUtils.getErrorResponse(-1, "userId is  null");
+		}
+		
+		OrderMainContext orderMainContext = new OrderMainContext();
+		Map<String,String> contextMap= new HashMap<String,String>();
+		contextMap.put(KEY_USER_ORDER_DATA, JsonUtil.toJson(teacherInfo));
+		orderMainContext.setCatetory(category);
+		orderMainContext.setOwnerKey(teacherInfo.getUserId());
+		orderMainContext.setContextDatas(contextMap);
+		ProcessResult ret = this.createOrder(orderMainContext);
+		if(ret.getRetCode()!=0)
+		{
+			return ret;
+		}
+		return this.startOrder(category, orderMainContext.getOrderId());
+		
+	}
+	
 
 	@Override
 	public ProcessResult queryTeacher(TeacherInfo teacherInfo) {
@@ -1034,5 +1094,29 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 
 		}
 		return processResult;
+	}
+
+	@Override
+	public ProcessResult teacherPublishCourse(String category,String dbId,String orderid) {
+		// TODO Auto-generated method stub
+		List<String> keys = new ArrayList<String>();
+		String courseClassKey = "courseClass";
+		String courseKey = "course";
+		keys.add(courseKey);
+		keys.add(courseClassKey);
+		Map<String, String> maps = getOrderContextMap(category, dbId, orderid, keys);
+		if (!maps.containsKey(courseKey)) {
+			ProcessResult ret = new ProcessResult();
+			ret.setRetCode(StudentConst.RESULT_Error_MISSING_COURSE);
+			ret.setRetMsg("missing course");
+			return ret;			
+		}
+		if (!maps.containsKey(courseClassKey)) {
+			ProcessResult ret = new ProcessResult();
+			ret.setRetCode(StudentConst.RESULT_Error_MISSING_COURSEClass);
+			ret.setRetMsg("missing courseClass");
+			return ret;			
+		}
+		return this.startOrder(category, orderid);
 	}
 }

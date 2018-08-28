@@ -63,6 +63,18 @@ public class OrderClientService {
 	//@RequestMapping(method = RequestMethod.POST, value = "/{category}/{dbId}/{orderId}/createOrder")
 	public ProcessResult createOrder(OrderMainContext orderMainContext)
 	{
+		if(StringUtils.isEmpty(orderMainContext.getOrderId()))
+		{
+			String orderid = this.getOrderId(orderMainContext.getCatetory(), orderMainContext.getOwnerKey());
+			if(StringUtils.isEmpty(orderid))
+			{
+				ProcessResult ret = new ProcessResult();
+				ret.setRetCode(-1);
+				ret.setRetMsg("orderid error");
+				return ret;
+			}
+			orderMainContext.setOrderId(orderid);
+		}
 		ProcessResult result  = restTemplate.postForObject(orderServiceUrl + "/" +  orderMainContext.getCatetory()+ "/" + orderMainContext.getDbId(orderMainContext.getOrderId()) + "/" + orderMainContext.getOrderId() + "/createOrder" ,orderMainContext ,ProcessResult.class);
 		return result;
 	}

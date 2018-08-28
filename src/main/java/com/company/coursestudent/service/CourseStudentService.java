@@ -85,11 +85,15 @@ public class CourseStudentService extends OrderClientService {
 		// check price
 		ProcessResult processResult = new ProcessResult();
 		StudentBuyOrder oldStudentBuyOrder = null;
+		processResult = teacherCourseManager.getCourse(studentBuyOrder.getCourseId());
+
+		Courses courses = (Courses) processResult.getResponseInfo();
+
 		// check 是否已经购买
 		try {
 			oldStudentBuyOrder = getByerStudentBuyOrder(studentBuyOrder.getUserId(), studentBuyOrder.getCourseId());
 			processResult.setResponseInfo(oldStudentBuyOrder);
-			// 有数据
+			// 该用户有购买记录
 			if (oldStudentBuyOrder != null) {
 				// 如果以前全部购买
 				if (oldStudentBuyOrder.getCourseClasses() == null
@@ -101,6 +105,13 @@ public class CourseStudentService extends OrderClientService {
 				else {
 					// 现在全部购买
 					if (studentBuyOrder.getCourseClasses() == null || studentBuyOrder.getCourseClasses().size() == 0) {
+						
+						if(studentBuyOrder.getTotalRealPrice() + oldStudentBuyOrder.getTotalRealPrice()==courses.getRealPrice())
+						{
+							processResult.setResponseInfo(courses);
+							return ControllerUtils.getSuccessResponse(processResult);
+						}
+						
 						return ControllerUtils.getErrorResponse(StudentConst.RESULT_Error_HAVEPAID,
 								oldStudentBuyOrder.getCourseClasses().get(0).getClassId());
 
@@ -130,10 +141,7 @@ public class CourseStudentService extends OrderClientService {
 		 * 获取课程
 		 */
 
-		processResult = teacherCourseManager.getCourse(studentBuyOrder.getCourseId());
-
-		Courses courses = (Courses) processResult.getResponseInfo();
-		studentBuyOrder.setTitle(courses.getTitle());
+				studentBuyOrder.setTitle(courses.getTitle());
 		studentBuyOrder.setTecherUserId(courses.getOwner());
 		if (StringUtils.isEmpty(studentBuyOrder.getTitle())) {
 			studentBuyOrder.setTitle("课程");
@@ -156,6 +164,7 @@ public class CourseStudentService extends OrderClientService {
 						"course real money error:need money " + courses.getRealPrice());
 			}
 		} else {
+			//购买课时信息
 			for (int i = 0; i < classList.size(); i++) {
 				Classbuyerorder classbuyerorder = classList.get(i);
 				processResult = teacherCourseManager.getCourseClass(studentBuyOrder.getCourseId(),
@@ -167,6 +176,7 @@ public class CourseStudentService extends OrderClientService {
 			}
 			// 校验余额
 			double totalMoney = 0;
+			
 			for (int i = 0; i < courseClassList.size(); i++) {
 				totalMoney += courseClassList.get(i).getRealPrice();
 			}
@@ -181,6 +191,7 @@ public class CourseStudentService extends OrderClientService {
 				return ControllerUtils.getErrorResponse(StudentConst.RESULT_Error_money,
 						"course real money error:need money " + totalMoney);
 			}
+			//判断是否全部购买
 		}
 		processResult.setResponseInfo(courses);
 		return ControllerUtils.getSuccessResponse(processResult);
@@ -253,6 +264,16 @@ public class CourseStudentService extends OrderClientService {
 						+ newStudentBuyOrder.getTotalOriginalPrice();
 				oldStudentBuyOrder.setTotalRealPrice(totalRealPrice);
 				oldStudentBuyOrder.setTotalOriginalPrice(totalOriginalPrice);
+				
+				/*
+				processResult = teacherCourseManager.getCourse(oldStudentBuyOrder.getCourseId());
+
+				Courses courses = (Courses) processResult.getResponseInfo();
+				if(totalRealPrice==courses.getRealPrice())
+				{
+					newStudentBuyOrder.set
+				}
+				*/
 				/*
 				 * 按照章节增加，按照课程增加；
 				 */
@@ -402,7 +423,152 @@ public class CourseStudentService extends OrderClientService {
 		*/
 		return updateUserBuyCourse(newStudentBuyOrder);
 	}
+	
+	/**
+	 * 提供客户端定时查询订单支付状态
+	 * @param orderId
+	 * @return
+	 * @throws Exception
+	 */
+	public ProcessResult queryPayResult(String orderId) throws Exception
+	{
+		String dbid = OrderMainContext.getDbId(orderId);
+		List<String> keys = new ArrayList<String>();
+		keys.add(getOrderSuccessPayKey());
+		ProcessResult processResult = getContextData(StudentConst.ORDER_BUYER_CATEGORY, dbid, orderId, keys);
+		if (processResult.getRetCode() != StudentConst.RESULT_Success) {
+			throw new Exception("error get will pay information: " + orderId);
+		}
+		Map<String, String> maps = (Map<String, String>) processResult.getResponseInfo();
+		if(maps.containsKey(getOrderSuccessPayKey()))
+		{
+			ProcessResult ret = ControllerUtils.getSuccessResponse(null);
+			ret.setResponseInfo(maps.get(getOrderSuccessPayKey()));
+			return ret;
+		}
+		else
+		{
+			return ControllerUtils.getErrorResponse(-1, "not pay");
+		}
+	}
+	/**
+	 * 提供给客户端测试支付成功接口
+	 * @param orderId
+	 * @return
+	 * @throws Exception
+	 */
+	public ProcessResult testConfirmPaySuccess(String orderId) throws Exception
+	{
+		String paymentKey = getOrderWillPayKey();
+		String dbid = OrderMainContext.getDbId(orderId);
+		List<String> keys = new ArrayList<String>();
+		keys.add(paymentKey);
+		keys.add(StudentConst.ORDERKEY_ORDER);
+		ProcessResult processResult = getContextData(StudentConst.ORDER_BUYER_CATEGORY, dbid, orderId, keys);
+		if (processResult.getRetCode() != StudentConst.RESULT_Success) {
+			throw new Exception("error get will pay information: " + orderId);
+		}
+		Map<String, String> maps = (Map<String, String>) processResult.getResponseInfo();
+		OrderWillPayRequest orderWillPayRequest = null;
+		if (maps.containsKey(paymentKey)) {
+			orderWillPayRequest = JsonUtil.fromJson(maps.get(paymentKey), OrderWillPayRequest.class);
+		} else {
+			throw new Exception("error get will payment info  order:" + orderId);
+		}
+		// 校验CRC信息
+		String crcResult = orderWillPayRequest.createCrcKey(null);
+		if (!orderWillPayRequest.crcOk(crcResult)) {
+			throw new Exception("error will payment ,crc error." + orderWillPayRequest.toString() + ":" + crcResult);
+		}
+		// 判断是否已经全部付款
+		int payResult = OrderPayResult.PAY_RESULT_FAIL;
+		
+		
+		Map<String, String> responseData = new HashMap<String,String>();
+		responseData.put(StudentConst.PAY_TOTAL_FEE_KEY, orderWillPayRequest.getTotal_fee());
+		responseData.put(StudentConst.PAY_FEE_TYPE_KEY, orderWillPayRequest.getFee_type());
+		return confirmPaySuccess(orderId,responseData);
+	}
+	
+	/**
+	 * 从支付系统确认支付成功后的处理
+	 * @param orderId
+	 * @param responseData
+	 * @return
+	 * @throws Exception
+	 */
+	protected ProcessResult confirmPaySuccess(String orderId,Map<String, String> responseData) throws Exception
+	{
+		String totalFee = responseData.get(StudentConst.PAY_TOTAL_FEE_KEY);
+		String dbid = OrderMainContext.getDbId(orderId);
+		String paymentKey = getOrderWillPayKey();
+		List<String> keys = new ArrayList<String>();
+		keys.add(paymentKey);
+		keys.add(StudentConst.ORDERKEY_ORDER);
+		ProcessResult processResult = getContextData(StudentConst.ORDER_BUYER_CATEGORY, dbid, orderId, keys);
+		if (processResult.getRetCode() != StudentConst.RESULT_Success) {
+			throw new Exception("error get will pay information: " + orderId);
+		}
+		Map<String, String> maps = (Map<String, String>) processResult.getResponseInfo();
+		OrderWillPayRequest orderWillPayRequest = null;
+		if (maps.containsKey(paymentKey)) {
+			orderWillPayRequest = JsonUtil.fromJson(maps.get(paymentKey), OrderWillPayRequest.class);
+		} else {
+			throw new Exception("error get will payment info  order:" + orderId);
+		}
+		// 校验CRC信息
+		String crcResult = orderWillPayRequest.createCrcKey(null);
+		if (!orderWillPayRequest.crcOk(crcResult)) {
+			throw new Exception("error will payment ,crc error." + orderWillPayRequest.toString() + ":" + crcResult);
+		}
+		// 判断是否已经全部付款
+		int payResult = OrderPayResult.PAY_RESULT_FAIL;
+		if (totalFee.compareToIgnoreCase(orderWillPayRequest.getTotal_fee()) != 0) {
+			payResult = OrderPayResult.PAY_RESULT_ALLSUCCESS;
+		} else {
+			payResult = OrderPayResult.PAY_RESULT_ALLSUCCESS;
+		}
+		// 构造付款信息，保存到订单
+		OrderPayResult orderPayResult = new OrderPayResult();
+		orderPayResult.setFee_type(responseData.get(StudentConst.PAY_FEE_TYPE_KEY));
+		orderPayResult.setPayResult(payResult);
+		orderPayResult.setPaymentType(OrderPayResult.PTYPE_WECHAT);
+		orderPayResult.setPayOrder(orderId);
+		orderPayResult.setPayTime(Calendar.getInstance().getTime());
+		orderPayResult.setTotal_fee(totalFee);
+		orderPayResult.setCrcKey(orderPayResult.createCrcKey(null));
+		OrderPayResultInfo orderPayResultInfo = new OrderPayResultInfo();
+		responseData.put(StudentConst.PAYRESULT_KEY_payOrder, orderId);
+		orderPayResultInfo.getPayInfo().add(JsonUtil.toJson(responseData));
+		Map<String, String> contextdata = new HashMap<String, String>();
 
+		contextdata.put(getOrderSuccessPayKey(), JsonUtil.toJson(orderPayResult));
+		contextdata.put(getOrderPayInfoKey(), JsonUtil.toJson(orderPayResultInfo));
+		processResult = putContextData(StudentConst.ORDER_BUYER_CATEGORY, dbid, orderId, contextdata);
+		if (processResult.getRetCode() != StudentConst.RESULT_Success) {
+			throw new Exception("error put success pay information: " + orderId);
+		}
+		// 更新用戶的订单状态,将原来用户订购的信息查询出来，增加新的订购信息进入列表
+		UserOrder userOrder = new UserOrder();
+		userOrder.setCategory(StudentConst.ORDER_BUYER_CATEGORY);
+		userOrder.setCreateTime(orderWillPayRequest.getCreateTime());
+		userOrder.setOrderId(orderId);
+		userOrder.setStatus(UserOrder.STATUS_FinishOrder);
+		userOrder.setUserId(orderWillPayRequest.getUserid());
+		processResult = updateUserOrderStatus(studentUserDbWriteUrl, userOrder);
+		if (processResult.getRetCode() != StudentConst.RESULT_Success) {
+			return processResult;
+		}
+		// 更新用户的购买信息的状态
+		StudentBuyOrder newStudentBuyOrder = null;
+		
+		
+		newStudentBuyOrder = JsonUtil.fromJson(maps.get(StudentConst.ORDERKEY_ORDER), StudentBuyOrder.class);
+		return updateUserBuyCourse(newStudentBuyOrder);
+
+	}
+	
+	
 	/**
 	 * 查询用户已经购买的信息
 	 * 

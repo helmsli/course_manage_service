@@ -18,6 +18,13 @@ public interface TeacherCourseManager {
 	
 	public ProcessResult clearCourse(Courses course);
 
+	/**
+	 * 客户端发布课程，提供给客户端使用
+	 * @param orderId
+	 * @return
+	 */
+	public ProcessResult teacherPublishCourse(String category,String dbId,String orderid);
+	
 	public ProcessResult delDraftDoc(Courses course);
 	/**
 	 * 客户端发布课程到课程库
@@ -95,7 +102,9 @@ public interface TeacherCourseManager {
 	public ProcessResult getAllClass(String courseId);
 	
 	
-	public ProcessResult configureTeacher(TeacherInfo teacherInfo);
+	public ProcessResult configureTeacher(TeacherInfo teacherInfo,String orderId);
+	
+	public ProcessResult teacherApplication(TeacherInfo teacherInfo);
 	
 	public ProcessResult queryTeacher(TeacherInfo teacherInfo);
 	

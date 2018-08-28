@@ -6,8 +6,10 @@ public enum EnumQuestionStatus {
 	Zero,
 	waitPay,
 	NewQuestion,
+	Ignore,
 	WaitAnswer,
 	HavedAnswered,
 	Expired,
-	Closed
+	Closed,
+	Evaluation
 }

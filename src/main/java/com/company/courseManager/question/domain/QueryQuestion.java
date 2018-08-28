@@ -6,6 +6,7 @@ public class QueryQuestion extends QueryUserOrderRequest {
 	private String courseId;
 	private String createUserId;
 	private String classId;
+	private String questionId;
 	/*
 	 * 1：待支付 2：新问题，3：待回复 4：已回复 ，5问题失效 6：问题结束
 
@@ -46,6 +47,14 @@ public class QueryQuestion extends QueryUserOrderRequest {
 
 	public void setStatus(int status) {
 		this.status = status;
+	}
+
+	public String getQuestionId() {
+		return questionId;
+	}
+
+	public void setQuestionId(String questionId) {
+		this.questionId = questionId;
 	}
 	
 	

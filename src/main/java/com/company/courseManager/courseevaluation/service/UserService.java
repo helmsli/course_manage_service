@@ -34,4 +34,17 @@ public class UserService {
 		}
 		return null;
 	}
+	
+	public ProcessResult modifyUserInfo(SecurityUser securityUser) {
+		// {routerId}/getUserInfoById
+		ProcessResult result = null;
+		
+
+	
+		
+		result = restTemplate.postForObject(this.securityUserCenter + "/010/modifyUserInfo", securityUser,
+				ProcessResult.class);
+		
+		return result;
+	}
 }

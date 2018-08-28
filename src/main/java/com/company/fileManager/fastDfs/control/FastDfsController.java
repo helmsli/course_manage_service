@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.company.courseManager.Const.CoursemanagerConst;
 import com.company.fileManager.fastDfs.FastDFSClientWrapper;
 import com.company.fileManager.fastDfs.FileManagerConst;
+import com.company.fileManager.fastDfs.FileUploadResult;
 import com.xinwei.nnl.common.domain.ProcessResult;
 import com.xinwei.nnl.common.util.JsonUtil;
 
@@ -57,7 +58,12 @@ public class FastDfsController {
     	try {
 			// 省略业务逻辑代码。。。
 			String imgUrl = fastDFSClientWrapper.uploadFile(file);
-			processResult.setResponseInfo(imgUrl);
+			FileUploadResult fileUploadResult = new FileUploadResult();
+			
+			fileUploadResult.setFilePath(imgUrl);
+			fileUploadResult.setUploadFileName(file.getOriginalFilename());
+			processResult.setResponseInfo(fileUploadResult);
+		
 			processResult.setRetCode(FileManagerConst.RESULT_SUCCESS);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -76,7 +82,11 @@ public class FastDfsController {
     	try {
 			// 省略业务逻辑代码。。。
 			String imgUrlList = fastDFSClientWrapper.uploadFileAndCrtThumbImageAuto(file);
-			processResult.setResponseInfo(imgUrlList);
+			FileUploadResult fileUploadResult = new FileUploadResult();
+			fileUploadResult.setFilePath(imgUrlList);
+			fileUploadResult.setUploadFileName(file.getOriginalFilename());
+			processResult.setResponseInfo(fileUploadResult);
+			//processResult.setRetMsg();
 			processResult.setRetCode(FileManagerConst.RESULT_SUCCESS);
 		} catch (Exception e) {
 			

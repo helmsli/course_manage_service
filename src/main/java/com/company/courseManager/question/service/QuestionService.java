@@ -12,6 +12,7 @@ import com.company.courseManager.question.domain.Note;
 import com.company.courseManager.question.domain.QueryNote;
 import com.company.courseManager.question.domain.QueryQuestion;
 import com.company.courseManager.question.domain.Question;
+import com.company.courseManager.question.domain.QuestionEval;
 import com.company.courseManager.teacher.domain.TeacherInfo;
 import com.company.courseManager.teacher.domain.TeacherInfoResponse;
 import com.company.courseManager.teacher.service.TeacherCourseManager;
@@ -27,6 +28,9 @@ public class QuestionService extends OrderClientService{
 	private String Category_AllQuestion="allques";
 	private String Category_Question_chapter="QuesChapter";
 	private String Category_Question_Course="QuesCourse";
+	
+	public int QUESTION=1;
+	public int Answer=2;
 	
 	@Autowired
 	private TeacherCourseManager teacherCourseManager;
@@ -135,7 +139,23 @@ public class QuestionService extends OrderClientService{
 		return processResult;
 
 	}
-	
+	/**
+	 * 
+	 * @param queryQuestion
+	 * @return
+	 */
+	public ProcessResult queryQuestionAndAnswer(QueryQuestion  queryQuestion)	{
+		queryQuestion.setCategory(getQuestionCategory());
+		queryQuestion.setUserId(queryQuestion.getQuestionId());
+		UserOrder userOrder = new UserOrder();
+		queryQuestion.setStartCreateTime(userOrder.getConstCreateDate());
+		queryQuestion.setEndCreateTime(userOrder.getConstCreateDate());
+		//queryQuestion.setUserId(getClassQuestionUserId(queryQuestion.getUserId(),queryQuestion.getCourseId(),queryQuestion.getClassId()));
+		// userOrder.setOrderData(JsonUtil.toJson(teacherInfo));
+		ProcessResult processResult = this.queryAllOrderReturnPage(null, queryQuestion);
+		return processResult;
+
+	}
 
 	public ProcessResult queryCourseChapter(QueryQuestion  queryQuestion )
 	{
@@ -187,11 +207,19 @@ public class QuestionService extends OrderClientService{
 		SimpleDateFormat sf = new SimpleDateFormat("yyMMddHHmmss");
 		question.setCreateTime(Calendar.getInstance().getTime());
 		question.setQuestionId(sf.format(question.getCreateTime()));
+		question.setReplayId(question.getQuestionId());
 		if(teacherInfoResponse!=null)
 			question.setTeacherInfo(JsonUtil.toJson(teacherInfoResponse));
 		if(securityUser!=null)
+		{
+			securityUser.setPassword(null);
+			securityUser.setOldPasswordExt(null);
+			securityUser.setPasswordExt("");
+			securityUser.setCreateSource(null);
+			securityUser.setRoles(null);
 			question.setCreateUserInfo(JsonUtil.toJson(securityUser));
-		UserOrder userOrder = new UserOrder();
+		}
+			UserOrder userOrder = new UserOrder();
     	
 		//add all my Note
 		userOrder.setCategory(getMyAllMyQuestionCategory());
@@ -224,7 +252,7 @@ public class QuestionService extends OrderClientService{
     	userOrder.setOrderId(question.getQuestionId());
     	userOrder.setOrderData(JsonUtil.toJson(question));
     	userOrder.setStatus(EnumQuestionStatus.NewQuestion.ordinal());
-    	userOrder.setOrderDataType(String.valueOf(EnumQuestionStatus.NewQuestion.ordinal()));
+    	userOrder.setOrderDataType(String.valueOf(QUESTION));
     	userOrder.setAmount(question.getPrice());
     	this.saveUserOrder(null, userOrder);
     
@@ -261,6 +289,7 @@ public class QuestionService extends OrderClientService{
     	{
     		ret.setResponseInfo(question);
     	}
+    	ret.setRetCode(0);
     	return ret;
     		
     }
@@ -282,12 +311,12 @@ public class QuestionService extends OrderClientService{
     	userOrder.setUserId(question.getQuestionId());
     	userOrder.setOrderId(question.getReplayId());
     	userOrder.setOrderData(JsonUtil.toJson(question));
-    	userOrder.setStatus(EnumQuestionStatus.NewQuestion.ordinal());
-    	userOrder.setOrderDataType(String.valueOf(EnumQuestionStatus.NewQuestion.ordinal()));
+    	userOrder.setStatus(EnumQuestionStatus.HavedAnswered.ordinal());
+    	userOrder.setOrderDataType(String.valueOf(this.Answer));
     	userOrder.setAmount(question.getPrice());
     	this.saveUserOrder(null, userOrder);
-    	this.updateQuestionStatus(question);
-		return null;
+    	return this.updateQuestionStatus(question);
+		
 	}
 	
 	public ProcessResult waitAnswerquestion(Question question)
@@ -303,33 +332,34 @@ public class QuestionService extends OrderClientService{
     	userOrder.setUserId(question.getQuestionId());
     	userOrder.setOrderId(question.getReplayId());
     	userOrder.setOrderData(JsonUtil.toJson(question));
-    	userOrder.setStatus(EnumQuestionStatus.NewQuestion.ordinal());
-    	userOrder.setOrderDataType(String.valueOf(EnumQuestionStatus.NewQuestion.ordinal()));
+    	userOrder.setStatus(EnumQuestionStatus.WaitAnswer.ordinal());
+    	userOrder.setOrderDataType(String.valueOf(QUESTION));
     	userOrder.setAmount(question.getPrice());
     	this.saveUserOrder(null, userOrder);
-    	this.updateQuestionStatus(question);
-		return null;
+    	return this.updateQuestionStatus(question);
+		
 	}
 	
 	public ProcessResult updateQuestionStatus(Question question)
     {
 		UserOrder userOrder = new UserOrder();
     	//单个问题
+		/*
 		userOrder.setCategory(getQuestionCategory());
     	userOrder.setConstCreateTime();
     	userOrder.setUserId(question.getQuestionId());
-    	userOrder.setOrderId(question.getReplayId());
-    	userOrder.setOrderData(JsonUtil.toJson(question));
+    	userOrder.setOrderId(question.getQuestionId());
+    	//userOrder.setOrderData(JsonUtil.toJson(question));
     	userOrder.setStatus(question.getStatus());
     	this.updateUserOrderStatus(null, userOrder);
-    	
+    	*/
 		
 		//add all my Note
 		userOrder.setCategory(getMyAllMyQuestionCategory());
     	userOrder.setConstCreateTime();
     	userOrder.setUserId(getAllQuestionUserId(question.getCreateUserId()));
     	userOrder.setOrderId(getAllQuestionOrderId(question));
-    	userOrder.setOrderData(JsonUtil.toJson(question));
+    //	userOrder.setOrderData(JsonUtil.toJson(question));
     	userOrder.setStatus(question.getStatus());
     	userOrder.setOrderDataType(String.valueOf(EnumQuestionStatus.NewQuestion.ordinal()));
     	userOrder.setAmount(question.getPrice());
@@ -342,11 +372,90 @@ public class QuestionService extends OrderClientService{
     	userOrder.setConstCreateTime();
     	userOrder.setUserId(getAllQuestionUserId(question.getTeacherId()));
     	userOrder.setOrderId(getAllQuestionOrderId(question));
-    	userOrder.setOrderData(JsonUtil.toJson(question));
+    	//userOrder.setOrderData(JsonUtil.toJson(question));
     	userOrder.setStatus(question.getStatus());
     	userOrder.setOrderDataType(String.valueOf(EnumQuestionStatus.NewQuestion.ordinal()));
     	userOrder.setAmount(question.getPrice());
     	return this.updateUserOrderStatus(null, userOrder);
     	
     }
+	
+	public ProcessResult endAnswerquestion(Question question)
+	{
+		
+		question.setStatus(EnumQuestionStatus.Closed.ordinal());
+		SimpleDateFormat sf = new SimpleDateFormat("yyMMddHHmmss");
+		question.setCreateTime(Calendar.getInstance().getTime());
+		question.setReplayId(sf.format(question.getCreateTime()));
+		UserOrder userOrder = new UserOrder();
+		userOrder.setCategory(getQuestionCategory());
+    	userOrder.setConstCreateTime();
+    	userOrder.setUserId(question.getQuestionId());
+    	userOrder.setOrderId(question.getReplayId());
+    	userOrder.setOrderData(JsonUtil.toJson(question));
+    	userOrder.setStatus(EnumQuestionStatus.Closed.ordinal());
+    	userOrder.setOrderDataType(String.valueOf(QUESTION));
+    	userOrder.setAmount(question.getPrice());
+    	this.saveUserOrder(null, userOrder);
+    	return this.updateQuestionStatus(question);
+		
+	}
+	/**
+	 * 评价问题
+	 * @param question
+	 * @return
+	 */
+	public ProcessResult evaluationAnswerquestion(QuestionEval questionEval)
+	{
+		
+		//questionEval.setStatus(EnumQuestionStatus.Evaluation.ordinal());
+		SimpleDateFormat sf = new SimpleDateFormat("yyMMddHHmmss");
+		questionEval.setCreateTime(Calendar.getInstance().getTime());
+		questionEval.setReplayId(sf.format(questionEval.getCreateTime()));
+		UserOrder userOrder = new UserOrder();
+		userOrder.setCategory(getQuestionCategory());
+    	userOrder.setConstCreateTime();
+    	userOrder.setUserId(questionEval.getQuestionId());
+    	userOrder.setOrderId(questionEval.getReplayId());
+    	userOrder.setOrderData(JsonUtil.toJson(questionEval));
+    	userOrder.setStatus(EnumQuestionStatus.Evaluation.ordinal());
+    	userOrder.setOrderDataType(String.valueOf(QUESTION));
+    	userOrder.setAmount(0);
+    	this.saveUserOrder(null, userOrder);
+    	
+    	Question question  =new Question();
+    	question.setCreateTime(questionEval.getCreateTime());
+    	question.setQuestionId(questionEval.getQuestionId());
+    	question.setCreateUserId(questionEval.getCreateUserId());
+    	question.setTeacherId(questionEval.getTeacherId());
+    	question.setPrice(0);
+    	question.setStatus(EnumQuestionStatus.Evaluation.ordinal());
+    	return this.updateQuestionStatus(question);
+		
+	}
+	/**
+	 * 忽略问题
+	 * @param question
+	 * @return
+	 */
+	public ProcessResult ignoreAnswerquestion(Question question)
+	{
+		
+		question.setStatus(EnumQuestionStatus.Ignore.ordinal());
+		SimpleDateFormat sf = new SimpleDateFormat("yyMMddHHmmss");
+		question.setCreateTime(Calendar.getInstance().getTime());
+		question.setReplayId(sf.format(question.getCreateTime()));
+		UserOrder userOrder = new UserOrder();
+		userOrder.setCategory(getQuestionCategory());
+    	userOrder.setConstCreateTime();
+    	userOrder.setUserId(question.getQuestionId());
+    	userOrder.setOrderId(question.getReplayId());
+    	userOrder.setOrderData(JsonUtil.toJson(question));
+    	userOrder.setStatus(EnumQuestionStatus.Ignore.ordinal());
+    	userOrder.setOrderDataType(String.valueOf(QUESTION));
+    	userOrder.setAmount(question.getPrice());
+    	this.saveUserOrder(null, userOrder);
+    	return this.updateQuestionStatus(question);
+		
+	}
 }

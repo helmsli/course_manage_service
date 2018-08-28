@@ -18,6 +18,11 @@ public class StudentConst {
 	
 	public static final int RESULT_Error_ORDERID_NULL=RESULT_Error_Fail+3;
 	
+	public static final int RESULT_Error_MISSING_COURSE=RESULT_Error_Fail+4;
+	
+	
+	public static final int RESULT_Error_MISSING_COURSEClass=RESULT_Error_Fail+5;
+	
 	public static final String RESULT_String_ORDERID_NULL="orderid is null";
 	
 	/**
