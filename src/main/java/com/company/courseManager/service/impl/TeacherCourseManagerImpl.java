@@ -42,6 +42,7 @@ import com.company.platform.order.OrderClientService;
 import com.company.security.domain.SecurityUser;
 import com.company.userOrder.domain.QueryUserOrderRequest;
 import com.company.userOrder.domain.UserOrder;
+import com.company.userOrderPlatform.domain.UserOrderConst;
 import com.company.videodb.Const.VideodbConst;
 import com.company.videodb.domain.CourseClass;
 import com.company.videodb.domain.Courses;
@@ -300,7 +301,7 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 
 		courses.setCourseId(courseId);
 		// JsonRequest jsonRequest = new JsonRequest();
-		result = restTemplate.postForObject(courseDbWriteUrl + "/" + dbId + "/" + courseId + "/confCourses", courses,
+		result = restTemplate.postForObject(courseDbWriteUrl + "/" + dbId + "/" + courseId + "/delCourses", courses,
 				ProcessResult.class);
 
 		return result;
@@ -394,7 +395,7 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		userOrder = new UserOrder();
 		userOrder.setCategory(StudentConst.USER_DRAFT_COURSEKey);
 		userOrder.setConstCreateTime();
-		userOrder.setOrderId(courses.getCourseId());
+		userOrder.setOrderId(orderId);
 		userOrder.setUserId(courses.getOwner());
 		result = this.delOneOrder(courseUserDbWriteUrl, userOrder);
 
@@ -720,14 +721,29 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 	 * @return
 	 */
 	public ProcessResult clearCourse(Courses course) {
-		ProcessResult processResult = this.getCourse(course.getCourseId());
+				
+		
+		UserOrder userOrder = new UserOrder();
+		userOrder.setCategory(StudentConst.USER_DRAFT_CATEGORY);
+		userOrder.setConstCreateTime();
+		userOrder.setOrderId(course.getCourseId());
+		userOrder.setUserId(course.getOwner());
+		ProcessResult ret = this.queryOneOrder(courseUserDbWriteUrl, userOrder);
+		if(ret.getRetCode()!=0)
+		{
+			return ret;
+		}
+		userOrder = (UserOrder)ret.getResponseInfo();
+		Courses delCourse = JsonUtil.fromJson(userOrder.getOrderData(), Courses.class);
+		
+		ProcessResult processResult = this.getCourse(delCourse.getCourseId());
 		if (processResult.getRetCode() != VideodbConst.RESULT_SUCCESS) {
 			return processResult;
 		}
 		CourseTeacher courseDb = (CourseTeacher) processResult.getResponseInfo();
 		if(StringUtils.isEmpty(courseDb.getOwner()))
 		{
-			if(!StringUtils.isEmpty(course.getOwner()))
+			if(!StringUtils.isEmpty(delCourse.getOwner()))
 			{
 				
 				processResult.setRetCode(-1);
@@ -739,18 +755,23 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		else if(courseDb.getOwner().compareToIgnoreCase(courseDb.getOwner())!=0)
 		{
 			 	processResult.setRetCode(-1);
-				processResult.setRetMsg("owner is not equal");
-				
+				processResult.setRetMsg("owner is not equal");				
 				return processResult;
-
-		}
-		
+		}			
 		this.delDraftDoc(course);
-		this.delClassToDb(course.getCourseId());
-		this.delCourseToSearch(course);
-		this.delCourseFromDb(course.getDbId(course.getCourseId()), course.getCourseId());
-		processResult.setRetCode(VideodbConst.RESULT_SUCCESS);
-		return processResult;
+		this.delClassToDb(delCourse.getCourseId());
+		this.delCourseToSearch(delCourse);
+		this.delCourseFromDb(course.getDbId(delCourse.getCourseId()), delCourse.getCourseId());
+		//ProcessResult processResult.setRetCode(VideodbConst.RESULT_SUCCESS);
+		
+		userOrder.setCategory(StudentConst.USER_DRAFT_CATEGORY);
+		userOrder.setConstCreateTime();
+		userOrder.setOrderId(course.getCourseId());
+		userOrder.setStatus(UserOrder.STATUS_CreateOrder);
+		userOrder.setUserId(course.getOwner());
+		this.delOneOrder(courseUserDbWriteUrl, userOrder);
+		
+		return ControllerUtils.getSuccessResponse(null);
 	}
 
 	/**
@@ -774,6 +795,7 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 	@Override
 	public ProcessResult createDraftDoc(DraftDocument draftDocument) {
 		// TODO Auto-generated method stub
+		
 		String orderId = draftDocument.getOrderId();
 		String requestCourseId = draftDocument.getCourses().getCourseId();
 		// 是否有草稿了，如果有草稿就是修改
@@ -826,6 +848,7 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 			List<CourseClassPublish> publishList = (List<CourseClassPublish>) processResult.getResponseInfo();
 			if (course != null) {
 				contexts.put(courseKey, JsonUtil.toJson(course));
+				
 			}
 			if (publishList != null) {
 				contexts.put(courseClassKey, JsonUtil.toJson(publishList));
@@ -850,7 +873,8 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		}
 
 		UserOrder userOrder = new UserOrder();
-		userOrder.setCategory(StudentConst.USER_DRAFT_COURSEKey);
+		/*
+		userOrder.setCategory(StudentConst.USER_DRAFT_CATEGORY);
 		userOrder.setConstCreateTime();
 		userOrder.setOrderId(draftDocument.getCourses().getCourseId());
 		userOrder.setUserId(draftDocument.getUserId());
@@ -871,7 +895,7 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 				e.printStackTrace();
 			}
 		}
-
+*/
 		userOrder = new UserOrder();
 		userOrder.setCategory(StudentConst.USER_DRAFT_CATEGORY);
 		userOrder.setConstCreateTime();
@@ -888,10 +912,10 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		userOrder = new UserOrder();
 		userOrder.setCategory(StudentConst.USER_DRAFT_COURSEKey);
 		userOrder.setConstCreateTime();
-		userOrder.setOrderId(draftDocument.getCourses().getCourseId());
+		userOrder.setOrderId(orderId);
 		userOrder.setStatus(UserOrder.STATUS_CreateOrder);
 		userOrder.setUserId(draftDocument.getUserId());
-		userOrder.setOrderData(orderId);
+		userOrder.setOrderData(contexts.get(courseKey));
 		result = restTemplate.postForObject(
 				courseUserDbWriteUrl + "/" + userOrder.getCategory() + "/" + userOrder.getUserId() + "/configUserOrder",
 				userOrder, ProcessResult.class);
@@ -947,6 +971,58 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 	{
 		String category = "lecturer";
 		String KEY_USER_ORDER_DATA = "__taskContext_";
+		String KEY_application_order = "__applicaiton_";
+		if(StringUtils.isEmpty(teacherInfo.getUserId()))
+		{
+			return ControllerUtils.getErrorResponse(-1, "userId is  null");
+		}
+		String orderid= this.getOrderId(category, teacherInfo.getUserId());
+		if(StringUtils.isEmpty(orderid))
+		{
+			ProcessResult ret = new ProcessResult();
+			ret.setRetCode(-1);
+			ret.setRetMsg("orderid error");
+			return ret;
+		}
+		
+		UserOrder userOrder = new UserOrder();
+		userOrder.setCategory(StudentConst.USER_Category_teacharApp);
+		userOrder.setConstCreateTime();
+		userOrder.setUserId(teacherInfo.getUserId());
+		userOrder.setOrderId(teacherInfo.getUserId());
+		
+		OrderMainContext orderMainContext = new OrderMainContext();
+		Map<String,String> contextMap= new HashMap<String,String>();
+		contextMap.put(KEY_USER_ORDER_DATA, JsonUtil.toJson(teacherInfo));
+		contextMap.put(KEY_application_order, JsonUtil.toJson(userOrder));
+		orderMainContext.setOrderId(orderid);
+		orderMainContext.setCatetory(category);
+		orderMainContext.setOwnerKey(teacherInfo.getUserId());
+		orderMainContext.setContextDatas(contextMap);
+		ProcessResult ret = this.createOrder(orderMainContext);
+		if(ret.getRetCode()!=0)
+		{
+			return ret;
+		}
+		//保存申请记录，提供给学生查询
+		try {
+			userOrder.setOrderDataType(orderid);
+			userOrder.setOrderData(JsonUtil.toJson(teacherInfo));				
+			this.saveUserOrder(null, userOrder);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+		return this.startOrder(category, orderMainContext.getOrderId());
+		
+	}
+
+	
+	@Override
+	public ProcessResult getTeacherApplicationResult(TeacherInfo teacherInfo)
+	{
+		String category = "lecturer";
+		String KEY_USER_ORDER_DATA = "__taskContext_";
 		if(StringUtils.isEmpty(teacherInfo.getUserId()))
 		{
 			return ControllerUtils.getErrorResponse(-1, "userId is  null");
@@ -963,10 +1039,28 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 		{
 			return ret;
 		}
-		return this.startOrder(category, orderMainContext.getOrderId());
-		
+		//保存申请记录，提供给学生查询
+		try {
+			UserOrder userOrder = new UserOrder();
+			userOrder.setCategory(StudentConst.USER_Category_teacharApp);
+			userOrder.setConstCreateTime();
+			userOrder.setUserId(teacherInfo.getUserId());
+			userOrder.setOrderId(teacherInfo.getUserId());
+			ret = this.queryOneOrder(courseUserDbWriteUrl, userOrder);
+			if(ret.getRetCode()==UserOrderConst.RESULT_Error_NotFound)
+			{
+				return ret;
+			}
+			else
+			{
+				
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+		return this.startOrder(category, orderMainContext.getOrderId());		
 	}
-	
 
 	@Override
 	public ProcessResult queryTeacher(TeacherInfo teacherInfo) {

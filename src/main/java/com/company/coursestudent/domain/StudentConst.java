@@ -29,7 +29,12 @@ public class StudentConst {
 	 * 用于在订购订单中记录原始的订单信息的KEY
 	 */
 	public static final String ORDERKEY_ORDER="order";
-	
+
+	/**
+	 * 学员申请为老师的记录
+	 */
+	public static final String USER_Category_teacharApp="_teacherApp";
+
 
 	
 	//学生购买订单

@@ -264,6 +264,22 @@ public class CManagerAccessController {
 		}
 		return processResult;
 	}
+	
+	@RequestMapping(method = RequestMethod.POST, value = "{userId}/applicationResult")
+	public ProcessResult getTecherApplicationResult(@PathVariable String userId, @RequestBody TeacherInfo teacherInfo) {
+		ProcessResult processResult = new ProcessResult();
+		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
+		try {
+			teacherInfo.setUserId(userId);
+			processResult = teacherCourseManager.teacherApplication(teacherInfo);
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			saveExceptionToResult(processResult, e);
+		}
+		return processResult;
+	}
 	/**
 	 * 订单系统调用审批通过后升级为老师
 	 * @param category

@@ -105,7 +105,7 @@ public interface TeacherCourseManager {
 	public ProcessResult configureTeacher(TeacherInfo teacherInfo,String orderId);
 	
 	public ProcessResult teacherApplication(TeacherInfo teacherInfo);
-	
+	public ProcessResult getTeacherApplicationResult(TeacherInfo teacherInfo);
 	public ProcessResult queryTeacher(TeacherInfo teacherInfo);
 	
 	public ProcessResult queryRecommandTeacher(String userId);

@@ -249,9 +249,10 @@ public class CourseStudentService extends OrderClientService {
 		userBuyCourse.setConstCreateTime();
 		userBuyCourse.setOrderId(newStudentBuyOrder.getCourseId());
 		userBuyCourse.setUserId(newStudentBuyOrder.getUserId());
-
+		
 		ProcessResult  processResult = queryOneOrder(studentUserDbWriteUrl, userBuyCourse);
 		// 如果是数据不存在的其余错误
+		log.debug("updateUserBuyCourse:" + processResult.toString());
 		if (processResult.getRetCode() != 10002&& processResult.getRetCode() != StudentConst.RESULT_Success) {
 			return processResult;
 		} else {
@@ -277,7 +278,18 @@ public class CourseStudentService extends OrderClientService {
 				/*
 				 * 按照章节增加，按照课程增加；
 				 */
-				oldStudentBuyOrder.getCourseClasses().addAll(newStudentBuyOrder.getCourseClasses());
+				
+				
+				if(newStudentBuyOrder.getCourseClasses()!=null)
+				{
+					List<Classbuyerorder> list = oldStudentBuyOrder.getCourseClasses();
+					if(list==null)
+					{
+						list = new ArrayList<Classbuyerorder>();
+						oldStudentBuyOrder.setCourseClasses(list);
+					}
+					list.addAll(newStudentBuyOrder.getCourseClasses());
+				}
 				newStudentBuyOrder = oldStudentBuyOrder;
 			}		
 		
@@ -288,6 +300,7 @@ public class CourseStudentService extends OrderClientService {
 		teacherCourseStatService.plusTeacherStudentAmountOne(newStudentBuyOrder.getTecherUserId(),newStudentBuyOrder.getUserId());
 		teacherCourseStatService.plusCourseStudentAmountOne(newStudentBuyOrder.getUserId(), newStudentBuyOrder.getCourseId());
 		processResult = this.saveUserOrder(studentUserDbWriteUrl, userBuyCourse);
+		log.debug("after" + processResult.toString());
 		return processResult;
 	}
 
@@ -799,6 +812,7 @@ public class CourseStudentService extends OrderClientService {
 			userOrder.setOrderId(orderId);
 			userOrder.setStatus(StudentConst.ORDER_BUYER_STATUS_NEEDPAY);
 			userOrder.setUserId(studentBuyOrder.getUserId());
+			userOrder.setOrderData(JsonUtil.toJson(studentBuyOrder));
 			processResult = saveUserOrder(studentUserDbWriteUrl, userOrder);
 			if (processResult.getRetCode() != StudentConst.RESULT_Success) {
 				return processResult;
