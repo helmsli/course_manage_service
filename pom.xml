@@ -200,6 +200,13 @@
 			<systemPath>${basedir}/lib/order_db_1.0.10.jar</systemPath>
 		</dependency>
 
+		<dependency>
+			<groupId>com.xinwei</groupId>
+			<artifactId>common-review-domain</artifactId>
+			<version>1.0.0</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/common-review-domain-1.0.0.jar</systemPath>
+		</dependency>
 
 		<dependency>
 			<groupId>com.xinwei.nnl</groupId>

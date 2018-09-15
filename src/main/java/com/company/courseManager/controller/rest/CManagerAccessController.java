@@ -4,7 +4,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,11 +19,8 @@ import com.company.courseManager.teacher.domain.TeacherInfo;
 import com.company.courseManager.teacher.service.TeacherCourseManager;
 import com.company.coursestudent.domain.DraftDocument;
 import com.company.coursestudent.domain.StudentConst;
-import com.company.coursestudent.domain.UserInfo;
 import com.company.platform.controller.rest.ControllerUtils;
 import com.company.userOrder.domain.QueryUserOrderRequest;
-import com.company.videoPlay.domain.AliVodUploadInfo;
-import com.company.videodb.Const.VideodbConst;
 import com.company.videodb.domain.Courses;
 import com.xinwei.nnl.common.domain.JsonRequest;
 import com.xinwei.nnl.common.domain.ProcessResult;
@@ -70,7 +66,8 @@ public class CManagerAccessController {
 	 * @return
 	 */
 	@RequestMapping(method = RequestMethod.POST, value = "{category}/createDraft")
-	public ProcessResult createDraft(@PathVariable String category, @RequestBody DraftDocument draftDocument) {
+	public ProcessResult createDraft(@PathVariable String category,
+			@RequestBody DraftDocument draftDocument) {
 		ProcessResult processResult = new ProcessResult();
 		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
 		try {
@@ -118,7 +115,7 @@ public class CManagerAccessController {
 		}
 		return processResult;
 	}
-	
+
 	@RequestMapping(method = RequestMethod.GET, value = "{category}/{dbid}/{orderid}/teacherpublishCourse")
 	public ProcessResult teacherPublishCourse(@PathVariable String category, @PathVariable String dbid,
 			@PathVariable String orderid) {
@@ -126,7 +123,7 @@ public class CManagerAccessController {
 		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
 		try {
 			processResult = teacherCourseManager.teacherPublishCourse(category, dbid, orderid);
-		
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -135,6 +132,7 @@ public class CManagerAccessController {
 		}
 		return processResult;
 	}
+
 	/**
 	 * 将数据从教师的课程发布到学员库
 	 * 
@@ -233,7 +231,7 @@ public class CManagerAccessController {
 		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
 		try {
 			teacherInfo.setUserId(userId);
-			processResult = teacherCourseManager.configureTeacher(teacherInfo,"");
+			processResult = teacherCourseManager.configureTeacher(teacherInfo, "");
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -250,7 +248,8 @@ public class CManagerAccessController {
 	 * @return
 	 */
 	@RequestMapping(method = RequestMethod.POST, value = "{userId}/teacherApplication")
-	public ProcessResult techerApplication(@PathVariable String userId, @RequestBody TeacherInfo teacherInfo) {
+	public ProcessResult techerApplication(@PathVariable String userId,
+			@RequestBody TeacherInfo teacherInfo) {
 		ProcessResult processResult = new ProcessResult();
 		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
 		try {
@@ -264,9 +263,10 @@ public class CManagerAccessController {
 		}
 		return processResult;
 	}
-	
+
 	@RequestMapping(method = RequestMethod.POST, value = "{userId}/applicationResult")
-	public ProcessResult getTecherApplicationResult(@PathVariable String userId, @RequestBody TeacherInfo teacherInfo) {
+	public ProcessResult getTecherApplicationResult(@PathVariable String userId,
+			@RequestBody TeacherInfo teacherInfo) {
 		ProcessResult processResult = new ProcessResult();
 		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
 		try {
@@ -280,6 +280,7 @@ public class CManagerAccessController {
 		}
 		return processResult;
 	}
+
 	/**
 	 * 订单系统调用审批通过后升级为老师
 	 * @param category
@@ -291,12 +292,12 @@ public class CManagerAccessController {
 	@RequestMapping(method = RequestMethod.POST, value = "{category}/{dbid}/{orderid}/autoBeTeacher")
 	public ProcessResult autoBeTeacher(@PathVariable String category, @PathVariable String dbid,
 			@PathVariable String orderid, @RequestBody JsonRequest jsonRequest) {
-		
+
 		ProcessResult processResult = new ProcessResult();
 		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
 		try {
-			
-			processResult = teacherCourseManager.configureTeacher(null,orderid);
+
+			processResult = teacherCourseManager.configureTeacher(null, orderid);
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -304,8 +305,9 @@ public class CManagerAccessController {
 			saveExceptionToResult(processResult, e);
 		}
 		return processResult;
-			
-		}
+
+	}
+
 	/**
 	 * 查询教师信息
 	 * 
@@ -352,14 +354,14 @@ public class CManagerAccessController {
 		return processResult;
 	}
 
-	
 	/**
 	 * 查询教师列表
 	 * @param queryUserOrderRequest
 	 * @return
 	 */
 	@PostMapping(value = "{userId}/getTeacherList")
-	public ProcessResult getTecherList(@PathVariable String userId,@RequestBody QueryUserOrderRequest queryUserOrderRequest) {
+	public ProcessResult getTecherList(@PathVariable String userId,
+			@RequestBody QueryUserOrderRequest queryUserOrderRequest) {
 		ProcessResult processResult = new ProcessResult();
 		processResult.setRetCode(CoursemanagerConst.RESULT_FAILURE);
 		try {
@@ -371,12 +373,14 @@ public class CManagerAccessController {
 		}
 		return processResult;
 	}
+
 	protected void saveExceptionToResult(ProcessResult processResult, Exception e) {
 		StringWriter errors = new StringWriter();
 		e.printStackTrace(new PrintWriter(errors));
 		String errorStr = errors.toString();
 		if (!StringUtils.isEmpty(errorStr)) {
-			processResult.setRetMsg(errorStr.substring(0, 1000));
+			String msg = errorStr.length() > 1000 ? errorStr.substring(0, 1000) : errorStr;
+			processResult.setRetMsg(msg);
 		}
 		return;
 	}
