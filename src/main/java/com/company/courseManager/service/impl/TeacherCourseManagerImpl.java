@@ -1021,24 +1021,7 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 	@Override
 	public ProcessResult getTeacherApplicationResult(TeacherInfo teacherInfo)
 	{
-		String category = "lecturer";
-		String KEY_USER_ORDER_DATA = "__taskContext_";
-		if(StringUtils.isEmpty(teacherInfo.getUserId()))
-		{
-			return ControllerUtils.getErrorResponse(-1, "userId is  null");
-		}
 		
-		OrderMainContext orderMainContext = new OrderMainContext();
-		Map<String,String> contextMap= new HashMap<String,String>();
-		contextMap.put(KEY_USER_ORDER_DATA, JsonUtil.toJson(teacherInfo));
-		orderMainContext.setCatetory(category);
-		orderMainContext.setOwnerKey(teacherInfo.getUserId());
-		orderMainContext.setContextDatas(contextMap);
-		ProcessResult ret = this.createOrder(orderMainContext);
-		if(ret.getRetCode()!=0)
-		{
-			return ret;
-		}
 		//保存申请记录，提供给学生查询
 		try {
 			UserOrder userOrder = new UserOrder();
@@ -1046,20 +1029,20 @@ public class TeacherCourseManagerImpl extends OrderClientService implements Teac
 			userOrder.setConstCreateTime();
 			userOrder.setUserId(teacherInfo.getUserId());
 			userOrder.setOrderId(teacherInfo.getUserId());
-			ret = this.queryOneOrder(courseUserDbWriteUrl, userOrder);
+			ProcessResult ret = this.queryOneOrder(courseUserDbWriteUrl, userOrder);
 			if(ret.getRetCode()==UserOrderConst.RESULT_Error_NotFound)
 			{
 				return ret;
 			}
 			else
 			{
-				
+				return ret;
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}		
-		return this.startOrder(category, orderMainContext.getOrderId());		
+		return null;		
 	}
 
 	@Override
